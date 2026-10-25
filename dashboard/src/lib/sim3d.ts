@@ -244,12 +244,92 @@ function clearGroup(grp: THREE.Object3D) {
   grp.clear();
 }
 
-/** Flood-only surface dressing. Every piece stays inside an existing house's box:
+/** Small deterministic material maps: no downloaded assets or per-frame work. */
+function surfacePattern(kind: "roof" | "wall"): THREE.DataTexture {
+  const size = 64, data = new Uint8Array(size * size * 4);
+  for (let y = 0; y < size; y++) for (let x = 0; x < size; x++) {
+    const seam = kind === "roof" ? y % 8 === 0 || (x + (Math.floor(y / 8) % 2) * 8) % 16 === 0 : y % 8 === 0;
+    const shade = seam ? 170 : 230 + ((x * 13 + y * 7) % 18);
+    const i = (y * size + x) * 4;
+    data[i] = data[i+1] = data[i+2] = shade; data[i+3] = 255;
+  }
+  const tex = new THREE.DataTexture(data, size, size);
+  tex.colorSpace = THREE.SRGBColorSpace;
+  tex.magFilter = THREE.LinearFilter;
+  tex.minFilter = THREE.LinearMipmapLinearFilter;
+  tex.generateMipmaps = true;
+  tex.needsUpdate = true;
+  return tex;
+}
+
+/** Surface panels on existing solids only. Preserve the silhouettes and all real openings.
+ * One instanced batch gives city towers, vehicles and covered structures readable detail.
+ */
+function worldSurfaceDetails(boxes: World3D["boxes"]): THREE.Group {
+  const group = new THREE.Group();
+  const pieces: { matrix: THREE.Matrix4; color: THREE.Color }[] = [];
+  const root = new THREE.Object3D(), part = new THREE.Object3D();
+  const put = (x: number, y: number, z: number, w: number, h: number, d: number, color: string) => {
+    part.position.set(x,y,z); part.scale.set(w,h,d); part.updateMatrix();
+    pieces.push({matrix: new THREE.Matrix4().multiplyMatrices(root.matrix,part.matrix), color: new THREE.Color(color)});
+  };
+  for (const b of boxes) {
+    const [L,W,H] = b.size;
+    root.position.copy(v3(b.center[0],b.center[1],b.z0));
+    root.rotation.y = -b.heading * Math.PI / 180; root.updateMatrix();
+    if (b.kind === "building") {
+      // Roof edging stays flush; facade openings supplied by the simulator remain untouched.
+      put(0,H+0.005,0,W,0.01,L,"#555e65");
+      for (const sign of [-1,1]) {
+        put(sign*(W/2-0.08),H+0.012,0,0.16,0.008,L,"#909594");
+        put(0,H+0.012,sign*(L/2-0.08),W,0.008,0.16,"#909594");
+      }
+    }
+    if (b.kind === "building" && !b.openings?.length) {
+      const floors = Math.max(1,Math.min(12,Math.floor(H/3)));
+      const cols = Math.max(1,Math.min(6,Math.floor(W/3)));
+      const sides = Math.max(1,Math.min(6,Math.floor(L/3)));
+      for (let f=0; f<floors; f++) {
+        const y = (f+0.55)*H/floors;
+        for (const sign of [-1,1]) {
+          for (let c=0;c<cols;c++) put((c+0.5)*W/cols-W/2,y,sign*(L/2+0.005),W/cols*0.58,H/floors*0.46,0.01,"#526b78");
+          for (let c=0;c<sides;c++) put(sign*(W/2+0.005),y,(c+0.5)*L/sides-L/2,0.01,H/floors*0.46,L/sides*0.58,"#526b78");
+        }
+      }
+    }
+    if (b.kind === "vehicle") {
+      // Glazing, bumpers, lights and dark wheel panels on the original vehicle volume.
+      for (const sign of [-1,1]) {
+        put(0,H*0.73,sign*(L/2+0.005),W*0.78,H*0.3,0.01,"#334c5d");
+        put(0,H*0.2,sign*(L/2+0.006),W*0.92,H*0.09,0.012,"#45494d");
+        for (const side of [-1,1]) {
+          put(side*W*0.34,H*0.39,sign*(L/2+0.006),W*0.16,H*0.1,0.012,sign>0?"#d7d9bc":"#9c4640");
+          put(side*(W/2+0.005),H*0.18,sign*L*0.29,0.01,H*0.32,L*0.15,"#252b30");
+        }
+        put(sign*(W/2+0.005),H*0.73,0,0.01,H*0.3,L*0.56,"#334c5d");
+      }
+      put(0,H+0.005,0,W*0.85,0.01,L*0.5,"#505c65");
+    }
+    if (["carport","walkway","shelter"].includes(b.kind)) {
+      // Roof seams only: never add supports or close an existing passage.
+      const ribs = Math.min(18,Math.max(2,Math.floor(L)));
+      for(let i=0;i<ribs;i++) put(0,H+0.005,(i+0.5)*L/ribs-L/2,W,0.01,0.035,"#788286");
+    }
+  }
+  if (!pieces.length) return group;
+  const mesh = new THREE.InstancedMesh(new THREE.BoxGeometry(1,1,1),new THREE.MeshStandardMaterial({roughness:0.75}),pieces.length);
+  pieces.forEach((p,i)=>{mesh.setMatrixAt(i,p.matrix);mesh.setColorAt(i,p.color);});
+  mesh.receiveShadow = true; mesh.instanceMatrix.needsUpdate = true;
+  group.add(mesh); return group;
+}
+
+/** Residential surface dressing. Every piece stays inside an existing house's box:
  * no new obstacles, changed footprints, or roof heights above the simulator's bounds.
  * Instancing keeps the neighbourhood to three extra draw calls, without asset downloads.
  */
-function floodHouseDetails(houses: World3D["boxes"]): THREE.Group {
+function houseDetails(houses: World3D["boxes"]): THREE.Group {
   const group = new THREE.Group();
+  if (!houses.length) return group;
   const roof = new THREE.BufferGeometry();
   roof.setAttribute("position", new THREE.Float32BufferAttribute([
     -0.5,0,-0.5, 0.5,0,-0.5, 0,1,-0.5,
@@ -258,7 +338,11 @@ function floodHouseDetails(houses: World3D["boxes"]): THREE.Group {
     0.5,0,-0.5, 0.5,0,0.5, 0,1,0.5, 0.5,0,-0.5, 0,1,0.5, 0,1,-0.5,
   ], 3));
   roof.computeVertexNormals();
-  const roofs = new THREE.InstancedMesh(roof, new THREE.MeshLambertMaterial({ side: THREE.DoubleSide }), houses.length);
+  const roofPos = roof.getAttribute("position");
+  const uv = new Float32Array(roofPos.count * 2);
+  for (let i = 0; i < roofPos.count; i++) { uv[i*2] = roofPos.getX(i) + 0.5; uv[i*2+1] = roofPos.getZ(i) + 0.5; }
+  roof.setAttribute("uv", new THREE.BufferAttribute(uv, 2));
+  const roofs = new THREE.InstancedMesh(roof, new THREE.MeshStandardMaterial({ side: THREE.DoubleSide, map: surfacePattern("roof"), roughness: 0.94 }), houses.length);
   const panels = new THREE.InstancedMesh(new THREE.BoxGeometry(1,1,1), new THREE.MeshLambertMaterial(), houses.length * 7);
   const stains = new THREE.InstancedMesh(new THREE.BoxGeometry(1,1,1), new THREE.MeshLambertMaterial(), houses.length);
   const root = new THREE.Object3D(), part = new THREE.Object3D(), matrix = new THREE.Matrix4();
@@ -824,9 +908,10 @@ export class SceneController {
       trunk.position.y = t.trunk_h / 2;
       trunk.castShadow = true;
       g.add(trunk);
-      const mat = new THREE.MeshLambertMaterial({ color: flood ? "#66704b" : t.color });
+      const leafColor = new THREE.Color(flood ? "#66704b" : t.color);
+      const mat = new THREE.MeshLambertMaterial({ color: leafColor, flatShading: true });
       for (const [dx, dz, dy, r] of [[0, 0, 0, 0.8], [0.35, 0.2, 0.15, 0.62], [-0.3, 0.25, 0.1, 0.62], [0.05, -0.38, 0.2, 0.62]]) {
-        const s = new THREE.Mesh(flood ? new THREE.IcosahedronGeometry(t.canopy_r * r, 0) : new THREE.SphereGeometry(t.canopy_r * r, 18, 14), mat);
+        const s = new THREE.Mesh(new THREE.IcosahedronGeometry(t.canopy_r * r, 1), mat);
         s.position.set(dx * t.canopy_r, t.canopy_z + dy * t.canopy_r, dz * t.canopy_r);
         s.castShadow = true;
         g.add(s);
@@ -834,14 +919,27 @@ export class SceneController {
       g.position.copy(v3(t.xy[0], t.xy[1], 0));
       this.staticGroup.add(g);
     }
+    const siding = surfacePattern("wall");
     for (const b of w.boxes) {
       const [L, W, H] = b.size;
-      const house = flood && b.kind === "house";
+      const house = ["house", "shed", "barn"].includes(b.kind) && !b.openings?.length;
       const wallHeight = house ? H * 0.72 : H;
       const variant = b.id.split("").reduce((n, c) => n + c.charCodeAt(0), 0);
       const color = house ? ["#c3bdac", "#b6b5a7", "#c9bea7", "#a9b0ac"][variant % 4]
         : flood && b.kind === "debris" ? "#78634c" : b.color;
-      const m = new THREE.Mesh(new THREE.BoxGeometry(W, wallHeight, L), new THREE.MeshLambertMaterial({ color }));
+      let shape: THREE.BufferGeometry = new THREE.BoxGeometry(W, wallHeight, L);
+      if (b.kind === "rock" || b.kind === "log") {
+        shape.dispose();
+        if (b.kind === "rock") {
+          shape = new THREE.IcosahedronGeometry(1, 1);
+          shape.scale(W / 2, H / 2, L / 2);
+        } else {
+          shape = new THREE.CylinderGeometry(0.5, 0.5, 1, 10);
+          shape.rotateX(Math.PI / 2);
+          shape.scale(W, H, L);
+        }
+      }
+      const m = new THREE.Mesh(shape, new THREE.MeshStandardMaterial({ color, roughness: 0.9, map: house ? siding : null, flatShading: b.kind === "rock" }));
       m.position.copy(v3(b.center[0], b.center[1], b.z0 + wallHeight / 2));
       m.rotation.y = -(b.heading * Math.PI) / 180;
       m.castShadow = true;
@@ -866,7 +964,9 @@ export class SceneController {
         this.staticGroup.add(decal);
       }
     }
-    if (flood) this.staticGroup.add(floodHouseDetails(w.boxes.filter((b) => b.kind === "house")));
+    this.staticGroup.add(houseDetails(w.boxes.filter((b) => ["house", "shed", "barn"].includes(b.kind) && !b.openings?.length)));
+    this.staticGroup.add(worldSurfaceDetails(w.boxes));
+    if (!w.boxes.some((b) => ["house", "shed", "barn"].includes(b.kind) && !b.openings?.length)) siding.dispose();
     for (const z of w.zones) {
       const pts = [...z.polygon, z.polygon[0]].map(([x, y]) => v3(x, y, 0.05));
       const line = new THREE.Line(new THREE.BufferGeometry().setFromPoints(pts), new THREE.LineDashedMaterial({ color: "#c3c2b7", dashSize: 0.8, gapSize: 0.5 }));
