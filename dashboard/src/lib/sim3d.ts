@@ -213,6 +213,27 @@ function label(text: string, cls: string): CSS2DObject {
   return new CSS2DObject(el);
 }
 
+// These world groups own their resources; release GPU buffers as well as scene references.
+function disposeWorldResources(grp: THREE.Object3D) {
+  const geometries = new Set<THREE.BufferGeometry>();
+  const materials = new Set<THREE.Material>();
+  const textures = new Set<THREE.Texture>();
+  grp.traverse((obj) => {
+    const mesh = obj as THREE.Mesh;
+    if (mesh.geometry) geometries.add(mesh.geometry);
+    if (mesh.material) {
+      for (const mat of Array.isArray(mesh.material) ? mesh.material : [mesh.material]) {
+        materials.add(mat);
+        for (const value of Object.values(mat)) if (value instanceof THREE.Texture) textures.add(value);
+      }
+    }
+    if (obj instanceof THREE.InstancedMesh) obj.dispose();
+  });
+  geometries.forEach((g) => g.dispose());
+  materials.forEach((m) => m.dispose());
+  textures.forEach((t) => t.dispose());
+}
+
 function clearGroup(grp: THREE.Object3D) {
   grp.traverse((obj) => {
     if (obj instanceof CSS2DObject) {
@@ -221,6 +242,58 @@ function clearGroup(grp: THREE.Object3D) {
     }
   });
   grp.clear();
+}
+
+/** Flood-only surface dressing. Every piece stays inside an existing house's box:
+ * no new obstacles, changed footprints, or roof heights above the simulator's bounds.
+ * Instancing keeps the neighbourhood to three extra draw calls, without asset downloads.
+ */
+function floodHouseDetails(houses: World3D["boxes"]): THREE.Group {
+  const group = new THREE.Group();
+  const roof = new THREE.BufferGeometry();
+  roof.setAttribute("position", new THREE.Float32BufferAttribute([
+    -0.5,0,-0.5, 0.5,0,-0.5, 0,1,-0.5,
+    -0.5,0,0.5, 0,1,0.5, 0.5,0,0.5,
+    -0.5,0,-0.5, 0,1,-0.5, 0,1,0.5, -0.5,0,-0.5, 0,1,0.5, -0.5,0,0.5,
+    0.5,0,-0.5, 0.5,0,0.5, 0,1,0.5, 0.5,0,-0.5, 0,1,0.5, 0,1,-0.5,
+  ], 3));
+  roof.computeVertexNormals();
+  const roofs = new THREE.InstancedMesh(roof, new THREE.MeshLambertMaterial({ side: THREE.DoubleSide }), houses.length);
+  const panels = new THREE.InstancedMesh(new THREE.BoxGeometry(1,1,1), new THREE.MeshLambertMaterial(), houses.length * 7);
+  const stains = new THREE.InstancedMesh(new THREE.BoxGeometry(1,1,1), new THREE.MeshLambertMaterial(), houses.length);
+  const root = new THREE.Object3D(), part = new THREE.Object3D(), matrix = new THREE.Matrix4();
+  let panel = 0;
+  const put = (mesh: THREE.InstancedMesh, i: number, pos: number[], scale: number[], color: string) => {
+    part.position.set(pos[0],pos[1],pos[2]);
+    part.scale.set(scale[0],scale[1],scale[2]);
+    part.updateMatrix();
+    mesh.setMatrixAt(i, matrix.multiplyMatrices(root.matrix, part.matrix));
+    mesh.setColorAt(i, new THREE.Color(color));
+  };
+  houses.forEach((b, i) => {
+    const [L,W,H] = b.size;
+    const eave = H * 0.72;
+    root.position.copy(v3(b.center[0], b.center[1], b.z0));
+    root.rotation.y = -b.heading * Math.PI / 180;
+    root.updateMatrix();
+    put(roofs, i, [0,eave,0], [W,H-eave,L], ["#555957", "#625c54", "#735b4e", "#4e575b"][i%4]);
+    // Flush facade panels, rather than new windows/doors in the visibility model.
+    for (const z of [-L/2 + 0.006, L/2 - 0.006]) {
+      for (const x of [-W*0.28, W*0.28])
+        put(panels, panel++, [x,eave*0.62,z], [W*0.16,0.95,0.02], "#36494c");
+      put(panels, panel++, [0,1.05,z], [0.95,2.1,0.02], i%3 === 0 ? "#625449" : "#4d5957");
+    }
+    // A weathered board on one facade suggests storm wear without adding wreckage.
+    put(panels, panel++, [-W*0.28,eave*0.62,L/2-0.018], [W*0.2,0.16,0.05], "#91816b");
+    put(stains, i, [0,0.22,0], [W+0.008,0.44,L+0.008], "#726b54");
+  });
+  for (const mesh of [roofs, panels, stains]) {
+    mesh.instanceMatrix.needsUpdate = true;
+    mesh.castShadow = true;
+    mesh.receiveShadow = true;
+    group.add(mesh);
+  }
+  return group;
 }
 
 export class SceneController {
@@ -399,6 +472,7 @@ export class SceneController {
     cancelAnimationFrame(this.raf);
     this.resizeObs.disconnect();
     this.controls.dispose();
+    disposeWorldResources(this.scene);
     this.renderer.dispose();
     this.host.removeChild(this.renderer.domElement);
     this.host.removeChild(this.labels.domElement);
@@ -600,7 +674,9 @@ export class SceneController {
   }
 
   private initWorldHazards(hz: WorldHazard3D | null | undefined) {
+    disposeWorldResources(this.hazardGroup);
     clearGroup(this.hazardGroup);
+    disposeWorldResources(this.hazardOverlayGroup);
     clearGroup(this.hazardOverlayGroup);
     this.worldHazards = hz ?? null;
     this.waterMesh = null;
@@ -694,10 +770,18 @@ export class SceneController {
   }
 
   setWorld(w: World3D) {
+    disposeWorldResources(this.staticGroup);
     clearGroup(this.staticGroup);
     this.boxMeshes.clear();
     const [x0, x1, y0, y1] = w.bounds;
     const span = Math.max(x1 - x0, y1 - y0);
+    const flood = w.hazards?.kind === "flood";
+    // Restore defaults on every world switch; the flood palette must not leak into pursuit/fire.
+    const sky = flood ? "#58656b" : "#1c2530";
+    this.scene.background = new THREE.Color(sky);
+    if (this.scene.fog instanceof THREE.Fog) this.scene.fog.color.set(sky);
+    this.sun.color.set(flood ? "#dce4e5" : "#fff4e0");
+    this.sun.intensity = flood ? 1.35 : 2.2;
     // scale fog and far plane to fit large worlds (flood 500 m, fire 200 m, SAR 1500 m)
     if (this.scene.fog instanceof THREE.Fog) {
       this.scene.fog.near = span > 80 ? Math.max(140, span * 0.5) : 90;
@@ -708,7 +792,7 @@ export class SceneController {
 
     // ground: the simulator's synthetic orthophoto, plus a plain apron around it
     const apronSize = Math.max(600, span * 1.8);
-    const apron = new THREE.Mesh(new THREE.PlaneGeometry(apronSize, apronSize), new THREE.MeshLambertMaterial({ color: "#36502f" }));
+    const apron = new THREE.Mesh(new THREE.PlaneGeometry(apronSize, apronSize), new THREE.MeshLambertMaterial({ color: flood ? "#686957" : "#36502f" }));
     apron.rotation.x = -Math.PI / 2;
     apron.position.y = -0.03;
     apron.receiveShadow = true;
@@ -716,7 +800,19 @@ export class SceneController {
     const tex = new THREE.TextureLoader().load(w.ortho);
     tex.colorSpace = THREE.SRGBColorSpace;
     tex.anisotropy = 8;
-    const ground = new THREE.Mesh(new THREE.PlaneGeometry(x1 - x0, y1 - y0), new THREE.MeshLambertMaterial({ map: tex }));
+    const groundMat = new THREE.MeshLambertMaterial({ map: tex });
+    if (flood) {
+      // Grade the existing orthophoto, preserving every road edge and dry-island outline.
+      groundMat.onBeforeCompile = (shader) => {
+        shader.fragmentShader = shader.fragmentShader.replace("#include <map_fragment>", `
+          #include <map_fragment>
+          float siltLuma = dot(diffuseColor.rgb, vec3(0.299, 0.587, 0.114));
+          diffuseColor.rgb = mix(vec3(siltLuma), diffuseColor.rgb, 0.25) * vec3(1.12, 1.02, 0.84);
+        `);
+      };
+      groundMat.customProgramCacheKey = () => "flood-silt";
+    }
+    const ground = new THREE.Mesh(new THREE.PlaneGeometry(x1 - x0, y1 - y0), groundMat);
     ground.rotation.x = -Math.PI / 2;
     ground.position.copy(v3((x0 + x1) / 2, (y0 + y1) / 2, 0));
     ground.receiveShadow = true;
@@ -728,9 +824,9 @@ export class SceneController {
       trunk.position.y = t.trunk_h / 2;
       trunk.castShadow = true;
       g.add(trunk);
-      const mat = new THREE.MeshLambertMaterial({ color: t.color });
+      const mat = new THREE.MeshLambertMaterial({ color: flood ? "#66704b" : t.color });
       for (const [dx, dz, dy, r] of [[0, 0, 0, 0.8], [0.35, 0.2, 0.15, 0.62], [-0.3, 0.25, 0.1, 0.62], [0.05, -0.38, 0.2, 0.62]]) {
-        const s = new THREE.Mesh(new THREE.SphereGeometry(t.canopy_r * r, 18, 14), mat);
+        const s = new THREE.Mesh(flood ? new THREE.IcosahedronGeometry(t.canopy_r * r, 0) : new THREE.SphereGeometry(t.canopy_r * r, 18, 14), mat);
         s.position.set(dx * t.canopy_r, t.canopy_z + dy * t.canopy_r, dz * t.canopy_r);
         s.castShadow = true;
         g.add(s);
@@ -740,8 +836,13 @@ export class SceneController {
     }
     for (const b of w.boxes) {
       const [L, W, H] = b.size;
-      const m = new THREE.Mesh(new THREE.BoxGeometry(W, H, L), new THREE.MeshLambertMaterial({ color: b.color }));
-      m.position.copy(v3(b.center[0], b.center[1], b.z0 + H / 2));
+      const house = flood && b.kind === "house";
+      const wallHeight = house ? H * 0.72 : H;
+      const variant = b.id.split("").reduce((n, c) => n + c.charCodeAt(0), 0);
+      const color = house ? ["#c3bdac", "#b6b5a7", "#c9bea7", "#a9b0ac"][variant % 4]
+        : flood && b.kind === "debris" ? "#78634c" : b.color;
+      const m = new THREE.Mesh(new THREE.BoxGeometry(W, wallHeight, L), new THREE.MeshLambertMaterial({ color }));
+      m.position.copy(v3(b.center[0], b.center[1], b.z0 + wallHeight / 2));
       m.rotation.y = -(b.heading * Math.PI) / 180;
       m.castShadow = true;
       m.receiveShadow = true;
@@ -765,6 +866,7 @@ export class SceneController {
         this.staticGroup.add(decal);
       }
     }
+    if (flood) this.staticGroup.add(floodHouseDetails(w.boxes.filter((b) => b.kind === "house")));
     for (const z of w.zones) {
       const pts = [...z.polygon, z.polygon[0]].map(([x, y]) => v3(x, y, 0.05));
       const line = new THREE.Line(new THREE.BufferGeometry().setFromPoints(pts), new THREE.LineDashedMaterial({ color: "#c3c2b7", dashSize: 0.8, gapSize: 0.5 }));
@@ -828,17 +930,17 @@ export class SceneController {
             const wave = 0.025 * Math.sin(f.t_s * 2.4 + wx * 0.14 + wy * 0.17);
             pos[i + 1] = Math.min(2.4, 0.08 + depth * 1.15) + wave;
             if (depth >= closedLim) {
-              // Deep water (> 0.3 m road closure depth): rich deep flood blue
+              // Muted slate water, still keyed to the unchanged road closure threshold.
               const k = Math.min(1, (depth - closedLim) / 0.65);
-              col[i] = 0.11 * (1 - k) + 0.05 * k;
-              col[i + 1] = 0.42 * (1 - k) + 0.24 * k;
-              col[i + 2] = 0.78 * (1 - k) + 0.56 * k;
+              col[i] = 0.27 * (1 - k) + 0.17 * k;
+              col[i + 1] = 0.34 * (1 - k) + 0.25 * k;
+              col[i + 2] = 0.35 * (1 - k) + 0.29 * k;
             } else {
-              // Shallow water (0.01 - 0.3 m): brighter cyan-blue
+              // Silty shallows contrast with the slate deeper areas.
               const k = depth / closedLim;
-              col[i] = 0.32 * (1 - k) + 0.14 * k;
-              col[i + 1] = 0.72 * (1 - k) + 0.48 * k;
-              col[i + 2] = 0.94 * (1 - k) + 0.82 * k;
+              col[i] = 0.44 * (1 - k) + 0.27 * k;
+              col[i + 1] = 0.42 * (1 - k) + 0.34 * k;
+              col[i + 2] = 0.32 * (1 - k) + 0.35 * k;
             }
           } else {
             pos[i + 1] = -0.22;
@@ -943,6 +1045,7 @@ export class SceneController {
   }
 
   private rebuildFloodOverlays(hz: FrameHazardFlood3D) {
+    disposeWorldResources(this.hazardOverlayGroup);
     clearGroup(this.hazardOverlayGroup);
     // Filled water surfaces + shoreline and >0.3 m deep-water contours
     for (const area of hz.areas) {
@@ -953,9 +1056,9 @@ export class SceneController {
       const surf = new THREE.Mesh(
         new THREE.ShapeGeometry(shape),
         new THREE.MeshBasicMaterial({
-          color: isDeep ? "#0b6bcb" : "#2da8ff",
+          color: isDeep ? "#394f56" : "#8b8266",
           transparent: true,
-          opacity: isDeep ? 0.56 : 0.44,
+          opacity: isDeep ? 0.28 : 0.24,
           side: THREE.DoubleSide,
           depthWrite: false,
         }),
@@ -967,7 +1070,7 @@ export class SceneController {
       const pts = [...area.polygon, area.polygon[0]].map(([x, y]) => v3(x, y, z + 0.04));
       const mat = isDeep
         ? new THREE.LineDashedMaterial({ color: "#ff9f1c", dashSize: 1.2, gapSize: 0.7 })
-        : new THREE.LineBasicMaterial({ color: "#7ce0ff", transparent: true, opacity: 0.9 });
+        : new THREE.LineBasicMaterial({ color: "#b4b49a", transparent: true, opacity: 0.9 });
       const line = new THREE.Line(new THREE.BufferGeometry().setFromPoints(pts), mat);
       if (isDeep) line.computeLineDistances();
       this.hazardOverlayGroup.add(line);
@@ -1014,6 +1117,7 @@ export class SceneController {
   }
 
   private rebuildFireOverlays(hz: FrameHazardFire3D) {
+    disposeWorldResources(this.hazardOverlayGroup);
     clearGroup(this.hazardOverlayGroup);
     let keepOutLabelPos: XY | null = null;
     for (const area of hz.areas) {
