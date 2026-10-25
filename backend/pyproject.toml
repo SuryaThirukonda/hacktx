@@ -2,7 +2,6 @@
 name = "overwatch"
 version = "0.1.0"
 description = "Overwatch: first-responder aerial copilot (drone + responder phone fusion, alerts, decisions, autonomy sim)"
-readme = {text = "Overwatch backend. See the repository README.md for setup and operation.", content-type = "text/plain"}
 requires-python = ">=3.11,<3.14"
 license = { text = "AGPL-3.0-or-later" }
 dependencies = [
