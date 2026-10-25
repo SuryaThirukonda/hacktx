@@ -48,7 +48,7 @@ def live(monkeypatch):
     app = create_app(cfg)
     p = app.state.rt.pipeline
     p.detector = PersonDetector()
-    p._detector_prov = "LIVE"
+    p._detector_prov = ("LIVE", cfg.perception.detector)
     with TestClient(app) as client:
         yield client, app.state.rt
 

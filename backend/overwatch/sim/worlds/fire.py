@@ -44,7 +44,7 @@ def fire_model() -> FireModel:
          (np.abs(Y - BUILDING.center[1]) < BUILDING.size_ns_m / 2 + 2)] = False  # the house and its gravel apron
     fuel[np.abs(Y - 30.0) < 3.5] = False  # the access road is a firebreak
     # time compressed for the demo: spread is fast so the scenario fits in a minute
-    return FireModel(g, fuel, [(-45.0, -45.0, 0.0)], base_ros_mps=0.9, wind_speed_mps=2.5, wind_to_deg=45.0)
+    return FireModel(g, fuel, [(-45.0, -45.0, 0.0)], base_ros_mps=0.45, wind_speed_mps=2.5, wind_to_deg=45.0)
 
 
 def build_world() -> World:

@@ -1,11 +1,41 @@
-import sys, os, json, math os.environ["OPENBLAS_NUM_THREADS"] = "1"
-os.environ["OMP_NUM_THREADS"] = "2"
-sys.path.insert(0, "backend")
-import torch torch.set_num_threads(2)
-import cv2 cv2.setNumThreads(1)
-import yaml
+"""Headless rescue probe. All truth comparison is confined to evaluation."""
+import json
+import math
+import os
+import sys
 from pathlib import Path
+
+ROOT = Path(__file__).resolve().parents[2]
+sys.path.insert(0, str(ROOT / "backend"))
+import yaml
 from overwatch.config import Config
-from overwatch.evaluation.scenario_runner import HeadlessRunner out = Path("evaluation/merge/rescue")
-out.mkdir(parents=True, exist_ok=True)
-for sid in sys.argv[1:] or ["FR1", "FF2"]: cfg = Config.model_validate(yaml.safe_load(Path("config/default.yaml").read_text())) cfg.decisions.primary = "rules" cfg.decisions.shadow = [] cfg.perception.yolo_weights = str(Path("backend/weights/yolo26n.pt").resolve()) runner = HeadlessRunner(cfg, sid, engine="rules") progress = [-1] prev = [None] max_depth = [0.0] unsafe = [0] beacon_error = [None] last = [None] def step(r, t): mission = r.pipeline.rescue sim = r.sim crew = sim.actor("responder") if int(t / 10000) != progress[0]: progress[0] = int(t / 10000) print( sid, round(t / 1000, 1), "flight", sim.drone.pos.tolist(), r.pipeline.autonomy.fsm, "colors", r.pipeline.track_colors, "detections", r.pipeline.latest_drone.overlay.detections if r.pipeline.latest_drone else None, flush=True) if mission.phase != prev[0]: print( sid, round(t / 1000, 1), mission.phase, "beacon", mission.beacon, "crew", crew.pos.tolist(), flush=True) prev[0] = mission.phase if mission.beacon and beacon_error[0] is None: who = next(a for a in sim.actors if a.role == "subject") beacon_error[0] = math.dist(mission.beacon["xy"], who.pos) if last[0] is not None and math.dist(last[0], crew.pos) > 1e-6: if not mission.safe(crew.pos, t / 1000): unsafe[0] += 1 if sid.startswith("FR"): max_depth[0] = max( max_depth[0], sim.scenario.hazards.flood.depth(*crew.pos, t / 1000) ) if int(t / 1000) != int((t - 33) / 1000) and r.pipeline.latest_drone: cv2.imwrite("/tmp/" + sid + "-latest.jpg", r.pipeline.latest_drone.image) last[0] = crew.pos.copy() res = runner.run( float(os.environ.get("VERIFY_DURATION", "115")), record_every_ms=1000, on_step=step) result = dict( scenario=sid, rescue=res.rescue, beacon_error_m=beacon_error[0], unsafe_moving_steps=unsafe[0], max_water_depth_m=max_depth[0], wall_s=res.wall_s, detector=runner.pipeline.detector.model_id, events=[v for v in runner.pipeline.rescue.callouts]) (out / f"{sid}.json").write_text(json.dumps(result, indent=2)) print(json.dumps(result), flush=True)
+from overwatch.evaluation.scenario_runner import HeadlessRunner
+
+
+def run(sid):
+    cfg = Config.model_validate(yaml.safe_load((ROOT / "config/default.yaml").read_text()))
+    cfg.decisions.primary, cfg.decisions.shadow = "rules", []
+    runner = HeadlessRunner(cfg, sid, engine="rules")
+    beacon_error = None
+    approved = False
+    def step(r, t):
+        nonlocal beacon_error, approved
+        mission = r.pipeline.rescue
+        if mission.beacon and beacon_error is None:
+            who = next(a for a in r.sim.actors if a.role == "subject")
+            beacon_error = math.dist(mission.beacon["xy"], who.pos)
+        if mission.phase == "REVIEW" and not approved:
+            mission.confirm("scripted simulated operator")
+            approved = True
+    res = runner.run(float(os.environ.get("VERIFY_DURATION", "115")), record_every_ms=1000, on_step=step)
+    result = dict(scenario=sid, rescue=runner.pipeline.rescue.view(), beacon_error_m=beacon_error,
+                  wall_s=res.wall_s, detector=runner.pipeline.detector.model_id)
+    out = ROOT / "evaluation/merge/rescue"
+    out.mkdir(parents=True, exist_ok=True)
+    (out / f"{sid}.json").write_text(json.dumps(result, indent=2))
+    return result
+
+
+if __name__ == "__main__":
+    for sid in sys.argv[1:] or ["FR3", "FF3", "SR5"]:
+        print(json.dumps(run(sid)), flush=True)

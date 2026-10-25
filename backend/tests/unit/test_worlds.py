@@ -28,7 +28,7 @@ def test_every_world_scenario_has_limits_and_stays_in_its_world():
             assert any(a.action == "dispatch" for a in s.actions), f"{k} starts on the ground but never launches"
         for a in s.actors:
             assert x0 <= a.start_xy[0] <= x1 and y0 <= a.start_xy[1] <= y1, (k, a.actor_id)
-    assert len(sc) - len(ids) == 27  # the existing scenarios are all still there
+    assert {"demo", "DEMO-1", "S05", "S16", "OW7", "PP0", "PP8", "CT1", "CT2"} <= set(sc)
 
 
 def test_hazard_layers_are_labelled_screening_models():

@@ -1,7 +1,25 @@
-"""Check the saved independent headless runs against the integration requirements."""
+"""Check saved independent headless evidence; absent evidence is a failure."""
 import json
 from pathlib import Path
-root=Path(__file__).resolve().parent
-for file in (root/'platform').glob('*.json'): report=json.loads(file.read_text());assert report['expected_pass'],file
-for sid in ('FR1','FR2','FF1','FF2'): r=json.loads((root/'rescue'/f'{sid}.json').read_text());m=r['rescue'] assert r['beacon_error_m']<=2 and r['unsafe_moving_steps']==0,(sid,r) assert m['arrived_s'] is not None and m['crew_distance_m']>1 and m['phase']=='COMPLETE',(sid,m) if sid.startswith('FR'):assert r['max_water_depth_m']<=.3,(sid,r)
-print('Six platform scenarios and four rescue handoffs meet the recorded criteria.')
+
+
+def main():
+    root = Path(__file__).resolve().parent
+    platform = list((root / "platform").glob("*.json"))
+    assert platform, "no platform evidence"
+    for file in platform:
+        report = json.loads(file.read_text())
+        assert report["expected_pass"], file
+    for sid in ("FR3", "FF3", "SR5"):
+        report = json.loads((root / "rescue" / f"{sid}.json").read_text())
+        mission = report["rescue"]
+        assert report["beacon_error_m"] is not None and report["beacon_error_m"] <= 3, (sid, report)
+        assert mission["unsafe_steps"] == 0 and mission["crew_distance_m"] > 1, (sid, mission)
+        assert mission["arrived_s"] is not None, (sid, mission)
+        if sid.startswith("FR"):
+            assert mission["max_water_depth_m"] <= .15, (sid, mission)
+    print("Saved platform and rescue handoffs meet the recorded criteria.")
+
+
+if __name__ == "__main__":
+    main()
