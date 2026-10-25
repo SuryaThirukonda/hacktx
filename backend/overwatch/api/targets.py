@@ -51,7 +51,7 @@ def register(app, rt, auth):
         description = body.description or " and ".join(
             text for text in (f"{body.torso_color} shirt" if body.torso_color else "",
                               f"{body.lower_color} pants" if body.lower_color else "") if text)
-        return guarded(lambda: svc.person_mark.request(iid, description, continuous=True))
+        return guarded(lambda: svc.person_mark.request_muse(iid, description))
 
     @app.post("/api/incidents/{iid}/target/confirm", dependencies=[Depends(auth)])
     def confirm(iid: str, body: CandidateConfirmation):

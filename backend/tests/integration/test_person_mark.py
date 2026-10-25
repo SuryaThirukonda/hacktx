@@ -24,6 +24,7 @@ def scene(monkeypatch):
     cfg.secrets.overwatch_token = "mark-test"
     app = create_app(cfg)
     rt = app.state.rt
+    monkeypatch.setattr(rt.incidents.person_mark, "request_muse", rt.incidents.person_mark.request)
     p = rt.pipeline
     client = TestClient(app)  # no background loops, clocks and decisions controlled by this test
     client.headers["Authorization"] = "Bearer mark-test"

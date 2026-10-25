@@ -14,7 +14,7 @@ interface Subject {
   motion_history: { xy: [number, number] }[];
 }
 interface Search {
-  request_id: string; status: string; reason: string; auto_approved: boolean;
+  request_id: string; status: string; reason: string; auto_approved: boolean; engine?: string;
   candidates: { track_id: string; well_supported: boolean; quality_reasons: string[] }[];
 }
 interface Target { session_id: string; state: string; subject: Subject | null; search: Search | null }
@@ -129,7 +129,7 @@ export function TargetSARPanel({ iid, data }: { iid: string; data: TargetSARData
           {!!subject.quality_reasons.length && <p>{subject.quality_reasons.join("; ")}</p>}
         </div>}
         {request && <>
-          <p>{request.reason}</p>
+          <p>{request.engine === "muse" ? "Muse Spark" : "Clothing rules · fallback"} · {request.reason}</p>
           {request.auto_approved && <p className="text-ink-3">Simulation selection; this is not human identity confirmation.</p>}
           {request.status === "review" && request.candidates.map((candidate) => <div className="flex items-center justify-between gap-1" key={candidate.track_id}>
             <span>{candidate.track_id}{!candidate.well_supported ? " · waiting for clean measurements" : ""}</span>
