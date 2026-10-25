@@ -146,6 +146,12 @@
 }
 .playback-controls button { display: flex; align-items: center; gap: 7px; height: 31px; padding: 0 10px; border: 1px solid #ffffff20; border-radius: 5px; font-size: 10px; color: #c3cedb; background: #151d28;
 }
+.panel-meta { display: inline-flex; align-items: center; gap: 8px; }
+.panel-toolbar .speed-controls { display: inline-flex; gap: 0; }
+.panel-toolbar .speed-controls button { border: 1px solid #ffffff20; border-radius: 0; padding: 5px 9px; font-size: 11px; font-weight: 600; }
+.panel-toolbar .speed-controls button:first-child { border-radius: 5px 0 0 5px; }
+.panel-toolbar .speed-controls button:last-child { border-radius: 0 5px 5px 0; }
+.panel-toolbar .speed-controls button.selected { background: #2b6cb0; color: #fff; border-color: #2b6cb0; }
 .playback-controls button:hover { background: #253143;
 }
 .mission-clock { font: 11px ui-monospace, monospace; letter-spacing: 1px; color: #9badbf; margin-right: 10px;

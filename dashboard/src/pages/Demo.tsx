@@ -255,6 +255,11 @@ function Playback() {
       <Btn title="Restart this scenario" disabled={!incident || !sim} onClick={() => run(() => actions.replay("restart", sim?.scenario))}>
         <RotateCcw size={13} />
       </Btn>
+      {[1, 2, 3].map((x) => (
+        <Btn key={x} active={Math.round(sim?.speed ?? 1) === x} disabled={!incident} title={`Run the simulation at ${x}x real time`} onClick={() => run(() => actions.simSpeed(x))}>
+          {x}x
+        </Btn>
+      ))}
     </div>
   );
 }

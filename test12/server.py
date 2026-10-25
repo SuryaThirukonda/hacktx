@@ -75,6 +75,7 @@ class Manager:
         self.frame_id = 0
         self.state_json = json.dumps({"running": False, "phase": "IDLE"}).encode()
         self.view = "drone"
+        self.speed = 1.0
         self.callouts: dict[int, str] = {}  # the current run's callouts as they are said, by number
         self.voice_lock: asyncio.Lock | None = None
         self.started = False
@@ -195,12 +196,20 @@ class Manager:
                                           "run_no": self.run_no, "view": self.view}).encode()
         self._pause_main()
         self.conn.send(("start", self.run_no, seed, spawn, self.view))
+        if self.speed != 1.0:
+            self.conn.send(("speed", self.speed))
         return seed
 
     def set_view(self, view: str) -> None:
         self.view = view
         if self.conn is not None:
             self.conn.send(("view", view))
+
+    def set_speed(self, speed: float) -> None:
+        """Simulation seconds per wall second for the demo (1x, 2x, 3x); applies to the running and the next run."""
+        self.speed = float(min(4.0, max(0.25, speed)))
+        if self.conn is not None:
+            self.conn.send(("speed", self.speed))
 
     def tts(self):
         """The backend's ElevenLabs client (built by the main runtime from the repo's .env), if there is one."""
@@ -292,6 +301,10 @@ class ViewBody(BaseModel):
     view: str
 
 
+class SpeedBody(BaseModel):
+    speed: float  # 1, 2 or 3 for the demo (0.25 to 4 accepted)
+
+
 def mount(app: FastAPI) -> None:
     """Adds the routes ahead of the dashboard's catch-all route, so /test12 is not served the dashboard."""
     MGR.rt = getattr(app.state, "rt", None)
@@ -332,6 +345,11 @@ def mount(app: FastAPI) -> None:
             raise HTTPException(422, f"view is one of {', '.join(VIEWS)}")
         MGR.set_view(body.view)
         return {"ok": True, "view": MGR.view}
+
+    @r.post("/api/test12/speed")
+    def set_speed(body: SpeedBody) -> dict[str, Any]:
+        MGR.set_speed(body.speed)
+        return {"ok": True, "speed": MGR.speed}
 
     @r.get("/api/test12/voice")
     def voice_status() -> dict[str, Any]:

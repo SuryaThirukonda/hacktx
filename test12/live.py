@@ -8,7 +8,7 @@ through a pipe; the server only relays them.
 
 Messages, child to server: ("ready",), ("frame", run_no, jpeg), ("state", run_no, json), ("end", run_no, json),
 ("callout", run_no, n, speech) (each callout to the police, for the page's voice).
-Server to child: ("start", run_no, seed, spawn, view), ("view", view), ("stop", run_no), ("quit",).
+Server to child: ("start", run_no, seed, spawn, view), ("view", view), ("speed", x), ("stop", run_no), ("quit",).
 
 The video shows one view at a time, for everyone watching: the drone's camera (its detection frames are reused, so
 only five in six frames are drawn by the pool), or a simulator view, third-person or bird's-eye (every frame drawn by
@@ -44,7 +44,7 @@ def serve(conn, workers: int = 3, quality: int = 80, yolo_threads: int = 6) -> N
     frames = FramePool(workers, quality)
     conn.send(("ready",))
     queued = None
-    ctl = {"view": "drone"}
+    ctl = {"view": "drone", "speed": 1.0}  # speed: simulation seconds per wall second (1x, 2x, 3x for the demo)
     while True:
         msg = queued or conn.recv()
         queued = None
@@ -53,6 +53,8 @@ def serve(conn, workers: int = 3, quality: int = 80, yolo_threads: int = 6) -> N
             queued = _run(conn, msg[1], msg[2], msg[3], ctl, detector, frames)
         elif msg[0] == "view":
             ctl["view"] = msg[1]
+        elif msg[0] == "speed":
+            ctl["speed"] = float(msg[1])
         elif msg[0] == "quit":
             frames.shutdown()
             return
@@ -88,6 +90,7 @@ def _run(conn, run_no: int, seed: int, spawn, ctl: dict, detector, frames):
         st["run_no"] = run_no
         st["view"] = ctl["view"]
         st["speed"] = round(speed, 2)
+        st["speed_target"] = ctl["speed"]
         st["running"] = not run.done and not stopped
         st["video"] = {"fps": round(video_fps(), 1), "target_fps": FPS, "dropped": dropped}
         st["detector"]["yolo_ms_mean"] = round(detector.total_ms / max(detector.calls, 1), 1)
@@ -146,6 +149,9 @@ def _run(conn, run_no: int, seed: int, spawn, ctl: dict, detector, frames):
                 msg = conn.recv()
                 if msg[0] == "view":
                     ctl["view"] = msg[1]
+                elif msg[0] == "speed":  # the clock keeps its place: only the pace from here on changes
+                    wall0, sim0 = time.monotonic(), run.t
+                    ctl["speed"] = float(msg[1])
                 elif msg[0] in ("stop", "start", "quit"):
                     stopped = True
                     leftover = msg if msg[0] != "stop" else None
@@ -168,13 +174,13 @@ def _run(conn, run_no: int, seed: int, spawn, ctl: dict, detector, frames):
                 # map/status updates retain their existing lower rates.
                 from .sim3d import frame as frame3d
                 conn.send(("pose", run_no, json.dumps(frame3d(run, overlays), separators=(",", ":")).encode()))
-            ahead = (run.t - sim0) - (time.monotonic() - wall0)
+            ahead = (run.t - sim0) / max(ctl["speed"], 0.25) - (time.monotonic() - wall0)
             if ahead > 0:
                 time.sleep(ahead)
             elif ahead < -2.0:  # far behind: stop trying to catch up, just run as fast as the CPU allows
                 wall0, sim0 = time.monotonic(), run.t
             if run.frame_no % FPS == 0:
-                speed = (run.t - sim0) / max(time.monotonic() - wall0, 1e-3)
+                speed = (run.t - sim0) / max(time.monotonic() - wall0, 1e-3)  # the pace achieved, not the one asked for
         drain(wait=True)
         summary = run.summary({"yolo_calls": detector.calls,
                                "yolo_ms_mean": round(detector.total_ms / max(detector.calls, 1), 1)})

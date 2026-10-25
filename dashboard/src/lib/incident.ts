@@ -313,6 +313,8 @@ export const actions = {
   brief: (message: string, obsIds: string[], severity: "info" | "attention" | "warning" | "critical" = "attention") =>
     api.post(`/api/incidents/${iidOrThrow()}/alerts`, { message, source_observation_ids: obsIds, severity }),
   ack: (alertId: string) => api.post(`/api/alerts/${alertId}/acknowledge`, { by: "operator" }),
+  simSpeed: (speed: number) => api.post("/api/simulation/control", { action: "speed", value: speed }),
+  citySpeed: (speed: number) => api.post("/api/test12/speed", { speed }),
   replay: (what: "start" | "pause" | "restart", value?: unknown) =>
     api.post(`/api/incidents/${iidOrThrow()}/replay/${what}`, what === "restart" ? { value: value ?? null } : {}),
   selectSource: (source: string, value?: string) => api.post(`/api/incidents/${iidOrThrow()}/sources`, { source, value }),

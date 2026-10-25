@@ -32,10 +32,18 @@ export function SimulationDashboard() {
   const [view, setView] = useState<"drone" | "3d">("drone");
   const [tab, setTab] = useState<"map" | "callouts">("map");
   const [spawn, setSpawn] = useState<[number, number] | null>(null);
+  const [speed, setSpeed] = useState(1); // 1x, 2x or 3x real time: the simulation clock, not the drone
+
   const viewport = useRef<HTMLDivElement>(null);
   const city = worldId === "city" && sid === "T12";
   const feed = useSimulationFeed(city, running);
   const target = useTargetSAR(running && !city ? incident?.id : undefined);
+  const serverSpeed = city ? feed.cityState?.speed_target : state?.sim?.speed;
+  useEffect(() => {
+    // the server keeps the pace across restarts and tabs: show what it is running at
+    if (serverSpeed != null && Math.round(serverSpeed) !== speed && [1, 2, 3].includes(Math.round(serverSpeed))) setSpeed(Math.round(serverSpeed));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [serverSpeed]);
   const selected = cases.find((c) => c.id === worldId);
   const scenario = selected?.scenarios.find((s) => s.id === sid);
   const callouts = city ? feed.cityState?.callouts ?? [] : state?.rescue?.callouts ?? [];
@@ -99,7 +107,24 @@ export function SimulationDashboard() {
             {city && <button onClick={launch}><RotateCcw size={13} /><span>Restart City</span></button>}
             <button aria-label="Fullscreen workspace" onClick={() => void viewport.current?.requestFullscreen()}><Maximize2 size={13} /></button></div></header>
         <div className="mission-panels"><section className="visual-panel"><div className="panel-toolbar"><div role="tablist" aria-label="Camera view">
-          <button role="tab" aria-selected={view === "drone"} onClick={() => setView("drone")}>Drone POV</button><button role="tab" aria-selected={view === "3d"} onClick={() => setView("3d")}><Box size={13} />3D world</button></div><span className="panel-meta">CAMERA / SYNTHETIC</span></div>
+          <button role="tab" aria-selected={view === "drone"} onClick={() => setView("drone")}>Drone POV</button><button role="tab" aria-selected={view === "3d"} onClick={() => setView("3d")}><Box size={13} />3D world</button></div><span className="panel-meta">
+          {city && speed > 1 && (feed.cityState?.speed ?? speed) < speed * 0.85 && (
+            <span title="The City engine runs YOLO on every sixth frame; on this CPU it cannot always keep the asked pace">{(feed.cityState?.speed ?? 0).toFixed(1)}x achieved · </span>
+          )}
+          <span className="speed-controls" role="group" aria-label="Simulation speed">
+              {[1, 2, 3].map((x) => (
+                <button
+                  key={x}
+                  aria-pressed={speed === x}
+                  className={speed === x ? "selected" : ""}
+                  title={`Run the simulation at ${x}x real time`}
+                  onClick={() => void perform(() => (city ? actions.citySpeed(x) : actions.simSpeed(x)).then(() => setSpeed(x)))}
+                >
+                  <span>{x}x</span>
+                </button>
+              ))}
+          </span>
+          CAMERA / SYNTHETIC</span></div>
           <div className="mission-visual">{view === "3d" ? <Suspense fallback={<p className="p-4">Loading 3D…</p>}><SharedScene world={feed.world} frame={feed.frame} /></Suspense> :
             <img className="city-video" alt="Simulated drone camera" src={withToken(city && sid === "T12" ? "/api/test12/stream.mjpg" : "/streams/drone.mjpg")} />}
             <div className="view-corner"><span className="record-dot" />SIMULATED VIEW</div></div>
