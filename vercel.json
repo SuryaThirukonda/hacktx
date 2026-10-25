@@ -1,0 +1,10 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "buildCommand": "cd dashboard && npm ci && npm run build && rm -rf ../public && cp -r dist ../public",
+  "functions": {
+    "app.py": {
+      "maxDuration": 60,
+      "excludeFiles": "{dashboard/**,public/**,data/**,sessions/**,ios/**,evaluation/**,docs/**,fixtures/**,schemas/**,scripts/**,backend/weights/**,backend/tests/**,backend/third_party/**,**/__pycache__/**,*.md,*.html}"
+    }
+  }
+}

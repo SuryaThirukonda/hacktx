@@ -1,0 +1,14 @@
+.env
+.env.*
+!.env.example
+tiger-cloud-hacktx-credentials.txt
+backend/.venv
+dashboard/node_modules
+data
+sessions
+ios
+evaluation
+**/__pycache__
+*.db
+*.db-wal
+*.db-shm
