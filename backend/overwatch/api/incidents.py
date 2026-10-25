@@ -413,7 +413,7 @@ def register(app: FastAPI, rt, auth: Callable[[Request], None]) -> None:
 
     @app.post("/api/incidents/{iid}/person-mark", dependencies=[Depends(auth)])
     def person_mark_request(iid: str, body: PersonMarkIn):
-        return mark_call(iid, svc.person_mark.request, body.text)
+        return mark_call(iid, svc.person_mark.request_muse, body.text)
 
     @app.post("/api/incidents/{iid}/person-mark/confirm", dependencies=[Depends(auth)])
     def person_mark_confirm(iid: str, body: PersonMarkRef):

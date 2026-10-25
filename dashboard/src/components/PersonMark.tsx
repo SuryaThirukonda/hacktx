@@ -86,7 +86,7 @@ export function PersonMark({ incidentId, announce }: { incidentId: string; annou
         append("assistant", `Aircraft mode: ${status.autonomy.mode}. ${status.blockers.length ? status.blockers.join(". ") : "The control path is ready."}`); return;
       }
       if (/^(help|what can you do|start follow|start tracking)$/.test(command)) {
-        append("assistant", "Describe one person's visible clothing, for example: track the person wearing a blue sweatshirt and black pants. OpenAI Decisions matches the visible candidates. You can also ask status, say stop, or clear mark. After a verified mark, use the separate Start follow button for aircraft movement."); return;
+        append("assistant", "Describe one person's visible clothing, for example: track the person wearing a blue sweatshirt and black pants. Muse compares visible candidate crops; clothing rules are the offline fallback. You can also ask status, say stop, or clear mark. After a verified mark, use the separate Start follow button for aircraft movement."); return;
       }
       const result = await api.post<Mark>(base, { text: description.trim() });
       if (current.current === base) { setMark(result); setText(description); }
@@ -134,7 +134,7 @@ export function PersonMark({ incidentId, announce }: { incidentId: string; annou
   const button = "rounded-lg border border-line bg-surface-2 px-3 py-2 font-semibold disabled:opacity-40";
   return <section className="mt-3 rounded-xl border border-line bg-surface p-3 text-[13px]" aria-label="Overwatch assistant">
     <h2 className="font-bold">Chat with Overwatch · one person of interest</h2>
-    <p className="mt-1 text-ink-3">Describe visible clothing. A clear match at model confidence ≥90% is approved automatically; others need review.</p>
+    <p className="mt-1 text-ink-3">Describe visible clothing. Muse proposes a visible match. Simulation can select it automatically; live aircraft require human confirmation.</p>
     <div role="log" aria-label="Overwatch conversation" className="mt-2 max-h-56 space-y-2 overflow-y-auto">
       {chat.map((message, index) => <p key={index} className={`rounded p-2 ${message.role === "user" ? "bg-surface-2" : "border border-line"}`}><b>{message.role === "user" ? "You" : "Overwatch"}:</b> {message.text}</p>)}
     </div>
@@ -160,7 +160,7 @@ export function PersonMark({ incidentId, announce }: { incidentId: string; annou
       <p className="font-semibold">{mark.status === "approved" ? "Person marked" : mark.status.replaceAll("_", " ")}
         {mark.confidence != null ? ` · ${(Math.floor(mark.confidence * 1000) / 10).toFixed(1)}% model confidence` : " · confidence not provided"}
         {mark.auto_approved ? " · auto-approved" : ""}</p>
-      <p>{mark.reason}</p>
+      <p>{mark.engine === "muse" ? "Muse Spark" : mark.engine?.includes("clothing_rules") ? "Clothing rules · fallback" : mark.engine} · {mark.reason}</p>
       {mark.preview_available && <figure><img className="max-h-40 rounded" alt="Proposed person's clothing at request time"
         src={withToken(`${base}/preview?request_id=${encodeURIComponent(mark.request_id!)}`)} /><figcaption className="text-[11px] text-ink-3">Request-time preview · not live video</figcaption></figure>}
       {mark.status === "approved" && <p>{mark.follow?.text} · {mark.autonomy?.motion_profile === "camera_only" ? "Yaw + camera tilt" : mark.autonomy?.motion_profile === "visual_follow" ? "Horizontal movement + camera pitch" : "Full-motion follow"} · {mark.autonomy?.mode}</p>}
@@ -173,6 +173,6 @@ export function PersonMark({ incidentId, announce }: { incidentId: string; annou
       </div>
       {mark.status === "approved" && !mark.can_start_follow && <p className="text-ink-3">{mark.movement_blocker} RC input always cancels movement.</p>}
     </div>}
-    <p className="mt-2 text-[11px] text-ink-3">Confidence is the model's score, not a measured accuracy guarantee. Only one person is marked. Finer clothing details may require visual review. Voice audio is sent to OpenAI for transcription.</p>
+    <p className="mt-2 text-[11px] text-ink-3">Confidence is the model's score, not a measured accuracy guarantee. Only one person is marked. Finer clothing details may require visual review. Clothing crops are sent to Meta when Muse is configured. Voice audio is sent to OpenAI for transcription.</p>
   </section>;
 }

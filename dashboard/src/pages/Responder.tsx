@@ -55,7 +55,8 @@ export function Responder() {
   const [mode, setMode] = useState<string>("");
   const audioRef = useRef(false);
   audioRef.current = audio;
-  const joinedSeq = useRef<number>(Number.MAX_SAFE_INTEGER);
+  const announcedAlerts = useRef(new Set<string>());
+  const currentIid = useRef(iid); currentIid.current = iid;
   const heading = useRef<{ deg: number | null; acc: number | null }>({ deg: null, acc: null });
   const canVibrate = typeof navigator !== "undefined" && "vibrate" in navigator;
 
@@ -72,7 +73,15 @@ export function Responder() {
   }, []);
 
   const notify = useCallback((a: IAlert) => {
-    if (audioRef.current) speak(a.message);
+    if (!a.id || a.acknowledged_at || a.status === "expired") return;
+    const key = `overwatch.spoken.v1:${a.incident_id}:${a.id}`;
+    if (announcedAlerts.current.has(key)) return;
+    try { if (sessionStorage.getItem(key)) return; } catch { /* private browsing */ }
+    if (audioRef.current && "speechSynthesis" in window) {
+      speak(a.message);
+      announcedAlerts.current.add(key);
+      try { sessionStorage.setItem(key, "1"); } catch { /* memory dedup remains */ }
+    }
     if (canVibrate) navigator.vibrate(VIB[a.severity] ?? VIB.info);
     else {
       setFlash(true);
@@ -84,15 +93,23 @@ export function Responder() {
   // incident event stream: alerts and acknowledgments in real time
   useEffect(() => {
     if (!iid) return;
+    let stopped = false;
+    setAlerts({});
+    const refreshAlerts = () => api.get<{ items: IAlert[] }>(`/api/incidents/${iid}/alerts`).then((r) => {
+      if (stopped || currentIid.current !== iid) return;
+      setAlerts(Object.fromEntries(r.items.map((a) => [a.id!, a])));
+      r.items.filter((a) => !a.acknowledged_at && a.status !== "expired").forEach(notify);
+    }).catch(() => undefined);
     api.get<Incident>(`/api/incidents/${iid}`).then(setIncident).catch(() => undefined);
-    api.get<{ items: IAlert[] }>(`/api/incidents/${iid}/alerts`).then((r) => setAlerts(Object.fromEntries(r.items.map((a) => [a.id!, a])))).catch(() => undefined);
+    void refreshAlerts();
     const s = new ReconnectingSocket(wsUrl(`/ws/incidents/${iid}`), {
-      onStatus: setConn,
+      onStatus: (status) => { setConn(status); if (status === "open") void refreshAlerts(); },
       onMessage: (raw) => {
+        if (stopped || currentIid.current !== iid) return;
         const m = raw as { type: string; items?: IncidentEvent[] } & IncidentEvent;
         if (m.type === "backlog") {
-          const items = m.items ?? [];
-          joinedSeq.current = items.length ? items[items.length - 1].seq! : 0;
+          // Reconcile server alert state; backlog may contain alerts already acknowledged.
+          void refreshAlerts();
           return;
         }
         if (m.type !== "incident_event") return;
@@ -100,7 +117,7 @@ export function Responder() {
         if (m.kind === "alert") {
           const a = p as unknown as IAlert;
           setAlerts((cur) => ({ ...cur, [a.id!]: a }));
-          if (m.seq! > joinedSeq.current) notify(a);
+          notify(a);
         } else if (m.kind === "alert_acknowledged") {
           const id = String(p.alert_id);
           setAlerts((cur) => (cur[id] ? { ...cur, [id]: { ...cur[id], acknowledged_at: m.at, acknowledged_by: String(p.by), status: "acknowledged" } } : cur));
@@ -109,7 +126,7 @@ export function Responder() {
         }
       },
     });
-    return () => s.close();
+    return () => { stopped = true; s.close(); };
   }, [iid, notify]);
 
   // targets: recomputed by the server every 2 s (all numbers come from computed fields)
@@ -157,8 +174,10 @@ export function Responder() {
   }, [iid, posMode]);
 
   const enableAudio = () => {
+    audioRef.current = true;
     setAudio(true);
-    speak("Audio on. Alerts will be announced.");
+    speak("Audio on. Alerts will use your selected phone audio output.");
+    Object.values(alerts).filter((a) => !a.acknowledged_at).forEach(notify);
   };
 
   const startGps = async () => {
@@ -209,7 +228,7 @@ export function Responder() {
         <PersonMark incidentId={iid} announce={(text) => { if (audioRef.current) speak(text); }} />
 
         <div className="mt-3 grid grid-cols-2 gap-2">
-          <button type="button" onClick={audio ? () => setAudio(false) : enableAudio}
+          <button type="button" onClick={audio ? () => { audioRef.current = false; setAudio(false); window.speechSynthesis?.cancel(); } : enableAudio}
             className={`flex h-14 items-center justify-center gap-2 rounded-xl border text-[15px] font-bold ${audio ? "border-[var(--good)] text-ink-1" : "border-line bg-surface text-ink-2"}`}>
             {audio ? <Volume2 size={20} /> : <VolumeX size={20} />} {audio ? "Voice on" : "Enable voice"}
           </button>
@@ -219,7 +238,7 @@ export function Responder() {
           </button>
         </div>
         <p className="mt-1.5 text-[12px] leading-snug text-ink-3">
-          Voice plays through this phone's current audio output, including paired AirPods. {canVibrate ? "Vibration on alerts." : "This browser cannot vibrate; alerts flash the screen instead."}
+          Voice plays through this phone's current audio output, including paired AirPods. Select AirPods in iPhone Control Center; disconnected headphones use the system fallback output. {canVibrate ? "Vibration on alerts." : "This browser cannot vibrate; alerts flash the screen instead."}
         </p>
         <p className="text-[12px] leading-snug text-ink-3">{posNote}</p>
         {mode === "SIMULATED" && posMode !== "sim" && (

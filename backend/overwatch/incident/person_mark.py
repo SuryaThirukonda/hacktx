@@ -2,6 +2,8 @@
 from __future__ import annotations
 
 import math
+import os
+import threading
 import re
 import uuid
 from typing import Any
@@ -40,6 +42,7 @@ class PersonMarkService:
         self.rt = service.rt
         self.requests: dict[str, dict[str, Any]] = {}
         self.previews: dict[str, bytes] = {}
+        self._muse_busy = False
 
     def _fresh(self) -> bool:
         p = self.rt.pipeline
@@ -67,7 +70,8 @@ class PersonMarkService:
             request_id = uuid.uuid4().hex
             self.previews.clear()  # memory only, one active mark, never retained as a recording
             for t in p.raw_tracks:
-                if t.state != "CONFIRMED" or not t.matched_now or t.class_name != "person" or p.last_frame is None:
+                if (t.state != "CONFIRMED" or not t.matched_now or t.class_name != "person"
+                        or t.track_id == p.locks["responder"].track_id or p.last_frame is None):
                     continue
                 h, w = p.last_frame.shape[:2]
                 x0, y0, x1, y1 = t.measured_box or t.box
@@ -92,6 +96,72 @@ class PersonMarkService:
                 state.update(status="no_match", reason="No confirmed people in view, or the decision engine is busy. Try again.")
             self.service.store.append_event(iid, "person_mark_requested", self._public(state))
             return self.view(iid)
+
+    def request_muse(self, iid: str, description: str) -> dict:
+        """One bounded background vision call; existing rules remain the offline path."""
+        with self.rt.pipeline.lock:
+            if self._muse_busy:
+                raise ValueError("Muse is still matching; wait a few seconds before requesting again")
+            capture = self.rt.pipeline.counters["drone"].last_capture_ms
+            if capture is None or not -100 <= self.rt.clock.now_ms() - capture <= self.rt.cfg.sources.drone.max_age_ms:
+                raise ValueError("no fresh captured drone frame; restart the stream before requesting a match")
+            self.request(iid, description, continuous=True)
+            state = self.requests[iid]
+            state.update(engine="clothing_rules_fallback", fallback_reason="MODEL_API_KEY unavailable",
+                         reason="Fallback: deterministic clothing matching (Muse key unavailable).")
+            if not os.environ.get("MODEL_API_KEY"):
+                return self.view(iid)
+            images = dict(self.previews)
+            if not images or len(images) > 8:
+                state.update(fallback_reason="no visible candidate crops or more than eight candidates",
+                             reason="Fallback: waiting for a clear view of at most eight candidates.")
+                return self.view(iid)
+            state.update(status="pending", continuous=False, engine="muse", fallback_reason=None,
+                         reason="Muse is comparing the visible candidate clothing…")
+            self._muse_busy = True
+            threading.Thread(target=self._run_muse, args=(iid, state, images), daemon=True,
+                             name="muse-person-match").start()
+            return self.view(iid)
+
+    def _run_muse(self, iid: str, state: dict, images: dict[str, bytes]) -> None:
+        from .muse import select_candidate
+        try:
+            selection = select_candidate(state["description"], images)
+            with self.rt.pipeline.lock:
+                if self.requests.get(iid) is not state or state["status"] != "pending":
+                    return
+                tid = selection["candidate_id"]
+                state.update(track_id=tid, confidence=selection["confidence"], engine="muse")
+                problem = self._candidate_problem(iid, state, check_request_age=True)
+                if problem and tid:
+                    state.update(status="no_match", track_id=None, reason=problem)
+                elif tid is None:
+                    state.update(status="no_match", reason="Muse found no confident visible clothing match.")
+                else:
+                    state.update(status="review", reason="Muse proposed this visible person; confirm before aircraft following.",
+                                 candidates=[{"track_id": tid, "well_supported": True, "quality_reasons": []}])
+                    p = self.rt.pipeline
+                    simulation = (self.rt.mode == "SIMULATED" and self.rt.sim is not None
+                                  and p.autonomy.target_is_sim and p.counters["drone"].provenance == "SYNTHETIC")
+                    if simulation:
+                        # Designation only: never human review, flight confirmation, or movement.
+                        p.lock_track("subject", tid, "Muse simulation selection", state["description"])
+                        p.flight_confirmed_track_id = None
+                        self.service.follow_update(iid)
+                        state.update(status="approved", auto_approved=True, human_confirmed=False,
+                                     designation=self.service.follow_tracker(iid).s.designation,
+                                     reason="Muse selected a visible person in simulation; local tracking active.")
+                self.service.store.append_event(iid, "person_mark_result", self._public(state))
+        except Exception:
+            # Credentials, response bodies and candidate images must never enter events/logs.
+            with self.rt.pipeline.lock:
+                if self.requests.get(iid) is state and state["status"] == "pending":
+                    state.update(status="searching", continuous=True, engine="clothing_rules_fallback",
+                                 confidence=None, track_id=None, fallback_reason="Muse API unavailable or invalid response",
+                                 reason="Fallback: Muse unavailable; deterministic clothing search continues.")
+        finally:
+            with self.rt.pipeline.lock:
+                self._muse_busy = False
 
     def refresh_continuous(self, iid: str) -> None:
         """Continuous measured-fact acquisition; never waits for a language-model result.
@@ -217,11 +287,16 @@ class PersonMarkService:
         if (iid != self.service.current_id or state["session_id"] != p.session_id or not p.incident.active or p.crowd
                 or state.get("tracker_epoch", p.tracker.epoch) != p.tracker.epoch):
             return "Incident/session changed; request a new mark."
+        # Muse is a background network request, not a real-time 1.5 s flight decision.
+        # Current captured evidence is still checked independently below.
         max_age = (float("inf") if state.get("continuous") else
+                   10000 if state.get("engine") == "muse" else
                    self.rt.cfg.decisions.stale_after_s * 1000 if check_request_age else 30000)
         if self.rt.clock.now_ms() - state["created_ms"] > max_age:
             return "Match expired; request a fresh match."
-        if not self._fresh():
+        capture = p.counters["drone"].last_capture_ms
+        if (not self._fresh() or (state.get("engine") == "muse" and
+                (capture is None or not -100 <= self.rt.clock.now_ms() - capture <= self.rt.cfg.sources.drone.max_age_ms))):
             return "Drone video is stale; request a fresh match."
         lock = p.locks["subject"]
         if state["status"] != "approved" and [lock.since_ms, lock.track_id] != state["lock_version"]:
@@ -230,6 +305,12 @@ class PersonMarkService:
         person = any(t.track_id == state.get("track_id") and t.class_name == "person" for t in p.raw_tracks)
         if info is None or info.state != "CONFIRMED" or not info.matched_now or not person:
             return "Proposed person is no longer visible; request a new match."
+        if state.get("engine") == "muse":
+            from ..vision.quality import measurement_problems
+            raw = next(t for t in p.raw_tracks if t.track_id == state["track_id"])
+            if measurement_problems(raw, p.raw_tracks, p.last_frame_size,
+                                    p.cfg.perception.tracker.high_thresh, p.last_detections):
+                return "Candidate needs clean current measurements; request a fresh match."
         return None
 
     def _approve(self, iid: str, state: dict, by: str, automatic: bool) -> None:
@@ -282,6 +363,8 @@ class PersonMarkService:
             if state and state["status"] == "pending" and self.rt.clock.now_ms() - state["created_ms"] > 10000:
                 state.update(status="error", reason="Matching timed out; try again.")
                 result = self._public(state)
+            if state and state.get("fallback_reason"):
+                result["reason"] = "Fallback (clothing rules): " + state["reason"]
             follow = self.service.follow_tracker(iid).view(self.rt.clock.now_ms())
             marked = state and state["status"] == "approved"
             if marked:
