@@ -40,8 +40,9 @@ evidence; it does not infer fine garment details or personal identity from faces
 
 ## Current simple website workflow
 
-The LIVE dashboard shows video, **Drone controls**, **Fly with keyboard** and target chat. Review queue, map,
-scenario list and timeline are omitted from the LIVE control screen; observation data is retained internally.
+The LIVE dashboard shows video, **Drone controls**, **Fly with keyboard** and target chat. The combined workspace
+also exposes the incident map, review queue, recommendations, alerts and timeline; source mode still controls
+which simulation and physical-control actions are available.
 
 1. Start the backend using `make drone-live`, open the existing SDK FPV screen and Start Stream on the reachable hotspot.
 2. On `/dashboard`, press **Enable aircraft controls** with neutral RC sticks/dial. This explicitly enables the

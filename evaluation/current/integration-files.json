@@ -1,11 +1,16 @@
 {
   "compared_to": "abe3a67",
   "description": "Files changed by repair and integration, excluding this generated inventory itself.",
-  "count": 158,
+  "count": 171,
   "files": [
     {
       "status": "A",
       "path": "6am.md",
+      "category": "documentation"
+    },
+    {
+      "status": "A",
+      "path": "DRONE_V1_HANDOFF.md",
       "category": "documentation"
     },
     {
@@ -399,6 +404,11 @@
       "category": "documentation"
     },
     {
+      "status": "M",
+      "path": "docs/SDK_WEBSITE_CONTROL_FIX.md",
+      "category": "documentation"
+    },
+    {
       "status": "A",
       "path": "docs/TARGET_MEMORY_SAR.md",
       "category": "documentation"
@@ -565,6 +575,41 @@
     },
     {
       "status": "A",
+      "path": "evaluation/current/city-sweep.txt",
+      "category": "validation evidence"
+    },
+    {
+      "status": "A",
+      "path": "evaluation/current/city-sweep/combined-runs.json",
+      "category": "validation evidence"
+    },
+    {
+      "status": "A",
+      "path": "evaluation/current/city-sweep/combined-summary.json",
+      "category": "validation evidence"
+    },
+    {
+      "status": "A",
+      "path": "evaluation/current/city-sweep/combined-summary.md",
+      "category": "validation evidence"
+    },
+    {
+      "status": "A",
+      "path": "evaluation/current/city-sweep/runs.json",
+      "category": "validation evidence"
+    },
+    {
+      "status": "A",
+      "path": "evaluation/current/city-sweep/runs.jsonl",
+      "category": "validation evidence"
+    },
+    {
+      "status": "A",
+      "path": "evaluation/current/city-sweep/summary.md",
+      "category": "validation evidence"
+    },
+    {
+      "status": "A",
       "path": "evaluation/current/fix-safety-worlds.txt",
       "category": "validation evidence"
     },
@@ -586,6 +631,11 @@
     {
       "status": "A",
       "path": "evaluation/current/platform-scenarios.txt",
+      "category": "validation evidence"
+    },
+    {
+      "status": "A",
+      "path": "evaluation/current/reachable-demo.json",
       "category": "validation evidence"
     },
     {
@@ -655,12 +705,27 @@
     },
     {
       "status": "A",
+      "path": "evaluation/current/saved-results-check.txt",
+      "category": "validation evidence"
+    },
+    {
+      "status": "A",
+      "path": "evaluation/current/scenario-matrix-summary.json",
+      "category": "validation evidence"
+    },
+    {
+      "status": "A",
       "path": "evaluation/current/schemas.txt",
       "category": "validation evidence"
     },
     {
       "status": "A",
       "path": "evaluation/current/static-check.txt",
+      "category": "validation evidence"
+    },
+    {
+      "status": "A",
+      "path": "evaluation/current/swift-safety-tests.txt",
       "category": "validation evidence"
     },
     {

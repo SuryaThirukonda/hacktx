@@ -1,0 +1,50 @@
+{
+  "implementation_commit": "43da017481dc11ac96a5a7b3e4cd72a4e9b721f6",
+  "seeds": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9
+  ],
+  "seconds_per_seed": 240,
+  "matched": 10,
+  "wrong_matches": 0,
+  "police_on_scene": 10,
+  "losses": 48,
+  "reacquired": 46,
+  "lost_at_end_seeds": [
+    3,
+    9
+  ],
+  "matched_s": {
+    "min": 15.2,
+    "median": 18.4,
+    "max": 124.2
+  },
+  "following_pct": {
+    "min": 28.6,
+    "median": 71.95,
+    "max": 83.4
+  },
+  "refind_max_s": {
+    "min": 13.8,
+    "median": 20.4,
+    "max": 74.6
+  },
+  "report_error_max_m": {
+    "min": 1.59,
+    "median": 2.94,
+    "max": 4.15
+  },
+  "callout_error_max_m": {
+    "min": 2.86,
+    "median": 6.08,
+    "max": 17.92
+  }
+}

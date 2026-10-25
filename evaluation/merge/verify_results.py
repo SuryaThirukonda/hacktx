@@ -5,15 +5,18 @@ from pathlib import Path
 
 def main():
     root = Path(__file__).resolve().parent
+    current = root.parent / "current"
     platform = list((root / "platform").glob("*.json"))
     assert platform, "no platform evidence"
     for file in platform:
         report = json.loads(file.read_text())
         assert report["expected_pass"], file
     for sid in ("FR3", "FF3", "SR5"):
-        report = json.loads((root / "rescue" / f"{sid}.json").read_text())
+        report = json.loads((current / "rescue" / f"{sid}.json").read_text())
+        assert report["passed"] and all(report["checks"].values()), (sid, report["checks"])
         mission = report["rescue"]
-        assert report["beacon_error_m"] is not None and report["beacon_error_m"] <= 3, (sid, report)
+        error = report["evidence"]["beacon_error_m"]
+        assert error is not None and error <= 3, (sid, report)
         assert mission["unsafe_steps"] == 0 and mission["crew_distance_m"] > 1, (sid, mission)
         assert mission["arrived_s"] is not None, (sid, mission)
         if sid.startswith("FR"):

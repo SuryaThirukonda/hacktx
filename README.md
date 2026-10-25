@@ -66,23 +66,11 @@ make sar-demo
 
 Open `http://127.0.0.1:8011/command` for the review workflow, or `/dashboard` for the situation workspace. The responder page is `/responder`. This helper uses synthetic sensors, rules, a separate local database and no physical-flight permission.
 
-## Validation commands
+## Quick demo check
 
-Build before API/browser checks; do not rebuild the assets while tests are serving them.
+Use the FR3 walkthrough above as the normal check: its person is deliberately placed in an accessible, known location. Launch, confirm the measured beacon, watch the crew approach and acknowledge the alert. The new map should show the blue camera-coverage grid, beacon and assessed route. There is no need to run seed sweeps or a full scenario matrix for this demo.
 
-```sh
-npm --prefix dashboard run typecheck
-npm --prefix dashboard run build
-backend/.venv/bin/python -m pytest backend/tests -q -rs
-make sar-eval
-make rescue-eval
-make e2e-live
-make e2e-sar
-make e2e-workspace
-make e2e
-```
-
-Browser checks use Chrome on macOS by default; set `E2E_CHROME` for another compatible Chromium executable. Current evidence uses stable paths under `evaluation/current/`. Recorded results and the exact tested scope are in [6am.md](6am.md).
+`make build` includes TypeScript checking. Existing backend and browser suites remain available as optional developer tools when relevant code changes; they are not required before each demo. Recorded results and their exact scope are in [6am.md](6am.md). Browser runners use Chrome by default; set `E2E_CHROME` for another compatible Chromium executable.
 
 ## Detector configuration
 
@@ -95,6 +83,8 @@ There is **no automatic live Search/Follow model switch**. YOLO26s at 1280 remai
 ## Live hardware and limits
 
 Use `make backend-live` or the existing `make drone-live` launcher for real device protocols. Native setup and operating guidance remain in [HARDWARE_INTEGRATION.md](HARDWARE_INTEGRATION.md), [docs/DRONE_LIVE_INTEGRATION.md](docs/DRONE_LIVE_INTEGRATION.md) and [docs/operating_guide.md](docs/operating_guide.md).
+
+Start with [DRONE_V1_HANDOFF.md](DRONE_V1_HANDOFF.md) for the retained SDK sample/website workflow and current validation boundaries; older integration reports describe earlier build evidence.
 
 Real-flight permission starts off. A current DJI stream, supported/re-armed bridge, fresh telemetry, local SDK permission and explicit target confirmation remain prerequisites. Marking a person does not start follow. Stop, reconnect, stale data and a changed incident invalidate relevant control state.
 

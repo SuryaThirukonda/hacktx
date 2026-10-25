@@ -266,13 +266,147 @@
     }
   ],
   "city": {
+    "implementation_commit": "43da017481dc11ac96a5a7b3e4cd72a4e9b721f6",
     "seeds": [
-      0
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
     ],
-    "duration_s": 240,
+    "seconds_per_seed": 240,
+    "matched": 10,
     "wrong_matches": 0,
-    "losses": 4,
-    "reacquired": 4,
-    "evidence": "city-headless/runs.json"
+    "police_on_scene": 10,
+    "losses": 48,
+    "reacquired": 46,
+    "lost_at_end_seeds": [
+      3,
+      9
+    ],
+    "matched_s": {
+      "min": 15.2,
+      "median": 18.4,
+      "max": 124.2
+    },
+    "following_pct": {
+      "min": 28.6,
+      "median": 71.95,
+      "max": 83.4
+    },
+    "refind_max_s": {
+      "min": 13.8,
+      "median": 20.4,
+      "max": 74.6
+    },
+    "report_error_max_m": {
+      "min": 1.59,
+      "median": 2.94,
+      "max": 4.15
+    },
+    "callout_error_max_m": {
+      "min": 2.86,
+      "median": 6.08,
+      "max": 17.92
+    },
+    "evidence": "city-sweep/combined-summary.json"
+  },
+  "default_validation": "One reachable-target FR3 demo; broad sweeps stopped at user request.",
+  "additional_scenario_coverage": {
+    "implementation_commit": "43da017481dc11ac96a5a7b3e4cd72a4e9b721f6",
+    "status": "stopped_at_user_request",
+    "reason": "User prefers one reachable-target demo; no further optimization or broad sweeps.",
+    "registered": 54,
+    "completed": 46,
+    "passed": [
+      "OW5",
+      "FR1",
+      "S04",
+      "PP0",
+      "PP1",
+      "CT2",
+      "S05",
+      "S13",
+      "demo",
+      "SR4",
+      "S09",
+      "PP6",
+      "SR3",
+      "SR2",
+      "OW2",
+      "PJ1",
+      "PP7",
+      "S03",
+      "PJ2",
+      "PP4",
+      "S16",
+      "SR1",
+      "PP8",
+      "OW1",
+      "FF1",
+      "S17",
+      "S01",
+      "PP5",
+      "OW7",
+      "PP2",
+      "S06",
+      "S10",
+      "S11",
+      "PP3",
+      "OW6",
+      "FR2"
+    ],
+    "without_declared_expectations": [
+      "S08",
+      "S12",
+      "OW4",
+      "S14",
+      "S02",
+      "OW3",
+      "S15",
+      "S20",
+      "DEMO-1",
+      "S07"
+    ],
+    "failed": [],
+    "unrun": [
+      "CT1",
+      "FF2",
+      "FF3",
+      "FR3",
+      "SAR1",
+      "SR5",
+      "VC1",
+      "VC2"
+    ],
+    "raw_evidence_archive": "/Users/gaurav/.codex/backups/hacktx-sync-before-repairs/diagnostics/continued-validation/scenarios"
+  },
+  "native_swift": {
+    "suites_passed": 3,
+    "evidence": "swift-safety-tests.txt",
+    "aircraft_hardware_tested": false
+  },
+  "reachable_demo": {
+    "url": "http://127.0.0.1:8012/dashboard",
+    "criterion": "acquire the reachable target",
+    "scenario": "FR3",
+    "target_xy": [
+      20,
+      14
+    ],
+    "incident_id": "INC-dfad0769ab",
+    "target_detected": true,
+    "assistance_observations": 1,
+    "guidance_delivered_and_acknowledged": true,
+    "new_dashboard_bundle_matches_checkout": true,
+    "physical_permission": false,
+    "return_check_status": "operator switched to another scenario during the demonstration",
+    "current_operator_scenario": "SR1",
+    "passed_target_acquisition_criterion": true
   }
 }

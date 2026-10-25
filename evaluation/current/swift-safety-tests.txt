@@ -1,0 +1,7 @@
+Compile and run: ManualOverrideGuard
+ManualOverrideGuard: initial gate, stick takeover, persistent latch, re-arm, stale RC, pause and mode switch passed
+Compile and run: CameraOnlyLimit
+Camera-only phone limit: zero translation, yaw cap and non-finite input passed
+Compile and run: CommandFreshnessGuard
+CommandFreshnessGuard: all motion/setup types, TTL, sequence, sync, token, stop and re-arm generations passed
+3/3 standalone native safety suites passed

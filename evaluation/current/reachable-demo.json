@@ -1,0 +1,18 @@
+{
+  "url": "http://127.0.0.1:8012/dashboard",
+  "criterion": "acquire the reachable target",
+  "scenario": "FR3",
+  "target_xy": [
+    20,
+    14
+  ],
+  "incident_id": "INC-dfad0769ab",
+  "target_detected": true,
+  "assistance_observations": 1,
+  "guidance_delivered_and_acknowledged": true,
+  "new_dashboard_bundle_matches_checkout": true,
+  "physical_permission": false,
+  "return_check_status": "operator switched to another scenario during the demonstration",
+  "current_operator_scenario": "SR1",
+  "passed_target_acquisition_criterion": true
+}

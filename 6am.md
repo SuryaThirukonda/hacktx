@@ -152,7 +152,9 @@ Evidence lives under `evaluation/current/`; platform scenario details are under 
 | SAR1 deterministic acceptance | **13/13** criteria passed, including real pixel detection, exclusions, evidence, approach-only route, delivery/ACK and no physical flight |
 | FR3 / FF3 / SR5 deterministic acceptance | **10/10 each**: measured beacon, human approval before movement, observation link, arrival, return, safe steps, ACK, survey and no physical permission |
 | Selected platform scenarios | PP0, PP8, PP5, PP6, PP7 and SR4 each met its scenario expectations |
-| City headless | One seed, 240 simulated seconds; zero wrong matches, four losses/four recoveries |
+| Additional scenario coverage | 46 of 54 completed before the user stopped broad testing: 36 passed their declared expectations, 10 had no declared expectations, zero failed |
+| City headless | Seeds 0–9, 240 simulated seconds each: 10/10 targets acquired, zero wrong matches, police reached the scene in all 10 |
+| Standalone Swift safety policies | 3/3 compiled and passed: manual override, camera-only/real-motion limits and command freshness |
 
 The full suite includes subject memory through loss/occlusion, track-ID changes, ambiguous clothing, stale frames and quality, incident/session/tracker-epoch changes; control scopes and decision epochs; review rejection; concurrent/idempotent ACK; route hazards; and City/main ownership. Source-only older tests were retained alongside the newer tests rather than replacing the target suite.
 
@@ -162,9 +164,15 @@ FR3/FF3/SR5 each completed in 26.33 simulated seconds with crew arrival at 16.33
 
 City seed 0 matched at 15.4 s, followed for 82.8% of the run, had 18.2 m median/19.0 m p90 following distance, four losses/four reacquisitions, 13.2 s median/13.8 s maximum recovery and police on scene at 32.8 s. This is a single-seed result; the run ended at its time limit, not a claim of an arrest or all-seed success.
 
-## Reproducible demo and checks
+The subsequent ten-seed sweep acquired every target. Median acquisition was 18.4 s, with a maximum of 124.2 s. Median following time was 71.95%; 48 tracking losses produced 46 recoveries before cutoff, with seeds 3 and 9 still out of sight at the end. The longest completed recovery was 74.6 s. These are recorded variations, not blockers under the user's demo criterion that the drone finds the person at least once. No further pursuit optimization is requested. Summaries are in `evaluation/current/city-sweep/combined-summary.json` and `combined-summary.md`.
 
-Follow the image-free [README](README.md) for dependency setup and routes. Optional vision/checkpoint dependencies are required by City and explicitly YOLO-configured scenarios. The current local checkout uses ignored links to already installed Mac dependencies/checkpoint; these links are not part of a fresh clone or the committed source.
+Broad matrix testing and the additional baseline comparison were stopped at the user's request. Completed matrix results are summarized in `evaluation/current/scenario-matrix-summary.json`; raw matrix diagnostics and the optional runner were preserved outside the deliverable under the existing backup's `diagnostics/continued-validation/` directory. The eight remaining matrix cases were not completed in this continuation. No feature or pre-existing regression tests were removed.
+
+## Reproducible demo and optional checks
+
+Follow the image-free [README](README.md) for dependency setup and routes. The normal validation workflow is now a single reachable-target FR3 demonstration, with no seed sweep or matrix required. Optional vision/checkpoint dependencies are required by City and explicitly YOLO-configured scenarios. The current local checkout uses ignored links to already installed Mac dependencies/checkpoint; these links are not part of a fresh clone or the committed source.
+
+The commands below reproduce the earlier automated evidence and remain optional developer tools. They are not a required checklist for each demo.
 
 ```sh
 npm --prefix dashboard run typecheck
@@ -190,13 +198,15 @@ Open `http://127.0.0.1:8011/command`, inspect a possible assistance candidate, o
 
 For base-launch rescue, use the normal simulated server and `/dashboard`. Select Flood/FR3, Fire/FF3 or Search and rescue/SR5, launch, wait for the pending beacon, inspect evidence and confirm. The crew remains stationary before approval. Watch the survey/route/callouts, acknowledge on the responder page, then observe the hold and return. Stop/manual override pauses rescue and requires an explicit restart.
 
+The simple FR3 demonstration places the person at local coordinates `(20, 14)`, in assessed reachable terrain. The merged checkout is currently served at `http://127.0.0.1:8012/dashboard`. The existing servers on ports 8000 and 8010 serve older checkouts, so an old dashboard there is not a loading delay. The new server is local, simulated and rules-only. Current manual-demo evidence is `evaluation/current/reachable-demo.json`.
+
 ## Limits and remaining work
 
 - No real aircraft flight, native app build, real LiDAR navigation, hardware watchdog timing experiment or Mac detector accuracy study was performed. Simulator and fake-device checks do not establish those outcomes.
 - CUDA sweep code is preserved, but its dataset/checkpoints and GPU measurements must be supplied on the intended host. Larger-model latency/accuracy and automatic model switching remain unimplemented.
 - SAR is a simulation workflow, not medical triage. Clothing matches are operational continuity, not verified personal identity. Gesture recognition and learned distress classification are not implemented.
 - Hazard layers are screening maps, not measured navigability. Bounded grid search/clearance and location uncertainty can produce an approach-only, blocked or unavailable result. Real rescue deployment needs validated maps, positioning and human procedures.
-- City validation covers one seed plus browser ownership/visualization checks. An exhaustive seed sweep and the entire 54-scenario matrix were not rerun. Existing unsupported extensions are listed in the use-case catalogue.
+- City validation covers ten seeds plus browser ownership/visualization checks. Targets were found in all runs, while temporary/terminal losses remain possible. No further optimization or broad testing is requested; the default demo deliberately uses an accessible target. The full 54-scenario matrix was not completed. Existing unsupported extensions are listed in the use-case catalogue.
 - External cloud decision/voice services, Tiger Data and physical DJI recordings were unavailable or intentionally unused. Base tests use optional-dependency fakes where the purpose is metadata/contract validation.
 - The production bundle builds but has a large shared entry/3D vendor chunk. Lazy scene loading is present; further bundle optimization was not a merge requirement.
 
