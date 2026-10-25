@@ -48,7 +48,9 @@ class RescueMission:
                                   beacon=self.beacon, provenance="simulated"))
 
     def say(self, text, now, urgent=False):
-        self.callouts.append(dict(n=len(self.callouts) + 1, t=now / 1000, speech=text, urgent=urgent))
+        """Short spoken callouts, through the pipeline's single list (the page speaks the newest only)."""
+        self.p.say("rescue", text, now, urgent=urgent)
+        self.callouts = self.p.callouts[-12:]
         self.event("crew_callout", text, now)
 
     def confirm(self, by="operator"):
@@ -57,7 +59,7 @@ class RescueMission:
         self.confirmed = True
         self.beacon.update(status="confirmed", confirmed_by=by)
         self.phase = "HOLD"
-        self.say("Simulation: rescue beacon confirmed. Crew guidance approved.", self.p.clock.now_ms(), True)
+        self.say("Beacon confirmed. Crew moving.", self.p.clock.now_ms(), True)
 
     def reject(self, by="operator"):
         if not self.active() or self.phase != "REVIEW" or not self.beacon:
@@ -121,7 +123,7 @@ class RescueMission:
                 self.p.autonomy.set_mode("HOLD", now, "rescue candidate awaiting human review")
                 self.p.autonomy.rescue_target = xy
                 self.event("rescue_beacon", "Person located: candidate beacon awaiting human review.", now)
-                self.say("Simulation: possible person located. Review the beacon before dispatching the crew.", now, True)
+                self.say("Found. Review the beacon.", now, True)
         if crew is not None and now - self.last_ping >= 1000:
             self.last_ping = now
             self.ping = dict(xy=crew.pos.tolist(), heading=crew.heading, t=now / 1000,
@@ -143,16 +145,15 @@ class RescueMission:
                 self.phase = "CREW_ON_SCENE"
                 self.arrived_ms = now
                 self.route = []
-                self.say("Simulation: crew at the assessed approach, within beacon uncertainty. Drone holding for ten seconds.", now, True)
+                self.say("Crew on scene. Holding.", now, True)
             elif now - self.last_callout >= 6000:
                 self.last_callout = now
                 delta = np.array(self.beacon["xy"]) - np.array(self.ping["xy"])
                 bearing = heading_from_vector(*delta) % 360
                 compass = "north north-east east south-east south south-west west north-west".split()[int((bearing + 22.5) // 45) % 8]
                 clock = int(round(((bearing - self.ping["heading"] + 180) % 360 - 180) / 30)) % 12 or 12
-                self.say((f"Simulation: person {np.linalg.norm(delta):.0f} meters {compass}, your {clock} o'clock. "
-                          "Follow the assessed approach route." if self.route else
-                          "Simulation: no assessed route. Crew holding; specialist access review needed."), now)
+                self.say((f"Person {np.linalg.norm(delta):.0f} metres {compass}, your {clock} o'clock." if self.route else
+                          "No safe route. Hold."), now)
         if self.phase == "CREW_ON_SCENE" and now - self.arrived_ms >= 10000:
             self.phase = "RETURN"
             self.p.autonomy.rescue_target = None

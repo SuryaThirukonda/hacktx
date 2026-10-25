@@ -144,7 +144,8 @@ export interface Frame3D {
     phase?: number; speed?: number;
   }[];
   subject: { state: string; track_id: string | null; est_xy: XY | null; last_seen_xy: XY | null; search_radius: number | null; lost_ms: number | null };
-  responder: { state: string; track_id: string | null };
+  responder: { state: string; track_id: string | null; xy?: XY | null };
+  callout?: string | null; // the latest spoken callout, drawn on the line from the responder to the target
   autonomy: {
     mode: string;
     fsm: string;
@@ -252,6 +253,8 @@ export class SceneController {
   private beliefSig = "";
   private boxMeshes = new Map<string, THREE.Mesh>();
   private crewLine: THREE.Line;
+  private calloutLine: THREE.Line;
+  private calloutLabel: CSS2DObject;
   private focus: string | null = null; // the story beat's entity: actor:<id> | box:<id prefix> | hypothesis:<id> | route
   private focusRing: THREE.Mesh;
   private sun: THREE.DirectionalLight;
@@ -373,7 +376,13 @@ export class SceneController {
     this.scene.add(this.focusRing);
     this.crewLine = new THREE.Line(new THREE.BufferGeometry(), new THREE.LineBasicMaterial({ color: "#3ddc84" }));
     this.crewLine.visible = false;
-    this.scene.add(this.hazardGroup, this.crewLine);
+    // the callout line: from the responder (police or crew) to the drone's estimate of the target, carrying the
+    // words the responder is being told, so the demo shows what the callout is relative to
+    this.calloutLine = new THREE.Line(new THREE.BufferGeometry(), new THREE.LineDashedMaterial({ color: "#ffd166", dashSize: 1.2, gapSize: 0.8 }));
+    this.calloutLine.visible = false;
+    this.calloutLabel = label("", "s3d-lbl s3d-lbl-callout");
+    this.calloutLabel.visible = false;
+    this.scene.add(this.hazardGroup, this.crewLine, this.calloutLine, this.calloutLabel);
 
     this.buildDrone();
     this.scene.add(this.drone);
@@ -1327,8 +1336,23 @@ export class SceneController {
     }
     for (const [id, g] of this.people) if (!seen.has(id)) g.visible = false;
 
-    // pipeline belief
+    // the callout: responder to target, with the latest words
     const s = f.subject;
+    const rxy = f.responder?.xy ?? null;
+    if (rxy && s.est_xy && s.state !== "UNLOCKED") {
+      const a = v3(rxy[0], rxy[1], 1.2);
+      const b = v3(s.est_xy[0], s.est_xy[1], 1.2);
+      this.calloutLine.geometry.dispose();
+      this.calloutLine.geometry = new THREE.BufferGeometry().setFromPoints([a, b]);
+      this.calloutLine.computeLineDistances();
+      this.calloutLine.visible = true;
+      this.calloutLabel.position.copy(a.clone().add(b).multiplyScalar(0.5).add(v3(0, 0, 2.5)));
+      this.calloutLabel.element.textContent = f.callout ?? "";
+      this.calloutLabel.visible = !!f.callout;
+    } else {
+      this.calloutLine.visible = false;
+      this.calloutLabel.visible = false;
+    }
     this.subjEst.visible = !!s.est_xy && s.state !== "UNLOCKED";
     if (s.est_xy) this.subjEst.position.copy(v3(s.est_xy[0], s.est_xy[1], 0.07));
     const lost = s.state !== "LOCKED" && s.state !== "UNLOCKED" && !!s.last_seen_xy;

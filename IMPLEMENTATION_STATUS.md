@@ -870,3 +870,23 @@ Earlier claims about Overwatch and FlyBy results are treated as claims; the numb
 - The picker lists only FL1 and WF1 for flood and fire; FR1 to FR3, SAR1 and FF1 to FF3 stay in the registry,
   unlisted. Checked here: both scenarios register, the stranded positions are dry (0 m) with 1.27 m of water between
   them, the fire mask is identical at 0.5 s and 300 s. Not run end to end (manual testing by Surya).
+
+### E9: concise spoken callouts, the responder in the picture (done; not run here)
+
+- One shared callout list in the pipeline (`Pipeline.say`, `WorldState.callouts`, `GET /api/voice/{n}.mp3`): one
+  short phrase per operation, never repeated within 8 s, logged as `CALLOUT` events. "Launching.", "Searching.",
+  "Found, red shirt." (urgent), "Lost." (urgent), "Back in view." (urgent), "Still lost. Holding.", "Wrong person.
+  Searching again.", "Area covered. Nobody matched.", and a position every 4 s while the target is tracked (any
+  follow, not only a dispatch): relative to the responder when their position is known ("Target 46 metres
+  north-east of you, your 2 o'clock, moving north."), otherwise to the base; no degrees, no feet. The rescue
+  mission's callouts go through the same list, shortened ("Found. Review the beacon.", "Beacon confirmed. Crew
+  moving.", "Crew on scene. Holding.", "Person 46 metres north-east, your 2 o'clock.", "No safe route. Hold.").
+  test12's speech is shortened the same way ("Lost.", "Found, red shirt, near Oak and Main.", "Suspect 46 metres
+  north-east, your 2 o'clock.", "Police on scene.").
+- The page's voice now speaks the newest callout and drops older ones: an urgent one interrupts whatever is
+  playing, a routine one after the current has had 1.5 s. The workspace reads `state.callouts` for every scenario
+  (City keeps its own list).
+- 3D: the main-engine frame carries the responder's position and the latest callout; a dashed yellow line runs from
+  the responder (police officer or crew) to the drone's estimate of the target with the words on it, so the demo
+  shows what the callout is relative to. The survey map already drew the crew or police ping.
+- Not checked beyond compiling and type-checking (manual testing by Surya).

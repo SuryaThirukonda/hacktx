@@ -211,6 +211,11 @@ class Pipeline:
         self._dispatch_seen: set[str] = set()
         self._dispatch_report_ms = -1e12
         self.detector_override: str | None = None  # a scenario's detector choice (simulator)
+        # spoken callouts: short, one per operation, newest first on the page (the voice hook drops older ones)
+        self.callouts: list[dict[str, Any]] = []
+        self._callout_said: dict[str, float] = {}
+        self._subject_was: str = "UNLOCKED"
+        self._home_xy: tuple[float, float] | None = None
         self.last_alert_latency_ms: float | None = None
         self.subject_last_capture_ms: float | None = None
         self.look_for: dict | None = None  # the operator's "look for" request (clothing words), this session only
@@ -236,6 +241,7 @@ class Pipeline:
                 self.session_id = session_id
             self.tracker.reset()
             self.cmc.reset()
+            self.callouts, self._callout_said, self._subject_was, self._home_xy = [], {}, "UNLOCKED", None
             with self.calib_lock:
                 self.calib.reset()
             self.registration.reset()
@@ -806,6 +812,7 @@ class Pipeline:
             else:
                 self.crew.tick(now)
             self._decision_jobs(now, kin)
+            self._callout_transitions(now)
             self._dispatch_report(now)
             if now - self._last_summary_ms >= self.cfg.voice.summary_interval_s * 1000.0:
                 self._last_summary_ms = now
@@ -1521,6 +1528,7 @@ class Pipeline:
                 ds.matched_track, ds.matched_by, ds.phase = None, None, "SEARCH"
                 self._dispatch_votes.clear()
                 self.autonomy.resume_search(now, "operator rejected the match")
+                self.say("search", "Wrong person. Searching again.", now, urgent=True)
                 self._inject("DISPATCH_REJECTED", "attention", now, "Match rejected by the operator: the drone resumes "
                              "the search legs", data={"track_id": tid})
 
@@ -1675,6 +1683,7 @@ class Pipeline:
                                                  legs=len(legs), altitude_m=altitude_m)
             self._log_operator("dispatch", description=desc, last_seen_xy=centre, radius_m=radius_m, area=area,
                                altitude_m=altitude_m, by=by)
+            self.say("launch", "Launching.", now, urgent=True)
             self._inject("DISPATCH_STARTED", "attention", now,
                          f"Search by {by}: sweeping {sweep_label} over {len(legs)} legs at {altitude_m:.0f} m" if sweep_label
                          else f"Dispatched by {by}: looking for '{desc}' over {len(legs)} legs at {altitude_m:.0f} m, "
@@ -1705,6 +1714,10 @@ class Pipeline:
                 ds.leg = max(0, plan.wp_i - plan.transit_legs + 1)
             return
         if plan is not None and ds.phase in ("TAKEOFF", "TRANSIT", "SEARCH", "COVERED"):
+            if plan.phase == "SEARCH" and ds.phase != "SEARCH":
+                self.say("search", "Searching.", now)
+            elif plan.phase == "COVERED" and ds.phase != "COVERED":
+                self.say("covered", "Area covered. Nobody matched.", now, urgent=True)
             ds.phase = plan.phase if plan.phase != "COVERED" else "COVERED"  # type: ignore[assignment]
             ds.leg = max(0, plan.wp_i - plan.transit_legs + 1)
         subj = self.locks["subject"]
@@ -1764,21 +1777,79 @@ class Pipeline:
         ds.matched_track, ds.matched_by, ds.phase = best, who, "TRACKING"
         self.autonomy.set_mode("FOLLOW", now, "dispatch: matched the description")
         self._log_operator("dispatch_match", track_id=best, colors=colors, description=ds.description)
+        self.say("found", f"Found, {ds.description}.", now, urgent=True)
         self._inject("DISPATCH_MATCH", "warning", now, f"Match: track {short(best)} ({colors[0]} top, {colors[1]} lower) "
                      f"fits '{ds.description}'. Tracking it; reject with Release if it is the wrong person",
                      track_id=best, data={"colors": colors, "votes": self._dispatch_votes.get(best)})
 
+    def say(self, kind: str, speech: str, now: float, urgent: bool = False, text: str | None = None) -> None:
+        """A spoken callout for the responder: one short phrase per operation. The same phrase is not repeated
+        within 8 s; the page speaks the newest and drops older ones. Also logged as a CALLOUT event."""
+        if now - self._callout_said.get(speech, -1e12) < 8000.0:
+            return
+        self._callout_said[speech] = now
+        self.callouts.append({"n": len(self.callouts) + 1, "t": round(now / 1000.0, 1), "kind": kind, "speech": speech,
+                              "urgent": urgent, "text": text or speech})
+        del self.callouts[:-80]
+        self._inject("CALLOUT", "info", now, text or speech, data={"kind": kind, "speech": speech, "urgent": urgent})
+
+    def _callout_transitions(self, now: float) -> None:
+        """'Lost.' and 'Back in view.' from the subject lock, whatever mission is running."""
+        subj = self.locks["subject"]
+        state = subj.state if subj.active else "UNLOCKED"
+        was = self._subject_was
+        self._subject_was = state
+        if was == "LOCKED" and state in ("COAST", "REACQUIRE", "UNCERTAIN"):
+            self.say("lost", "Lost.", now, urgent=True)
+        elif was in ("COAST", "REACQUIRE", "UNCERTAIN") and state == "LOCKED":
+            self.say("found", "Back in view.", now, urgent=True)
+        elif was in ("COAST", "REACQUIRE", "UNCERTAIN") and state == "HOLD":
+            self.say("hold", "Still lost. Holding.", now, urgent=True)
+
+    def _spoken_position(self, target_xy: tuple[float, float], vel: tuple[float, float] | None) -> tuple[str, dict[str, Any]]:
+        """Where the target is, in words a responder can use: from the responder's own position when it is known
+        (distance, compass, clock), otherwise from the launch point. No degrees, no feet."""
+        words = "north north-east east south-east south south-west west north-west".split()
+        resp = self.responder.position_xy_m if self.responder is not None else None
+        speed = math.hypot(*vel) if vel else 0.0
+        moving = f", moving {words[int((heading_from_vector(*vel) % 360.0 + 22.5) // 45) % 8]}" if speed > 0.6 else ""
+        if resp is not None:
+            dx, dy = target_xy[0] - resp[0], target_xy[1] - resp[1]
+            dist = math.hypot(dx, dy)
+            brg = heading_from_vector(dx, dy) % 360.0
+            head = self.responder.heading_deg
+            clock = (int(round(((brg - head + 180.0) % 360.0 - 180.0) / 30.0)) % 12 or 12) if head is not None else None
+            where = ("right beside you" if dist < 12.0 else f"{dist:.0f} metres {words[int((brg + 22.5) // 45) % 8]} of you")
+            if clock:
+                where += f", your {clock} o'clock"
+            return f"Target {where}{moving}.", {"relative_to": "responder", "distance_m": round(dist), "compass": words[int((brg + 22.5) // 45) % 8], "clock": clock}
+        base = self.dispatch_state.pad_xy if self.dispatch_state is not None else self._home_xy
+        if base is None:
+            return f"Target in view{moving}.", {"relative_to": "none"}
+        dx, dy = target_xy[0] - base[0], target_xy[1] - base[1]
+        dist = math.hypot(dx, dy)
+        brg = heading_from_vector(dx, dy) % 360.0
+        return (f"Target {dist:.0f} metres {words[int((brg + 22.5) // 45) % 8]} of base{moving}.",
+                {"relative_to": "launch point", "distance_m": round(dist), "compass": words[int((brg + 22.5) // 45) % 8]})
+
     def _dispatch_report(self, now: float) -> None:
-        """Every few seconds while tracking: where the target is relative to the launch point."""
+        """Every few seconds while the subject is tracked (a dispatch, or any follow): where the target is, spoken
+        relative to the responder when their position is known, else to the launch point."""
         ds = self.dispatch_state
-        if ds is None or ds.phase != "TRACKING" or now - self._dispatch_report_ms < 4000.0:
+        following = (ds is not None and ds.phase == "TRACKING") or self.autonomy.mode == "FOLLOW"
+        if not following or now - self._dispatch_report_ms < 4000.0:
             return
         subj = self.locks["subject"]
         if not subj.active or subj.kf is None or subj.state not in ("LOCKED", "COAST"):
             return
+        if self._home_xy is None:
+            d = self.drone_state(now)
+            if d is not None and d.position_xy_m is not None:
+                self._home_xy = (float(d.position_xy_m[0]), float(d.position_xy_m[1]))
         x, y = (float(v) for v in subj.kf.position)
         err = float(subj.kf_err) if subj.kf_err is not None else None
-        dx, dy = x - ds.pad_xy[0], y - ds.pad_xy[1]
+        pad = ds.pad_xy if ds is not None else (self._home_xy or (x, y))
+        dx, dy = x - pad[0], y - pad[1]
         dist = math.hypot(dx, dy)
         brg = heading_from_vector(dx, dy) % 360.0
         compass = "N NE E SE S SW W NW".split()[int((brg + 22.5) // 45) % 8]
@@ -1793,7 +1864,10 @@ class Pipeline:
         if geo is not None:
             lat, lon = local_to_latlon(x, y, geo, self.cfg.world.north_offset_deg)
             rep["lat"], rep["lon"] = round(lat, 6), round(lon, 6)
-        ds.last_report = rep
+        speech, rel = self._spoken_position((x, y), (vx, vy))
+        rep["spoken"] = rel
+        if ds is not None:
+            ds.last_report = rep
         self._dispatch_report_ms = now
         moving = f", moving {compass_of(rep['heading_deg'])} at {speed:.1f} m/s" if rep["heading_deg"] is not None else ", stationary"
         text = (f"Target {dist:.0f} m from the launch point, bearing {brg:03.0f} ({compass}){moving}; "
@@ -1802,6 +1876,7 @@ class Pipeline:
         if "lat" in rep:
             text += f"; {rep['lat']:.5f}, {rep['lon']:.5f}"
         self._inject("POSITION_REPORT", "info", now, text, track_id=subj.track_id, data=rep, ttl_ms=4500.0)
+        self.say("position", speech, now, text=text)
 
     def ack_alert(self, alert_id: str) -> Alert | None:
         with self.lock:
@@ -1952,6 +2027,7 @@ class Pipeline:
                 obstacles=[(o.xy_m[0], o.xy_m[1], round(now - o.ts_ms)) for o in self.obstacles if now - o.ts_ms < 8000][-220:],
                 zones=self.zones,
                 geofence=list(self.cfg.autonomy.geofence), autonomy=self.autonomy.state(), dispatch=self.dispatch_state,
+                callouts=self.callouts[-12:],
                 pursuit=self._pursuit_view(now), voice=self.voice.view(), crew_routing=self.crew.view(), rescue=self.rescue.view(), decisions=dstat,
                 alerts_active=self.arbiter.active_alerts()[:8], metrics=metrics_small,  # type: ignore[arg-type]
                 incident=self.incident, guardrails=self.guardrails(), notices=notices, narration=self.narration)

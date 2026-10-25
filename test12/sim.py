@@ -527,7 +527,7 @@ class Run:
             return f"right beside you ({rel['distance_m']:.0f} m, your {rel['clock']} o'clock)", \
                 f"right beside you, your {rel['clock']} o'clock"
         return f"{rel['distance_m']:.0f} m {rel['compass']} of you (your {rel['clock']} o'clock)", \
-            f"{spoken_m(rel['distance_m'])} {COMPASS_WORDS[rel['compass']]} of you, your {rel['clock']} o'clock"
+            f"{spoken_m(rel['distance_m'])} {COMPASS_WORDS[rel['compass']]}, your {rel['clock']} o'clock"
 
     def _callout(self, t: float, kind: str, text: str, speech: str, urgent: bool = False) -> None:
         """A message to the police: written (``text``) and as it is spoken (``speech``, read out on the page)."""
@@ -549,8 +549,7 @@ class Run:
         text = (f"To police: suspect out of sight for {t - ls['t']:.0f} s; last seen {where} "
                 f"({fmt_base(ls['base'])}). {doing}.")
         spoken_where = spoken_place(at_place(ls["label"])) + (f", {said}" if rel is not None else "")
-        speech = (f"Lost sight of the suspect {spoken_where}. Scanning." if first else
-                  f"Suspect still out of sight. Last seen {spoken_where}.")
+        speech = "Lost." if first else f"Still lost. Last seen {spoken_where}."
         self.event("report", text)
         self._callout(t, "lost", text, speech, urgent=first)
 
@@ -587,14 +586,14 @@ class Run:
         if rel is None:  # the first report: the police car is still at the station
             text = (f"To police: suspect at {fmt_base(base)} ({dist:.0f} m, bearing {brg:03.0f} {compass(brg)}) "
                     f"{at_place(rep['near'])}{moving}. {how}")
-            speech = f"Suspect located {spoken_place(at_place(rep['near']))}{said_moving}."
+            speech = f"Found, red shirt, {spoken_place(at_place(rep['near']))}{said_moving}."
         else:
             truth = np.asarray(self.suspect.xy) - np.array(self.police.pose()[:2])  # scoring only
             self.m["callout_err"].append(round(float(np.linalg.norm(np.array(rel["rel"]) - truth)), 2))
             words, said = self._rel_words(rel)
             text = (f"To police: suspect {words}, {at_place(rep['near'])}{moving}. At {fmt_base(base)}; your ping "
                     f"puts you at {fmt_base(rel['car_base'])}. {how}")
-            speech = f"Suspect {said}, {spoken_place(at_place(rep['near']))}{said_moving}."
+            speech = f"Suspect {said}{said_moving}."
         urgent = back or rel is None
         if back:
             speech = "Back in view. " + speech
@@ -611,7 +610,7 @@ class Run:
         self.event("report", text)
         if self.police.state == "PARKED":
             self.police.dispatch(t, pos)
-            speech += " Police car dispatched."
+            speech += " Police dispatched."
             self.event("police", "Police car dispatched from the station to the reported position (catching up in "
                                  "about 20 s). It pings its position to the drone every second; from now on each "
                                  "report says where the suspect is from the car.")

@@ -615,6 +615,7 @@ class WorldState(Msg):
     autonomy: AutonomyState = AutonomyState()
     dispatch: DispatchStatus | None = None
     pursuit: PursuitState | None = None
+    callouts: list[dict[str, Any]] = []  # spoken callouts for the responder: n, t, kind, speech, urgent, text
     voice: dict[str, Any] | None = None  # operator commands: transcript, intent, primitive, question, approval
     rescue: dict[str, Any] | None = None  # labelled simulator beacon and crew state
     crew_routing: dict[str, Any] | None = None  # ground-crew routes through water or fire, planned live

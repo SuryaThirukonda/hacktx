@@ -1085,12 +1085,11 @@ def create_app(cfg: Config | None = None) -> FastAPI:
         await asyncio.get_running_loop().run_in_executor(rt.executor, P().process_drone_frame, pkt)
         return {"status": "ok", "control": "video_only"}
 
+    @app.get("/api/voice/{n}.mp3", dependencies=[Depends(auth)])
     @app.get("/api/rescue/voice/{n}.mp3", dependencies=[Depends(auth)])
     async def rescue_voice(n: int):
-        rescue = rt.pipeline.rescue
-        if not rescue.active():
-            raise HTTPException(404, "no active simulated rescue")
-        text = next((c["speech"] for c in rescue.callouts if c["n"] == n), None)
+        """One spoken callout (any mission) as audio, through the server's own ElevenLabs client."""
+        text = next((c["speech"] for c in rt.pipeline.callouts if c["n"] == n), None)
         if text is None:
             raise HTTPException(404, "no such callout in this session")
         if not rt.tts.available:

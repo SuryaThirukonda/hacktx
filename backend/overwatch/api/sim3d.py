@@ -156,7 +156,10 @@ def frame_payload(rt) -> dict[str, Any]:
         "subject": {"state": subj.state, "track_id": subj.track_id, "est_xy": est,
                     "last_seen_xy": subj.last_seen_xy_m, "search_radius": subj.search_radius_m,
                     "lost_ms": subj.lost_ms},
-        "responder": {"state": resp.state, "track_id": resp.track_id},
+        "responder": {"state": resp.state, "track_id": resp.track_id,
+                      "xy": next(([round(float(a.pos[0]), 2), round(float(a.pos[1]), 2)] for a in sim.actors
+                                  if a.role == "responder" and a.active), None)},
+        "callout": (p.callouts[-1]["speech"] if p.callouts else None),
         "autonomy": {"mode": auto.mode, "fsm": auto.fsm, "primitive": auto.primitive,
                      "primitive_source": auto.primitive_source,
                      "geofence_margin_m": auto.safety.geofence_margin_m if auto.safety else None,

@@ -531,6 +531,7 @@ export interface VoiceView {
 }
 
 export interface WorldState {
+  callouts?: { n: number; t: number; kind?: string; speech: string; urgent?: boolean; text?: string }[];
   rescue?: { ping?: { xy: XY }; beacon?: { xy: XY; status?: string }; phase?: string;
     callouts?: { n: number; t: number; speech: string; urgent?: boolean }[];
     crew_distance_m?: number; no_safe_route?: boolean } | null;

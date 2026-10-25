@@ -46,10 +46,10 @@ export function SimulationDashboard() {
   }, [serverSpeed]);
   const selected = cases.find((c) => c.id === worldId);
   const scenario = selected?.scenarios.find((s) => s.id === sid);
-  const callouts = city ? feed.cityState?.callouts ?? [] : state?.rescue?.callouts ?? [];
+  const callouts = city ? feed.cityState?.callouts ?? [] : state?.callouts ?? [];
   const time = city ? feed.cityState?.t ?? 0 : feed.frame?.t_s ?? 0;
   const voice = useCalloutVoice(city ? feed.cityState?.run_no ?? 0 : state?.session_id ?? "", time, callouts,
-    (n) => city ? `/api/test12/voice/${feed.cityState?.run_no}/${n}.mp3` : `/api/rescue/voice/${n}.mp3`);
+    (n) => city ? `/api/test12/voice/${feed.cityState?.run_no}/${n}.mp3` : `/api/voice/${n}.mp3`);
   useEffect(() => { void loadHome().catch((e: Error) => setError(e.message)); }, []);
   useEffect(() => {
     if (selected && !selected.scenarios.some((s) => s.id === sid)) setSid(selected.scenarios[0]?.id ?? "");
