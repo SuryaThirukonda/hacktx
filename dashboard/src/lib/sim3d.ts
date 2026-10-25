@@ -115,6 +115,8 @@ export interface Decision3D {
 export interface Frame3D {
   type: "frame";
   beacon?: { xy: XY; status?: string } | null;
+  /** every rescue beacon with its assessed crew route (A* on the hazard grid) */
+  beacons?: { id: string; n: number; xy: XY; status: string; route: XY[]; route_ok: boolean; walking: boolean; label: string }[];
   t_s: number;
   scenario: string;
   scenario_name: string;
@@ -235,6 +237,7 @@ export class SceneController {
   private drone = new THREE.Group();
   private droneBody = new THREE.Group();
   private beaconMark: THREE.Group | null = null;
+  private beaconKey = "";
   private footFill: THREE.Mesh;
   private footRays: THREE.LineSegments;
   private trail: THREE.Line;
@@ -1307,16 +1310,42 @@ export class SceneController {
     const resetPose = !this.frame || f.t_s < this.lastT - 0.5;
     this.frame = f;
     this.spinProps(f.drone.pos[2] > 0.4);
-    if (this.beaconMark) { clearGroup(this.beaconMark); this.scene.remove(this.beaconMark); this.beaconMark = null; }
-    if (f.beacon && f.beacon.status !== "rejected") {
-      const group = new THREE.Group();
-      const ring = new THREE.Mesh(new THREE.RingGeometry(.7, 1, 32), new THREE.MeshBasicMaterial({
-        color: f.beacon.status === "confirmed" ? "#9ef0bf" : "#ffe196", side: THREE.DoubleSide }));
-      ring.rotation.x = -Math.PI / 2; group.add(ring);
-      const text = label(`Rescue beacon · ${f.beacon.status ?? "pending"}`, "s3d-lbl");
-      text.position.y = 1.8; group.add(text);
-      group.position.copy(v3(f.beacon.xy[0], f.beacon.xy[1], .2));
-      this.scene.add(group); this.beaconMark = group;
+    // every rescue beacon: a ring and label, and its assessed crew route (amber; the one the crew is walking is
+    // drawn green by the crew-route block below)
+    const beacons = f.beacons ?? (f.beacon ? [{ id: "B1", n: 1, xy: f.beacon.xy, status: f.beacon.status ?? "pending", route: [], route_ok: false, walking: false, label: "" }] : []);
+    const beaconKey = beacons.map((b) => `${b.id}|${b.status}|${b.xy}|${b.walking}|${b.label}|${b.route.length}`).join(";");
+    if (beaconKey !== this.beaconKey) {
+      this.beaconKey = beaconKey;
+      if (this.beaconMark) { clearGroup(this.beaconMark); this.scene.remove(this.beaconMark); this.beaconMark = null; }
+      const all = new THREE.Group();
+      for (const b of beacons) {
+        if (b.status === "rejected") continue;
+        const group = new THREE.Group();
+        const color = b.status === "reached" ? "#9ef0bf" : b.status === "confirmed" ? "#8fe0c0" : "#ffe196";
+        const ring = new THREE.Mesh(new THREE.RingGeometry(.7, 1, 32), new THREE.MeshBasicMaterial({ color, side: THREE.DoubleSide }));
+        ring.rotation.x = -Math.PI / 2; group.add(ring);
+        const text = label(`Beacon ${b.n} · ${b.status}`, "s3d-lbl");
+        text.position.y = 1.8; group.add(text);
+        group.position.copy(v3(b.xy[0], b.xy[1], .2));
+        all.add(group);
+        if (b.route_ok && b.route.length > 1 && !b.walking) {
+          const pts = b.route.map(([x, y]) => v3(x, y, 0.35));
+          const tube = new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts), Math.max(16, pts.length * 2), 0.16, 6, false),
+            new THREE.MeshBasicMaterial({ color: "#ffb703", transparent: true, opacity: 0.7 }));
+          all.add(tube);
+          const mid = b.route[Math.floor(b.route.length / 2)];
+          const anchor = new THREE.Group();
+          anchor.position.copy(v3(mid[0], mid[1], 1.4));
+          anchor.add(label(`route ${b.label}`, "s3d-lbl s3d-lbl-static"));
+          all.add(anchor);
+        } else if (!b.route_ok && b.label) {
+          const anchor = new THREE.Group();
+          anchor.position.copy(v3(b.xy[0], b.xy[1], 3.2));
+          anchor.add(label(b.label, "s3d-lbl s3d-lbl-warn"));
+          all.add(anchor);
+        }
+      }
+      this.scene.add(all); this.beaconMark = all;
     }
     if (f.t_s < this.lastT - 0.5) {
       // scenario restarted

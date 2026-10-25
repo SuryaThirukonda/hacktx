@@ -136,7 +136,16 @@ export function SimulationDashboard() {
           <div className="mission-metrics"><div className="mission-metric"><span>Mission state</span><strong>{city ? feed.cityState?.phase_label ?? feed.cityState?.phase : state?.rescue?.phase ?? state?.autonomy.fsm ?? "Connecting"}</strong></div>
             <div className="mission-metric"><span>Seen ground</span><strong>{(city ? feed.cityState?.survey?.seen_m2 : feed.frame?.survey?.seen_m2) ?? 0} m²</strong></div>
             <div className="mission-metric"><span>Target</span><strong>{city ? feed.cityState?.target?.fresh ? "Observed" : "Last estimate" : target.target?.state ?? "Searching"}</strong></div>
-            <div className="mission-metric"><span>Beacon</span><strong>{feed.frame?.beacon?.status ?? "Awaiting detection"}</strong></div></div></section>
+            <div className="mission-metric"><span>Beacons</span><strong>{feed.frame?.beacons?.length ? `${feed.frame.beacons.filter((b) => b.status !== "rejected").length} placed · ${feed.frame.beacons.filter((b) => b.status === "confirmed" || b.status === "reached").length} confirmed` : feed.frame?.beacon?.status ?? "Awaiting detection"}</strong></div></div>
+          {!!feed.frame?.beacons?.length && <ul className="beacon-list" aria-label="Rescue beacons">
+            {feed.frame.beacons.map((b) => <li key={b.id}>
+              <strong>Beacon {b.n}</strong> <span>{b.status}{b.walking ? " · crew walking" : ""} · {b.label}</span>
+              {b.status === "pending" && <span className="beacon-actions">
+                <button type="button" onClick={() => void api.post(`/api/rescue/beacons/${b.id}/confirm`, {}).catch(() => undefined)}>Confirm</button>
+                <button type="button" onClick={() => void api.post(`/api/rescue/beacons/${b.id}/reject`, {}).catch(() => undefined)}>Reject</button>
+              </span>}
+            </li>)}
+          </ul>}</section>
           <section className="situational-panel"><div className="panel-toolbar"><div role="tablist" aria-label="Situation view"><button role="tab" aria-selected={tab === "map"} onClick={() => setTab("map")}>Survey map</button><button role="tab" aria-selected={tab === "callouts"} onClick={() => setTab("callouts")}>Callouts <span className="tab-count">{callouts.length}</span></button></div></div>
             <div className="situational-body">{tab === "map" ? <SurveyMap world={feed.world} frame={feed.frame} city={city ? feed.cityState : null} state={city ? null : state} spawn={spawn} onSpawn={city ? setSpawn : undefined} paths={targetPaths(target)} pins={targetPins(target)} /> :
               <div className="callout-tab"><div className="callout-tab-heading"><h2>Responder callouts</h2><button className="voice-toggle" aria-pressed={voice.enabled} onClick={voice.toggle}><Radio size={13} />Voice {voice.enabled ? "on" : "off"}</button></div>

@@ -269,9 +269,10 @@ def scenarios():
         "WF1", "Wildfire (static): survey the burn and beacon the person in the clearing",
         "On the search-and-rescue woodland: three patches of forest are burning and a ring of fire surrounds a "
         "clearing with someone inside, open only through a break on the trailhead side. Nothing spreads: the fire is "
-        "where it is for the whole run. The drone launches from the trailhead pad, sweeps the burn area, matches the "
-        "yellow shirt and puts a beacon on the person; the crew's way in (A* round the fire, through the break) is "
-        "assessed the moment the beacon is placed and drawn in 3D.",
+        "where it is for the whole run. The drone launches from the trailhead pad, sweeps the burn area and puts a "
+        "beacon on every person it sees (the stranded person and the hiker); the crew's way in to each (A* round "
+        "the fire, through the break) is assessed the moment the beacon is placed and drawn in 3D, and the drone "
+        "keeps sweeping until the area is covered.",
         duration_s=300.0, drone=DroneInit(WILD_PAD[0], WILD_PAD[1], 0.6, 45.0, -50.0),
         actors=[responder((WILD_PAD[0] + 10.0, WILD_PAD[1] + 2.0), [Wait(999)], heading=45.0),
                 person("stranded", "subject", reported, MUSTARD, [Wait(999)], vary=False),

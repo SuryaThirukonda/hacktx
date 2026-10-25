@@ -396,3 +396,11 @@
 }
 @media (max-width: 600px) { .launch-nav { position: relative; flex-wrap: wrap; height: 92px; padding-bottom: 28px; } .launch-nav .nav-center { bottom: 13px; font-size: 9px; width: 100%; justify-content: center; } .world-picker { padding-top: 23px; }
 }
+
+/* rescue beacons: one row per person found, with the assessed crew route and a person's decision */
+.beacon-list { list-style: none; margin: 0; padding: 6px 14px 10px; border-top: 1px solid #a5bed91f; background: #111923; font-size: 11px; color: #c3c2b7; max-height: 110px; overflow-y: auto; }
+.beacon-list li { display: flex; gap: 8px; align-items: center; padding: 3px 0; }
+.beacon-list strong { color: #ffe196; }
+.beacon-actions { margin-left: auto; display: flex; gap: 6px; }
+.beacon-actions button { font-size: 10px; padding: 2px 8px; border: 1px solid #a5bed94d; border-radius: 4px; background: #1a2533; color: #e8eefb; cursor: pointer; }
+.beacon-actions button:hover { background: #253447; }

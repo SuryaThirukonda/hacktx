@@ -269,6 +269,30 @@ def scenarios():
                                                                   "false_candidate_objects": false_objects(res)})
     out.append(sc4)
 
+    # SR6: a rescue sweep of the sector. Nobody is matched against a description: every person the detector sees
+    # gets a beacon, the team's way in is assessed (A* over the structures) and drawn at once, and the drone keeps
+    # sweeping so everyone in the area is tagged.
+    reported = (-25.0, -30.0)
+    sc6 = Scenario(
+        "SR6", "Rescue sweep: beacon everyone in the sector, route the team to each",
+        "Three people are in the sector by the trail: a hiker in a yellow jacket and two walkers in blue and dark "
+        "clothing. The drone launches from the trailhead pad, sweeps the sector and puts a beacon on every person "
+        "it sees; the team's route to each beacon is assessed the moment it is placed and drawn in 3D. The team "
+        "walks to the beacons the operator confirms, one after another.",
+        duration_s=300.0, drone=DroneInit(LAUNCHPAD[0], LAUNCHPAD[1], 0.6, 45.0, -50.0),
+        actors=[responder((LAUNCHPAD[0] + 10.0, LAUNCHPAD[1] + 2.0), [Wait(999)], heading=45.0),
+                person("lost", "subject", (-52.0, -47.0), MUSTARD, [Wait(999)], pants=JEANS, height=1.72),
+                person("walker-a", "subject", (10.0, -55.0), BLUE, [Wait(999)], pants=DARK, heading=250),
+                person("walker-b", "subject", (-20.0, 10.0), DARK, [Wait(999)], pants=JEANS, heading=120)],
+        actions=[ScriptedAction(1.0, "lock_responder", "responder")],
+        limits=[MetricLimit("world.rescue_beacons", min=1)],
+        tags=["world:sar", "search", "rescue", "beacon"])
+    sc6.rescue = dict(kind="sar", description="anyone", last_seen_xy=reported, radius_m=70.0, altitude_m=30.0,
+                      crew_speed_mps=1.5)
+    sc6.world_eval = lambda res, scenario: {"rescue_beacons": (res.rescue or {}).get("found", 0),
+                                            "people": {k: actor_found(res, k) for k in ("lost", "walker-a", "walker-b")}}
+    out.append(sc6)
+
     for s in out:
         s.world = build_world
         # a 1080p feed and the learned detector on a larger input: a person stays a few dozen pixels tall to the

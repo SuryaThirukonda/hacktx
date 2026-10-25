@@ -171,8 +171,21 @@ def frame_payload(rt) -> dict[str, Any]:
         "pursuit": pursuit,
         "crew_route": _crew_route(p),
         "survey": sim.survey.encode(sim.t_s),
-        "beacon": p.rescue.beacon if p.rescue.active() else None,
+        "beacon": p.rescue._public(p.rescue.beacon) if p.rescue.active() and p.rescue.beacon else None,
+        "beacons": _beacons(p),
     }
+
+
+def _beacons(p) -> list[dict[str, Any]]:
+    """Every rescue beacon with its assessed crew route (A* on the hazard grid), for the 3D view."""
+    if not p.rescue.active():
+        return []
+    return [{"id": b["id"], "n": b["n"], "xy": [round(b["xy"][0], 1), round(b["xy"][1], 1)], "status": b["status"],
+             "route": [[round(float(x), 1), round(float(y), 1)] for x, y in (b.get("route") or [])],
+             "route_ok": bool(b.get("route")), "walking": b["id"] == p.rescue.target,
+             "label": (f"B{b['n']} · {b['length_m']:.0f} m" if b.get("route") and b.get("length_m") is not None
+                       else f"B{b['n']} · {b.get('route_reason') or 'assessing'}")}
+            for b in p.rescue.beacons]
 
 
 def _crew_route(p) -> dict[str, Any] | None:

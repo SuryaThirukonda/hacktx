@@ -920,3 +920,21 @@ Earlier claims about Overwatch and FlyBy results are treated as claims; the numb
 - Checked: `py_compile`, `ruff` on the touched files (no new findings beyond the pre-existing style ones), `tsc -b`,
   `npm run build`; one WF1 run through the 3D frame stream for the beacon and route. Everything else is manual
   testing by Surya.
+
+### E11: rescue sweeps tag everyone (done; not run here)
+
+- `RescueMission` no longer matches a description: the sweep is a plain dispatch (`sweep_label`), and every
+  confirmed person track with a calibrated ground position gets a beacon (`B1`, `B2`, …; a person seen again within
+  6 m of a beacon is that beacon). The crew's way in to each beacon is assessed (A* on the hazard grid) the moment
+  it is placed and replanned every 10 s (every 2 s for the one the crew is walking to). The drone keeps sweeping
+  until the area is covered, says "Found. Beacon N." for each, "Area covered. N people found." at the end, and
+  returns to the pad 15 s later unless the crew is still walking. The operator confirms or rejects beacons
+  (`POST /api/rescue/beacons/{id}/confirm|reject`, buttons under the mission metrics); the crew walks to confirmed
+  beacons in order and says "Crew at beacon N." on arrival. `GET /api/rescue` and `rescue.view()` carry `beacons`,
+  `found` and `target`; `beacon` stays as the crew's current (or first pending) beacon for older callers.
+- 3D: every beacon is a ring with "Beacon N · status" and its route is an amber tube labelled "route BN · L m"
+  (green for the one being walked, the crew-route block); a blocked assessment is said at the beacon.
+- SR6 "Rescue sweep: beacon everyone in the sector" on the forest (three people, no hazards, A* over the structures
+  only), listed first under Search and rescue. FL1 and WF1 now tag everyone too (the hiker in WF1, the three
+  stranded people in FL1). Pursuit and city scenarios are unchanged: they still match one described person.
+- Checked: `py_compile`, `tsc -b`, `npm run build`; not run (manual testing by Surya).

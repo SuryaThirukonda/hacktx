@@ -243,8 +243,9 @@ def scenarios():
     sc = Scenario(
         "FL1", "Flood (static): survey the flooded blocks and beacon the stranded",
         "The south of the neighbourhood is under about 0.75 m of standing water; a few mounds stay dry. The drone "
-        "launches from the pad, sweeps the flooded blocks, puts a beacon on the person in the yellow shirt and guides "
-        "the crew along dry roads. The water does not rise: nothing here depends on how long the search takes.",
+        "launches from the pad, sweeps the flooded blocks, puts a beacon on every person it sees and assesses the "
+        "crew's way in to each one at once; the crew walks to the beacons the operator confirms. The water does not "
+        "rise: nothing here depends on how long the search takes.",
         duration_s=300.0, drone=DroneInit(FLOOD_PAD[0], FLOOD_PAD[1], 0.6, 180.0, -50.0),
         actors=[responder(STAGING, [Wait(999)], heading=180.0),
                 person("stranded-a", "subject", reported, MUSTARD, [Wait(999)], vary=False),

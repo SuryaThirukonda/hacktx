@@ -1085,6 +1085,24 @@ def create_app(cfg: Config | None = None) -> FastAPI:
         await asyncio.get_running_loop().run_in_executor(rt.executor, P().process_drone_frame, pkt)
         return {"status": "ok", "control": "video_only"}
 
+    @app.get("/api/rescue", dependencies=[Depends(auth)])
+    def rescue_view() -> dict[str, Any]:
+        """The simulated rescue: every beacon placed so far, each with its assessed crew route."""
+        with rt.pipeline.lock:
+            return rt.pipeline.rescue.view() or {"active": False}
+
+    @app.post("/api/rescue/beacons/{beacon_id}/{decision}", dependencies=[Depends(auth)])
+    def rescue_review(beacon_id: str, decision: str) -> dict[str, Any]:
+        """A person confirms a beacon (the crew walks to it) or rejects it. Simulation only."""
+        if decision not in ("confirm", "reject"):
+            raise HTTPException(422, "decision is confirm or reject")
+        with rt.pipeline.lock:
+            try:
+                getattr(rt.pipeline.rescue, decision)("operator", beacon_id)
+            except ValueError as e:
+                raise HTTPException(409, str(e)) from e
+            return rt.pipeline.rescue.view() or {"active": False}
+
     @app.get("/api/voice/{n}.mp3", dependencies=[Depends(auth)])
     @app.get("/api/rescue/voice/{n}.mp3", dependencies=[Depends(auth)])
     async def rescue_voice(n: int):
