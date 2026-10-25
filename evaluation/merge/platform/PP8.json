@@ -1,2 +1,481 @@
-{ "label": "synthetic", "scenario": "PP8", "name": "Dispatch (autonomous): launch, search by description, track, report", "duration_s": 170.0, "wall_s": 220.69, "realtime_factor": 0.77, "detection": { "criterion": "track box IoU>0.2 with GT box, visibility>=0.5", "hits": 1595, "total": 1606, "recall": 0.993, "recall_by_size": { "lt8px": { "hits": 7, "total": 13, "recall": 0.538 }, "8-16px": { "hits": 30, "total": 32, "recall": 0.938 }, "16-32px": { "hits": 121, "total": 123, "recall": 0.984 }, "32-64px": { "hits": 1437, "total": 1438, "recall": 0.999 }, "ge64px": { "hits": 0, "total": 0, "recall": null } } }, "tracking": { "id_switches": { "responder": 0, "ped-p": 1, "subject": 0 }, "total_id_switches": 1 }, "projection_error_m": { "telemetry": { "n": 1595, "p50": 1.14, "p95": 1.807, "mean": 1.122 } }, "subject_lock": { "steps_subject_visible_and_locked": 1200, "correct": 1200, "wrong_target": 0, "not_locked_on_anything": 0, "correct_fraction": 1.0 }, "range_error_m": { "n": 1191, "p50": 1.577, "p95": 5.384, "mean": 2.044, "valid_steps": 1191, "total_steps": 1701 }, "autonomy": { "follow_steps": 1200, "subject_in_frame_fraction": 1.0 }, "phone_vision": { "landscape": { "criterion": "on-device box -> nearest GT actor whose torso projects inside it", "boxes": 758, "gt_matched": 758, "range_coverage": 0.0, "range_error_m": { "n": 0, "p50": null, "p95": null, "mean": null }, "bearing_error_deg": { "n": 758, "p50": 0.2, "p95": 0.952, "mean": 0.32 }, "edge_clipped_boxes": 0 } }, "cross_view": { "landscape": { "associated": 0, "correct": 0, "accuracy": null, "coverage": 0.0 } }, "expected_events": [], "alerts": { "POSITION_CALLOUT": 15, "ZONE_ENTRY": 1 }, "decisions": { "D5_priority:rules": { "n": 16, "acted": 16, "sim_latency_ms": { "n": 16, "p50": 0.1, "p95": 0.1, "mean": 0.1 } }, "D4_motion:rules": { "n": 75, "acted": 75, "sim_latency_ms": { "n": 75, "p50": 0.1, "p95": 0.1, "mean": 0.1 } } }, "registration": { "method": "none", "valid": false, "confidence": "none", "residual_m": null, "pairs": 0, "yaw_deg": null, "translation_m": null, "reason": "phone frame not registered to the local map" }, "operator_actions": [ { "t_ms": 2000.0000000000027, "action": "dispatch", "description": "red shirt, jeans", "last_seen_xy": [ -40.0, -92.0 ], "radius_m": 48.0, "altitude_m": 28.0 } ], "events_timeline": [ [ 2.0, "DISPATCH_STARTED", "Dispatched by scripted operator (demo): looking for 'red shirt, jeans' over 8 legs at 28 m, launching from (-138, -128) m" ], [ 22.33, "DISPATCH_SEEN", "Person seen (orange top, orange lower): does not match 'red shirt, jeans'" ], [ 49.1, "DISPATCH_SEEN", "Person seen (blue top, green lower): does not match 'red shirt, jeans'" ], [ 50.13, "LOCK_ENGAGED", "Subject locked on track #3 by autonomy: matched 'red shirt, jeans' by clothing colours (red top, gray lower)" ], [ 50.1, "DISPATCH_MATCH", "Match: track #3 (red top, gray lower) fits 'red shirt, jeans'. Tracking it; reject with Release if it is the wrong person" ], [ 50.13, "POSITION_REPORT", "Target 128 m from the launch point, bearing 073 (E), stationary; position \u00b10 m; 30.26609, -97.77307" ], [ 51.03, "POSITION_CALLOUT", "Subject 11 o'clock, 101 meters, stationary" ], [ 54.23, "POSITION_REPORT", "Target 134 m from the launch point, bearing 074 (E), moving E at 2.3 m/s; position \u00b13 m; 30.26608, -97.77300" ], [ 58.33, "POSITION_REPORT", "Target 139 m from the launch point, bearing 074 (E), moving E at 1.3 m/s; position \u00b13 m; 30.26608, -97.77294" ], [ 59.13, "POSITION_CALLOUT", "Subject 12 o'clock, 119 meters, walking away" ], [ 62.43, "POSITION_REPORT", "Target 146 m from the launch point, bearing 075 (E), moving E at 1.9 m/s; position \u00b13 m; 30.26608, -97.77287" ], [ 66.53, "POSITION_REPORT", "Target 150 m from the launch point, bearing 076 (E), moving E at 1.4 m/s; position \u00b13 m; 30.26608, -97.77282" ], [ 67.23, "POSITION_CALLOUT", "Subject 12 o'clock, 130 meters, walking away" ], [ 70.63, "POSITION_REPORT", "Target 157 m from the launch point, bearing 077 (E), moving E at 1.4 m/s; position \u00b13 m; 30.26607, -97.77275" ], [ 74.73, "POSITION_REPORT", "Target 162 m from the launch point, bearing 077 (E), moving E at 1.1 m/s; position \u00b13 m; 30.26607, -97.77269" ], [ 75.33, "POSITION_CALLOUT", "Subject 12 o'clock, 145 meters, walking away" ], [ 78.83, "POSITION_REPORT", "Target 168 m from the launch point, bearing 078 (E), moving E at 1.1 m/s; position \u00b13 m; 30.26607, -97.77263" ], [ 82.93, "POSITION_REPORT", "Target 173 m from the launch point, bearing 077 (E), moving N at 1.6 m/s; position \u00b13 m; 30.26609, -97.77258" ], [ 83.43, "POSITION_CALLOUT", "Subject 12 o'clock, 153 meters, jogging, crossing" ], [ 87.03, "POSITION_REPORT", "Target 174 m from the launch point, bearing 076 (E), moving N at 1.5 m/s; position \u00b13 m; 30.26614, -97.77258" ], [ 91.13, "POSITION_REPORT", "Target 176 m from the launch point, bearing 073 (E), moving N at 1.6 m/s; position \u00b13 m; 30.26620, -97.77258" ], [ 91.53, "POSITION_CALLOUT", "Subject 11 o'clock, 159 meters, walking, crossing" ], [ 95.23, "POSITION_REPORT", "Target 179 m from the launch point, bearing 071 (E), moving N at 1.5 m/s; position \u00b13 m; 30.26626, -97.77258" ], [ 99.33, "POSITION_REPORT", "Target 180 m from the launch point, bearing 069 (E), moving N at 1.5 m/s; position \u00b13 m; 30.26632, -97.77258" ], [ 99.63, "POSITION_CALLOUT", "Subject 11 o'clock, 159 meters, walking, crossing" ], [ 103.43, "POSITION_REPORT", "Target 183 m from the launch point, bearing 068 (E), moving N at 1.7 m/s; position \u00b13 m; 30.26637, -97.77258" ], [ 107.53, "POSITION_REPORT", "Target 185 m from the launch point, bearing 066 (NE), moving N at 1.8 m/s; position \u00b13 m; 30.26644, -97.77258" ], [ 107.73, "POSITION_CALLOUT", "Subject 11 o'clock, 163 meters, walking, crossing" ], [ 111.63, "POSITION_REPORT", "Target 189 m from the launch point, bearing 064 (NE), moving N at 1.6 m/s; position \u00b13 m; 30.26650, -97.77257" ], [ 115.83, "POSITION_CALLOUT", "Subject 11 o'clock, 167 meters, walking, crossing" ], [ 115.73, "POSITION_REPORT", "Target 191 m from the launch point, bearing 062 (NE), moving N at 1.9 m/s; position \u00b13 m; 30.26656, -97.77258" ], [ 117.03, "ZONE_ENTRY", "Subject entered Block under watch" ], [ 119.83, "POSITION_REPORT", "Target 195 m from the launch point, bearing 060 (NE), moving N at 1.3 m/s; position \u00b13 m; 30.26662, -97.77258" ], [ 123.93, "POSITION_CALLOUT", "Subject 11 o'clock, 175 meters, walking, crossing" ], [ 123.93, "POSITION_REPORT", "Target 198 m from the launch point, bearing 058 (NE), moving N at 1.7 m/s; position \u00b13 m; 30.26668, -97.77259" ], [ 128.03, "POSITION_REPORT", "Target 201 m from the launch point, bearing 057 (NE), moving N at 1.7 m/s; position \u00b13 m; 30.26675, -97.77259" ], [ 132.03, "POSITION_CALLOUT", "Subject 11 o'clock, 183 meters, walking, crossing" ], [ 132.13, "POSITION_REPORT", "Target 205 m from the launch point, bearing 055 (NE), moving N at 1.1 m/s; position \u00b13 m; 30.26680, -97.77259" ], [ 136.23, "POSITION_REPORT", "Target 209 m from the launch point, bearing 054 (NE), moving N at 1.5 m/s; position \u00b13 m; 30.26686, -97.77258" ], [ 140.13, "POSITION_CALLOUT", "Subject 11 o'clock, 192 meters, walking, crossing" ], [ 140.33, "POSITION_REPORT", "Target 213 m from the launch point, bearing 053 (NE), moving N at 1.6 m/s; position \u00b13 m; 30.26691, -97.77258" ], [ 144.43, "POSITION_REPORT", "Target 217 m from the launch point, bearing 051 (NE), moving N at 1.8 m/s; position \u00b13 m; 30.26697, -97.77258" ], [ 148.23, "POSITION_CALLOUT", "Subject 11 o'clock, 191 meters, walking, crossing" ], [ 148.53, "POSITION_REPORT", "Target 218 m from the launch point, bearing 051 (NE), moving SE at 0.8 m/s; position \u00b13 m; 30.26698, -97.77258" ], [ 152.63, "POSITION_REPORT", "Target 218 m from the launch point, bearing 051 (NE), stationary; position \u00b13 m; 30.26698, -97.77258" ], [ 156.33, "POSITION_CALLOUT", "Subject 11 o'clock, 193 meters, stationary" ], [ 156.73, "POSITION_REPORT", "Target 217 m from the launch point, bearing 051 (NE), stationary; position \u00b13 m; 30.26698, -97.77259" ], [ 160.83, "POSITION_REPORT", "Target 217 m from the launch point, bearing 051 (NE), moving N at 0.7 m/s; position \u00b13 m; 30.26698, -97.77258" ], [ 164.43, "POSITION_CALLOUT", "Subject 11 o'clock, 193 meters, walking, crossing" ], [ 164.93, "POSITION_REPORT", "Target 218 m from the launch point, bearing 051 (NE), stationary; position \u00b13 m; 30.26698, -97.77258" ], [ 169.03, "POSITION_REPORT", "Target 217 m from the launch point, bearing 051 (NE), stationary; position \u00b13 m; 30.26698, -97.77258" ] ], "engine": { "requested": "rules", "used": "rules", "note": null }, "memory": { "criterion": "ids given to each simulated person while a track overlaps them (1 = perfect)", "tracker_id_count": 5, "memory_id_count": 3, "people": 4, "tracker_swaps": 0, "wrong_merges": 0, "per_person": { "ped-b": { "tracker_ids": 1, "memory_ids": 0 }, "ped-p": { "tracker_ids": 2, "memory_ids": 1 }, "responder": { "tracker_ids": 1, "memory_ids": 1 }, "subject": { "tracker_ids": 1, "memory_ids": 1 } } }, "world": { "matched": 1, "time_to_match_s": 48.1, "wrong_match": 0, "people_seen": 3, "phase_steps": { "TAKEOFF": 186, "TRANSIT": 82, "SEARCH": 213, "TRACKING": 1200 }, "position_reports": 60, "report_distance_error_m": 0.6 }, "expected_metrics": [ { "metric": "world.wrong_match", "value": 0, "min": null, "max": 0, "pass": true }, { "metric": "world.matched", "value": 1, "min": 1, "max": null, "pass": true }, { "metric": "world.report_distance_error_m", "value": 0.6, "min": null, "max": 8.0, "pass": true } ], "expected_pass": true
+{
+  "label": "synthetic",
+  "scenario": "PP8",
+  "name": "Dispatch (autonomous): launch, search by description, track, report",
+  "duration_s": 170.0,
+  "wall_s": 122.61,
+  "realtime_factor": 1.39,
+  "detection": {
+    "criterion": "track box IoU>0.2 with GT box, visibility>=0.5",
+    "hits": 1595,
+    "total": 1606,
+    "recall": 0.993,
+    "recall_by_size": {
+      "lt8px": {
+        "hits": 7,
+        "total": 13,
+        "recall": 0.538
+      },
+      "8-16px": {
+        "hits": 30,
+        "total": 32,
+        "recall": 0.938
+      },
+      "16-32px": {
+        "hits": 121,
+        "total": 123,
+        "recall": 0.984
+      },
+      "32-64px": {
+        "hits": 1437,
+        "total": 1438,
+        "recall": 0.999
+      },
+      "ge64px": {
+        "hits": 0,
+        "total": 0,
+        "recall": null
+      }
+    }
+  },
+  "tracking": {
+    "id_switches": {
+      "responder": 0,
+      "ped-p": 1,
+      "subject": 0
+    },
+    "total_id_switches": 1
+  },
+  "projection_error_m": {
+    "telemetry": {
+      "n": 1595,
+      "p50": 1.14,
+      "p95": 1.806,
+      "mean": 1.123
+    }
+  },
+  "subject_lock": {
+    "steps_subject_visible_and_locked": 1200,
+    "correct": 1200,
+    "wrong_target": 0,
+    "not_locked_on_anything": 0,
+    "correct_fraction": 1.0
+  },
+  "range_error_m": {
+    "n": 1191,
+    "p50": 1.577,
+    "p95": 5.389,
+    "mean": 2.044,
+    "valid_steps": 1191,
+    "total_steps": 1701
+  },
+  "autonomy": {
+    "follow_steps": 1200,
+    "subject_in_frame_fraction": 1.0
+  },
+  "phone_vision": {
+    "landscape": {
+      "criterion": "on-device box -> nearest GT actor whose torso projects inside it",
+      "boxes": 787,
+      "gt_matched": 787,
+      "range_coverage": 0.0,
+      "range_error_m": {
+        "n": 0,
+        "p50": null,
+        "p95": null,
+        "mean": null
+      },
+      "bearing_error_deg": {
+        "n": 787,
+        "p50": 0.2,
+        "p95": 0.977,
+        "mean": 0.32
+      },
+      "edge_clipped_boxes": 0
+    }
+  },
+  "cross_view": {
+    "landscape": {
+      "associated": 0,
+      "correct": 0,
+      "accuracy": null,
+      "coverage": 0.0
+    }
+  },
+  "expected_events": [],
+  "alerts": {
+    "POSITION_CALLOUT": 15,
+    "ZONE_ENTRY": 1
+  },
+  "decisions": {
+    "D5_priority:rules": {
+      "n": 16,
+      "acted": 16,
+      "sim_latency_ms": {
+        "n": 16,
+        "p50": 0.1,
+        "p95": 0.1,
+        "mean": 0.1
+      }
+    },
+    "D4_motion:rules": {
+      "n": 75,
+      "acted": 75,
+      "sim_latency_ms": {
+        "n": 75,
+        "p50": 0.1,
+        "p95": 0.1,
+        "mean": 0.1
+      }
+    }
+  },
+  "registration": {
+    "method": "none",
+    "valid": false,
+    "confidence": "none",
+    "residual_m": null,
+    "pairs": 0,
+    "yaw_deg": null,
+    "translation_m": null,
+    "reason": "phone frame not registered to the local map"
+  },
+  "operator_actions": [
+    {
+      "t_ms": 2000.0000000000027,
+      "action": "dispatch",
+      "description": "red shirt, jeans",
+      "last_seen_xy": [
+        -40.0,
+        -92.0
+      ],
+      "radius_m": 48.0,
+      "altitude_m": 28.0
+    }
+  ],
+  "events_timeline": [
+    [
+      2.0,
+      "DISPATCH_STARTED",
+      "Dispatched by scripted operator (demo): looking for 'red shirt, jeans' over 8 legs at 28 m, launching from (-138, -128) m"
+    ],
+    [
+      22.33,
+      "DISPATCH_SEEN",
+      "Person seen (orange top, orange lower): does not match 'red shirt, jeans'"
+    ],
+    [
+      49.1,
+      "DISPATCH_SEEN",
+      "Person seen (blue top, green lower): does not match 'red shirt, jeans'"
+    ],
+    [
+      50.13,
+      "LOCK_ENGAGED",
+      "Subject locked on track #3 by autonomy: matched 'red shirt, jeans' by clothing colours (red top, gray lower)"
+    ],
+    [
+      50.1,
+      "DISPATCH_MATCH",
+      "Match: track #3 (red top, gray lower) fits 'red shirt, jeans'. Tracking it; reject with Release if it is the wrong person"
+    ],
+    [
+      50.13,
+      "POSITION_REPORT",
+      "Target 128 m from the launch point, bearing 073 (E), stationary; position \u00b10 m; 30.26609, -97.77307"
+    ],
+    [
+      51.03,
+      "POSITION_CALLOUT",
+      "Subject 11 o'clock, 101 meters, stationary"
+    ],
+    [
+      54.23,
+      "POSITION_REPORT",
+      "Target 134 m from the launch point, bearing 074 (E), moving E at 2.3 m/s; position \u00b13 m; 30.26608, -97.77300"
+    ],
+    [
+      58.33,
+      "POSITION_REPORT",
+      "Target 139 m from the launch point, bearing 074 (E), moving E at 1.3 m/s; position \u00b13 m; 30.26608, -97.77294"
+    ],
+    [
+      59.13,
+      "POSITION_CALLOUT",
+      "Subject 12 o'clock, 119 meters, walking away"
+    ],
+    [
+      62.43,
+      "POSITION_REPORT",
+      "Target 146 m from the launch point, bearing 075 (E), moving E at 1.9 m/s; position \u00b13 m; 30.26608, -97.77287"
+    ],
+    [
+      66.53,
+      "POSITION_REPORT",
+      "Target 150 m from the launch point, bearing 076 (E), moving E at 1.4 m/s; position \u00b13 m; 30.26608, -97.77282"
+    ],
+    [
+      67.23,
+      "POSITION_CALLOUT",
+      "Subject 12 o'clock, 130 meters, walking away"
+    ],
+    [
+      70.63,
+      "POSITION_REPORT",
+      "Target 157 m from the launch point, bearing 077 (E), moving E at 1.4 m/s; position \u00b13 m; 30.26607, -97.77275"
+    ],
+    [
+      74.73,
+      "POSITION_REPORT",
+      "Target 162 m from the launch point, bearing 077 (E), moving E at 1.1 m/s; position \u00b13 m; 30.26607, -97.77269"
+    ],
+    [
+      75.33,
+      "POSITION_CALLOUT",
+      "Subject 12 o'clock, 145 meters, walking away"
+    ],
+    [
+      78.83,
+      "POSITION_REPORT",
+      "Target 168 m from the launch point, bearing 078 (E), moving E at 1.1 m/s; position \u00b13 m; 30.26607, -97.77263"
+    ],
+    [
+      82.93,
+      "POSITION_REPORT",
+      "Target 173 m from the launch point, bearing 077 (E), moving N at 1.6 m/s; position \u00b13 m; 30.26609, -97.77258"
+    ],
+    [
+      83.43,
+      "POSITION_CALLOUT",
+      "Subject 12 o'clock, 153 meters, jogging, crossing"
+    ],
+    [
+      87.03,
+      "POSITION_REPORT",
+      "Target 174 m from the launch point, bearing 076 (E), moving N at 1.5 m/s; position \u00b13 m; 30.26614, -97.77258"
+    ],
+    [
+      91.13,
+      "POSITION_REPORT",
+      "Target 176 m from the launch point, bearing 073 (E), moving N at 1.6 m/s; position \u00b13 m; 30.26620, -97.77258"
+    ],
+    [
+      91.53,
+      "POSITION_CALLOUT",
+      "Subject 11 o'clock, 159 meters, walking, crossing"
+    ],
+    [
+      95.23,
+      "POSITION_REPORT",
+      "Target 179 m from the launch point, bearing 071 (E), moving N at 1.5 m/s; position \u00b13 m; 30.26626, -97.77258"
+    ],
+    [
+      99.33,
+      "POSITION_REPORT",
+      "Target 180 m from the launch point, bearing 069 (E), moving N at 1.5 m/s; position \u00b13 m; 30.26632, -97.77258"
+    ],
+    [
+      99.63,
+      "POSITION_CALLOUT",
+      "Subject 11 o'clock, 159 meters, walking, crossing"
+    ],
+    [
+      103.43,
+      "POSITION_REPORT",
+      "Target 183 m from the launch point, bearing 068 (E), moving N at 1.7 m/s; position \u00b13 m; 30.26637, -97.77258"
+    ],
+    [
+      107.53,
+      "POSITION_REPORT",
+      "Target 185 m from the launch point, bearing 066 (NE), moving N at 1.8 m/s; position \u00b13 m; 30.26644, -97.77258"
+    ],
+    [
+      107.73,
+      "POSITION_CALLOUT",
+      "Subject 11 o'clock, 163 meters, walking, crossing"
+    ],
+    [
+      111.63,
+      "POSITION_REPORT",
+      "Target 189 m from the launch point, bearing 064 (NE), moving N at 1.6 m/s; position \u00b13 m; 30.26650, -97.77257"
+    ],
+    [
+      115.83,
+      "POSITION_CALLOUT",
+      "Subject 11 o'clock, 167 meters, walking, crossing"
+    ],
+    [
+      115.73,
+      "POSITION_REPORT",
+      "Target 191 m from the launch point, bearing 062 (NE), moving N at 1.9 m/s; position \u00b13 m; 30.26656, -97.77258"
+    ],
+    [
+      117.03,
+      "ZONE_ENTRY",
+      "Subject entered Block under watch"
+    ],
+    [
+      119.83,
+      "POSITION_REPORT",
+      "Target 195 m from the launch point, bearing 060 (NE), moving N at 1.2 m/s; position \u00b13 m; 30.26662, -97.77258"
+    ],
+    [
+      123.93,
+      "POSITION_CALLOUT",
+      "Subject 11 o'clock, 175 meters, walking, crossing"
+    ],
+    [
+      123.93,
+      "POSITION_REPORT",
+      "Target 198 m from the launch point, bearing 058 (NE), moving N at 1.7 m/s; position \u00b13 m; 30.26668, -97.77259"
+    ],
+    [
+      128.03,
+      "POSITION_REPORT",
+      "Target 201 m from the launch point, bearing 057 (NE), moving N at 1.7 m/s; position \u00b13 m; 30.26675, -97.77259"
+    ],
+    [
+      132.03,
+      "POSITION_CALLOUT",
+      "Subject 11 o'clock, 183 meters, walking, crossing"
+    ],
+    [
+      132.13,
+      "POSITION_REPORT",
+      "Target 205 m from the launch point, bearing 055 (NE), moving N at 1.1 m/s; position \u00b13 m; 30.26680, -97.77259"
+    ],
+    [
+      136.23,
+      "POSITION_REPORT",
+      "Target 209 m from the launch point, bearing 054 (NE), moving N at 1.5 m/s; position \u00b13 m; 30.26686, -97.77258"
+    ],
+    [
+      140.13,
+      "POSITION_CALLOUT",
+      "Subject 11 o'clock, 192 meters, walking, crossing"
+    ],
+    [
+      140.33,
+      "POSITION_REPORT",
+      "Target 213 m from the launch point, bearing 053 (NE), moving N at 1.6 m/s; position \u00b13 m; 30.26691, -97.77258"
+    ],
+    [
+      144.43,
+      "POSITION_REPORT",
+      "Target 217 m from the launch point, bearing 051 (NE), moving N at 1.8 m/s; position \u00b13 m; 30.26697, -97.77258"
+    ],
+    [
+      148.23,
+      "POSITION_CALLOUT",
+      "Subject 11 o'clock, 191 meters, walking, crossing"
+    ],
+    [
+      148.53,
+      "POSITION_REPORT",
+      "Target 218 m from the launch point, bearing 051 (NE), moving SE at 0.8 m/s; position \u00b13 m; 30.26698, -97.77258"
+    ],
+    [
+      152.63,
+      "POSITION_REPORT",
+      "Target 218 m from the launch point, bearing 051 (NE), stationary; position \u00b13 m; 30.26698, -97.77258"
+    ],
+    [
+      156.33,
+      "POSITION_CALLOUT",
+      "Subject 11 o'clock, 193 meters, stationary"
+    ],
+    [
+      156.73,
+      "POSITION_REPORT",
+      "Target 217 m from the launch point, bearing 051 (NE), stationary; position \u00b13 m; 30.26698, -97.77259"
+    ],
+    [
+      160.83,
+      "POSITION_REPORT",
+      "Target 217 m from the launch point, bearing 051 (NE), moving N at 0.7 m/s; position \u00b13 m; 30.26698, -97.77258"
+    ],
+    [
+      164.43,
+      "POSITION_CALLOUT",
+      "Subject 11 o'clock, 193 meters, walking, crossing"
+    ],
+    [
+      164.93,
+      "POSITION_REPORT",
+      "Target 218 m from the launch point, bearing 051 (NE), stationary; position \u00b13 m; 30.26698, -97.77258"
+    ],
+    [
+      169.03,
+      "POSITION_REPORT",
+      "Target 217 m from the launch point, bearing 051 (NE), stationary; position \u00b13 m; 30.26698, -97.77258"
+    ]
+  ],
+  "engine": {
+    "requested": "rules",
+    "used": "rules",
+    "note": null
+  },
+  "memory": {
+    "criterion": "ids given to each simulated person while a track overlaps them (1 = perfect)",
+    "tracker_id_count": 5,
+    "memory_id_count": 3,
+    "people": 4,
+    "tracker_swaps": 0,
+    "wrong_merges": 0,
+    "per_person": {
+      "ped-b": {
+        "tracker_ids": 1,
+        "memory_ids": 0
+      },
+      "ped-p": {
+        "tracker_ids": 2,
+        "memory_ids": 1
+      },
+      "responder": {
+        "tracker_ids": 1,
+        "memory_ids": 1
+      },
+      "subject": {
+        "tracker_ids": 1,
+        "memory_ids": 1
+      }
+    }
+  },
+  "world": {
+    "matched": 1,
+    "time_to_match_s": 48.1,
+    "wrong_match": 0,
+    "people_seen": 3,
+    "phase_steps": {
+      "TAKEOFF": 186,
+      "TRANSIT": 82,
+      "SEARCH": 213,
+      "TRACKING": 1200
+    },
+    "position_reports": 60,
+    "report_distance_error_m": 0.6
+  },
+  "expected_metrics": [
+    {
+      "metric": "world.wrong_match",
+      "value": 0,
+      "min": null,
+      "max": 0,
+      "pass": true
+    },
+    {
+      "metric": "world.matched",
+      "value": 1,
+      "min": 1,
+      "max": null,
+      "pass": true
+    },
+    {
+      "metric": "world.report_distance_error_m",
+      "value": 0.6,
+      "min": null,
+      "max": 8.0,
+      "pass": true
+    }
+  ],
+  "expected_pass": true
 }

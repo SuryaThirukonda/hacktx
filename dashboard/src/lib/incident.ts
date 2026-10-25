@@ -64,6 +64,8 @@ export interface Metrics {
 }
 
 export interface FollowView {
+  session_id?: string;
+  observation_id?: string | null;
   status: "none" | "tracking" | "lost" | "unverified" | "released";
   text: string;
   track_id: string | null;
@@ -144,30 +146,39 @@ async function refetch(what: string) {
   try {
     if (what === "observations") {
       const r = await api.get<{ items: ObservationView[] }>(`/api/incidents/${iid}/observations`);
+      if (currentId !== iid) return;
       useIncident.setState({ observations: r.items });
     } else if (what === "alerts") {
       const r = await api.get<{ items: IAlert[] }>(`/api/incidents/${iid}/alerts`);
+      if (currentId !== iid) return;
       useIncident.setState({ alerts: r.items });
     } else if (what === "incident") {
       const r = await api.get<Incident>(`/api/incidents/${iid}`);
+      if (currentId !== iid) return;
       useIncident.setState({ incident: r });
     } else if (what === "sources") {
       const r = await api.get<SourceList>(`/api/incidents/${iid}/sources`);
+      if (currentId !== iid) return;
       useIncident.setState({ sources: r });
     } else if (what === "scene") {
       const r = await api.get<{ anchors: SceneAnchor[] }>(`/api/incidents/${iid}/scene`);
+      if (currentId !== iid) return;
       useIncident.setState({ anchors: r.anchors });
     } else if (what === "structure") {
       const r = await api.get<StructureView>(`/api/incidents/${iid}/structure`);
+      if (currentId !== iid) return;
       useIncident.setState({ structure: r });
     } else if (what === "actions") {
       const r = await api.get<{ items: MissionAction[]; decisions: { mode_label?: string } | null }>(`/api/incidents/${iid}/actions`);
+      if (currentId !== iid) return;
       useIncident.setState({ missionActions: r.items, decisionMode: r.decisions?.mode_label ?? null });
     } else if (what === "follow") {
       const r = await api.get<FollowView>(`/api/incidents/${iid}/follow`);
+      if (currentId !== iid) return;
       useIncident.setState({ follow: r });
     } else if (what === "metrics") {
       const r = await api.get<Metrics>(`/api/incidents/${iid}/metrics`);
+      if (currentId !== iid) return;
       useIncident.setState({ metrics: r });
     }
   } catch (e) {
@@ -255,6 +266,12 @@ setInterval(() => {
 /** Load a scenario. An incident belongs to one place: a scenario in another world starts a new incident, one in the
  *  same world restarts in place. */
 export async function chooseScenario(sid: string, mission: Mission, title: string) {
+  if (sid === "T12") {
+    await api.post("/api/test12/stop");
+    await api.post("/api/test12/start", {});
+    window.location.assign("/dashboard?scenario=T12&running=1");
+    return;
+  }
   const g = useIncident.getState();
   const worldOf = (id: string | null | undefined) => g.usecases.find((u) => u.scenarios.some((s) => s.id === id))?.id;
   if (!g.incident || worldOf(g.incident.scenario_id ?? g.activeScenario) !== worldOf(sid)) {
@@ -305,10 +322,10 @@ export const actions = {
     api.post("/api/calibration/ground-points", {
       points: pairs.map((p, i) => ({ ...p, holdout: pairs.length >= 5 && i % 4 === 3 })),
     }),
-  followDesignate: (trackId: string) => api.post(`/api/incidents/${iidOrThrow()}/follow/designate`, { track_id: trackId, by: "operator" }),
-  followConfirm: () => api.post(`/api/incidents/${iidOrThrow()}/follow/confirm`, { by: "operator" }),
-  followReject: () => api.post(`/api/incidents/${iidOrThrow()}/follow/reject`, { by: "operator" }),
-  followRelease: () => api.post(`/api/incidents/${iidOrThrow()}/follow/release`, { by: "operator" }),
+  followDesignate: (trackId: string) => api.post(`/api/incidents/${iidOrThrow()}/follow/designate`, { track_id: trackId, by: "operator", session_id: useIncident.getState().follow?.session_id, designation: useIncident.getState().follow?.designation }),
+  followConfirm: () => api.post(`/api/incidents/${iidOrThrow()}/follow/confirm`, { by: "operator", session_id: useIncident.getState().follow?.session_id, designation: useIncident.getState().follow?.designation }),
+  followReject: () => api.post(`/api/incidents/${iidOrThrow()}/follow/reject`, { by: "operator", session_id: useIncident.getState().follow?.session_id, designation: useIncident.getState().follow?.designation }),
+  followRelease: () => api.post(`/api/incidents/${iidOrThrow()}/follow/release`, { by: "operator", session_id: useIncident.getState().follow?.session_id, designation: useIncident.getState().follow?.designation }),
   followDescribe: (text: string) => api.post<{ ok: boolean; note: string }>(`/api/incidents/${iidOrThrow()}/follow/describe`, { text }),
   followDescribeConfirm: () => api.post(`/api/incidents/${iidOrThrow()}/follow/describe/confirm`, { by: "operator" }),
   lookFor: (text: string) => api.post(`/api/incidents/${iidOrThrow()}/look-for`, { text }),

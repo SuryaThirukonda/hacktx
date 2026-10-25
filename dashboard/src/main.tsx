@@ -4,6 +4,7 @@ import "./index.css";
 import { usePath, viewFromPath } from "./lib/router";
 import { connectStreams } from "./lib/store";
 import { Console, Disconnected, Toast } from "./pages/Console";
+import { SimulationDashboard } from "./pages/SimulationDashboard";
 import { Demo } from "./pages/Demo";
 import { Drive } from "./pages/Drive";
 import { Mission } from "./pages/Mission";
@@ -19,8 +20,8 @@ const Sim3D = lazy(() => import("./pages/Sim3D").then((m) => ({ default: m.Sim3D
 // /ops/...     sensor and fusion console (overview, drone, phone, map pages)
 // /responder   responder PWA (incident alerts);  /responder/sensors  phone-sensor proximity view;  /3d  3D view
 const entry = window.location.pathname;
-const page = entry.startsWith("/responder/sensors") ? "sensors" : entry.startsWith("/responder") ? "responder" : entry.startsWith("/3d") ? "3d" : entry.startsWith("/ops") ? "ops" : entry.startsWith("/dashboard") ? "mission" : entry.startsWith("/drive") ? "drive" : "demo";
-if (page === "ops" || page === "mission" || page === "demo") connectStreams();
+const page = entry.startsWith("/responder/sensors") ? "sensors" : entry.startsWith("/responder") ? "responder" : entry.startsWith("/3d") ? "3d" : entry.startsWith("/ops") ? "ops" : entry.startsWith("/command") ? "mission" : entry.startsWith("/dashboard") ? "simulation" : entry.startsWith("/drive") ? "drive" : entry.startsWith("/demo") ? "demo" : "simulation";
+if (page === "ops" || page === "mission" || page === "demo" || page === "simulation") connectStreams();
 
 /** Ops console routes share one set of live sockets. */
 function OpsApp() {
@@ -34,7 +35,7 @@ function OpsApp() {
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
-    {page === "sensors" ? (
+    {page === "simulation" ? <SimulationDashboard /> : page === "sensors" ? (
       <ResponderSensors />
     ) : page === "responder" ? (
       <Responder />

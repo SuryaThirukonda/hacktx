@@ -1,0 +1,3243 @@
+[
+  {
+    "seq": 1,
+    "incident_id": "INC-788adb0ec4",
+    "at": "2026-10-25T11:51:56.269081Z",
+    "kind": "incident_created",
+    "payload": {
+      "title": "SAR acceptance",
+      "mission": "search",
+      "provenance": "simulated",
+      "scenario": "SAR1"
+    }
+  },
+  {
+    "seq": 2,
+    "incident_id": "INC-788adb0ec4",
+    "at": "2026-10-25T11:51:56.269189Z",
+    "kind": "source_updated",
+    "payload": {
+      "id": "simulated",
+      "kind": "simulation",
+      "name": "Simulator (SIMULATED)",
+      "connection_status": "connected",
+      "source_mode": "simulated",
+      "last_seen_at": null,
+      "calibration": {},
+      "detail": "scenario SAR1"
+    }
+  },
+  {
+    "seq": 3,
+    "incident_id": "INC-788adb0ec4",
+    "at": "2026-10-25T11:51:56.328041Z",
+    "kind": "sensor_status",
+    "payload": {
+      "source": "drone",
+      "from": null,
+      "to": "OK"
+    }
+  },
+  {
+    "seq": 4,
+    "incident_id": "INC-788adb0ec4",
+    "at": "2026-10-25T11:51:56.328077Z",
+    "kind": "sensor_status",
+    "payload": {
+      "source": "phone",
+      "from": null,
+      "to": "OK"
+    }
+  },
+  {
+    "seq": 5,
+    "incident_id": "INC-788adb0ec4",
+    "at": "2026-10-25T11:51:56.328088Z",
+    "kind": "sensor_status",
+    "payload": {
+      "source": "telemetry",
+      "from": null,
+      "to": "OK"
+    }
+  },
+  {
+    "seq": 6,
+    "incident_id": "INC-788adb0ec4",
+    "at": "2026-10-25T11:51:56.328529Z",
+    "kind": "responder_position",
+    "payload": {
+      "source": "simulated",
+      "accuracy_m": 0.5,
+      "enu": {
+        "frame": "enu:INC-788adb0ec4",
+        "x": 5.0,
+        "y": 10.0,
+        "z": 0
+      },
+      "heading_deg": 90.0,
+      "heading_accuracy_deg": 5.0,
+      "received_at": "2026-10-25T11:51:56.328527+00:00"
+    }
+  },
+  {
+    "seq": 7,
+    "incident_id": "INC-788adb0ec4",
+    "at": "2026-10-25T11:51:56.430744Z",
+    "kind": "track_started",
+    "payload": {
+      "track_id": "INC-788adb0ec4.s-6419ef.drone:1:e1",
+      "status": "active",
+      "identity": "unverified",
+      "provenance": "simulated",
+      "first_seen": "2026-10-25T11:51:56.430577+00:00"
+    }
+  },
+  {
+    "seq": 8,
+    "incident_id": "INC-788adb0ec4",
+    "at": "2026-10-25T11:51:56.430831Z",
+    "kind": "track_started",
+    "payload": {
+      "track_id": "INC-788adb0ec4.s-6419ef.drone:2:e1",
+      "status": "active",
+      "identity": "unverified",
+      "provenance": "simulated",
+      "first_seen": "2026-10-25T11:51:56.430577+00:00"
+    }
+  },
+  {
+    "seq": 9,
+    "incident_id": "INC-788adb0ec4",
+    "at": "2026-10-25T11:51:56.430863Z",
+    "kind": "track_started",
+    "payload": {
+      "track_id": "INC-788adb0ec4.s-6419ef.drone:3:e1",
+      "status": "active",
+      "identity": "unverified",
+      "provenance": "simulated",
+      "first_seen": "2026-10-25T11:51:56.430577+00:00"
+    }
+  },
+  {
+    "seq": 10,
+    "incident_id": "INC-788adb0ec4",
+    "at": "2026-10-25T11:51:56.432733Z",
+    "kind": "observation",
+    "payload": {
+      "observation": {
+        "schema_version": "incident-1.0",
+        "id": "OBS-99eeccc214",
+        "incident_id": "INC-788adb0ec4",
+        "sensor_source_id": "drone",
+        "observed_at": "2026-10-25T11:51:56.432569Z",
+        "received_at": "2026-10-25T11:51:56.432622Z",
+        "category": "person",
+        "label": "possible person",
+        "confidence": 0.892,
+        "detector": "sim-blob-v1",
+        "bounding_box": {
+          "frame": "image:drone",
+          "x0": 307.0,
+          "y0": 153.0,
+          "x1": 329.0,
+          "y1": 173.0
+        },
+        "world_position": {
+          "frame": "enu:INC-788adb0ec4",
+          "x": 6.83,
+          "y": 17.97,
+          "z": 0.0
+        },
+        "horizontal_uncertainty_m": 2.96,
+        "coordinate_frame": "enu:INC-788adb0ec4",
+        "position_estimation_method": "ground_plane",
+        "evidence_frame_reference": "evidence/OBS-99eeccc214.jpg#frame=5",
+        "track_id": "drone:1:e1",
+        "stale_after": "2026-10-25T11:53:56.432569Z",
+        "provenance": "simulated",
+        "attributes": {
+          "flagged_by": "search_rules",
+          "track_state": "CONFIRMED",
+          "incident_track_id": "INC-788adb0ec4.s-6419ef.drone:1:e1",
+          "session_id": "s-6419ef",
+          "confidence_kind": "uncalibrated_model_score",
+          "object_id": "obj-1",
+          "sim_truth": {
+            "actor_id": "dry-fixture",
+            "xy": [
+              7.0,
+              18.0
+            ],
+            "iou": 0.735,
+            "source": "simulator ground truth (evaluation only)"
+          }
+        }
+      }
+    }
+  },
+  {
+    "seq": 11,
+    "incident_id": "INC-788adb0ec4",
+    "at": "2026-10-25T11:51:56.433910Z",
+    "kind": "observation",
+    "payload": {
+      "observation": {
+        "schema_version": "incident-1.0",
+        "id": "OBS-3dd68f4338",
+        "incident_id": "INC-788adb0ec4",
+        "sensor_source_id": "drone",
+        "observed_at": "2026-10-25T11:51:56.433843Z",
+        "received_at": "2026-10-25T11:51:56.433867Z",
+        "category": "person",
+        "label": "possible person",
+        "confidence": 0.787,
+        "detector": "sim-blob-v1",
+        "bounding_box": {
+          "frame": "image:drone",
+          "x0": 666.0,
+          "y0": 261.0,
+          "x1": 691.0,
+          "y1": 277.0
+        },
+        "world_position": {
+          "frame": "enu:INC-788adb0ec4",
+          "x": 20.33,
+          "y": 13.97,
+          "z": 0.0
+        },
+        "horizontal_uncertainty_m": 2.96,
+        "coordinate_frame": "enu:INC-788adb0ec4",
+        "position_estimation_method": "ground_plane",
+        "evidence_frame_reference": "evidence/OBS-3dd68f4338.jpg#frame=5",
+        "track_id": "drone:2:e1",
+        "stale_after": "2026-10-25T11:53:56.433843Z",
+        "provenance": "simulated",
+        "attributes": {
+          "flagged_by": "search_rules",
+          "track_state": "CONFIRMED",
+          "incident_track_id": "INC-788adb0ec4.s-6419ef.drone:2:e1",
+          "session_id": "s-6419ef",
+          "confidence_kind": "uncalibrated_model_score",
+          "object_id": "obj-2",
+          "sim_truth": {
+            "actor_id": "assistance-fixture",
+            "xy": [
+              20.0,
+              14.0
+            ],
+            "iou": 0.82,
+            "source": "simulator ground truth (evaluation only)"
+          }
+        }
+      }
+    }
+  },
+  {
+    "seq": 12,
+    "incident_id": "INC-788adb0ec4",
+    "at": "2026-10-25T11:51:56.434988Z",
+    "kind": "observation",
+    "payload": {
+      "observation": {
+        "schema_version": "incident-1.0",
+        "id": "OBS-70005d6c93",
+        "incident_id": "INC-788adb0ec4",
+        "sensor_source_id": "drone",
+        "observed_at": "2026-10-25T11:51:56.434930Z",
+        "received_at": "2026-10-25T11:51:56.434950Z",
+        "category": "person",
+        "label": "possible person",
+        "confidence": 0.795,
+        "detector": "sim-blob-v1",
+        "bounding_box": {
+          "frame": "image:drone",
+          "x0": 236.0,
+          "y0": 372.0,
+          "x1": 261.0,
+          "y1": 393.0
+        },
+        "world_position": {
+          "frame": "enu:INC-788adb0ec4",
+          "x": 4.82,
+          "y": 9.7,
+          "z": 0.0
+        },
+        "horizontal_uncertainty_m": 2.96,
+        "coordinate_frame": "enu:INC-788adb0ec4",
+        "position_estimation_method": "ground_plane",
+        "evidence_frame_reference": "evidence/OBS-70005d6c93.jpg#frame=5",
+        "track_id": "drone:3:e1",
+        "stale_after": "2026-10-25T11:53:56.434930Z",
+        "provenance": "simulated",
+        "attributes": {
+          "flagged_by": "search_rules",
+          "track_state": "CONFIRMED",
+          "incident_track_id": "INC-788adb0ec4.s-6419ef.drone:3:e1",
+          "session_id": "s-6419ef",
+          "confidence_kind": "uncalibrated_model_score",
+          "object_id": "obj-3",
+          "sim_truth": {
+            "actor_id": "responder",
+            "xy": [
+              5.0,
+              10.0
+            ],
+            "iou": 0.838,
+            "source": "simulator ground truth (evaluation only)"
+          }
+        }
+      }
+    }
+  },
+  {
+    "seq": 13,
+    "incident_id": "INC-788adb0ec4",
+    "at": "2026-10-25T11:51:56.435029Z",
+    "kind": "responder_position",
+    "payload": {
+      "source": "simulated",
+      "accuracy_m": 0.5,
+      "enu": {
+        "frame": "enu:INC-788adb0ec4",
+        "x": 5.0,
+        "y": 10.0,
+        "z": 0
+      },
+      "heading_deg": 90.0,
+      "heading_accuracy_deg": 5.0,
+      "received_at": "2026-10-25T11:51:56.435027+00:00"
+    }
+  },
+  {
+    "seq": 14,
+    "incident_id": "INC-788adb0ec4",
+    "at": "2026-10-25T11:51:56.435421Z",
+    "kind": "decision_proposal",
+    "payload": {
+      "id": "ACT-0b8506883a",
+      "incident_id": "INC-788adb0ec4",
+      "mission": "search",
+      "action_type": "review_candidate",
+      "proposed_by": "rules",
+      "parameters": {
+        "observation_id": "OBS-99eeccc214",
+        "key": "review_candidate:OBS-99eeccc214",
+        "message": "Review possible person: observed at 11:51:56 UTC, position within 3.0 m.",
+        "facts": {
+          "label": "possible person",
+          "age_s": 0.0,
+          "review_status": "pending",
+          "stale": false,
+          "verified": true,
+          "uncertainty_m": 2.96,
+          "observation_id": "OBS-99eeccc214",
+          "observed_utc": "11:51:56",
+          "where": "position within 3.0 m"
+        },
+        "engine": null,
+        "model_note": null
+      },
+      "approval_status": "not_required",
+      "execution_status": "not_started",
+      "safety_constraints": [
+        "a candidate is not a confirmation"
+      ],
+      "reason": "deterministic rule",
+      "created_at": "2026-10-25T11:51:56.435394Z"
+    }
+  },
+  {
+    "seq": 15,
+    "incident_id": "INC-788adb0ec4",
+    "at": "2026-10-25T11:51:56.435538Z",
+    "kind": "decision_proposal",
+    "payload": {
+      "id": "ACT-0e9ccb9e9f",
+      "incident_id": "INC-788adb0ec4",
+      "mission": "search",
+      "action_type": "review_candidate",
+      "proposed_by": "rules",
+      "parameters": {
+        "observation_id": "OBS-3dd68f4338",
+        "key": "review_candidate:OBS-3dd68f4338",
+        "message": "Review possible person: observed at 11:51:56 UTC, position within 3.0 m.",
+        "facts": {
+          "label": "possible person",
+          "age_s": 0.0,
+          "review_status": "pending",
+          "stale": false,
+          "verified": true,
+          "uncertainty_m": 2.96,
+          "observation_id": "OBS-3dd68f4338",
+          "observed_utc": "11:51:56",
+          "where": "position within 3.0 m"
+        },
+        "engine": null,
+        "model_note": null
+      },
+      "approval_status": "not_required",
+      "execution_status": "not_started",
+      "safety_constraints": [
+        "a candidate is not a confirmation"
+      ],
+      "reason": "deterministic rule",
+      "created_at": "2026-10-25T11:51:56.435524Z"
+    }
+  },
+  {
+    "seq": 16,
+    "incident_id": "INC-788adb0ec4",
+    "at": "2026-10-25T11:51:56.435643Z",
+    "kind": "decision_proposal",
+    "payload": {
+      "id": "ACT-684372bf9b",
+      "incident_id": "INC-788adb0ec4",
+      "mission": "search",
+      "action_type": "review_candidate",
+      "proposed_by": "rules",
+      "parameters": {
+        "observation_id": "OBS-70005d6c93",
+        "key": "review_candidate:OBS-70005d6c93",
+        "message": "Review possible person: observed at 11:51:56 UTC, position within 3.0 m.",
+        "facts": {
+          "label": "possible person",
+          "age_s": 0.0,
+          "review_status": "pending",
+          "stale": false,
+          "verified": true,
+          "uncertainty_m": 2.96,
+          "observation_id": "OBS-70005d6c93",
+          "observed_utc": "11:51:56",
+          "where": "position within 3.0 m"
+        },
+        "engine": null,
+        "model_note": null
+      },
+      "approval_status": "not_required",
+      "execution_status": "not_started",
+      "safety_constraints": [
+        "a candidate is not a confirmation"
+      ],
+      "reason": "deterministic rule",
+      "created_at": "2026-10-25T11:51:56.435632Z"
+    }
+  },
+  {
+    "seq": 17,
+    "incident_id": "INC-788adb0ec4",
+    "at": "2026-10-25T11:51:56.435664Z",
+    "kind": "object_new",
+    "payload": {
+      "object_id": "obj-1",
+      "label": "person",
+      "state": "VISIBLE",
+      "xy": [
+        6.83,
+        17.97
+      ],
+      "track_id": "drone:1:e1"
+    }
+  },
+  {
+    "seq": 18,
+    "incident_id": "INC-788adb0ec4",
+    "at": "2026-10-25T11:51:56.435675Z",
+    "kind": "object_new",
+    "payload": {
+      "object_id": "obj-2",
+      "label": "person",
+      "state": "VISIBLE",
+      "xy": [
+        20.35,
+        14.01
+      ],
+      "track_id": "drone:2:e1"
+    }
+  },
+  {
+    "seq": 19,
+    "incident_id": "INC-788adb0ec4",
+    "at": "2026-10-25T11:51:56.435683Z",
+    "kind": "object_new",
+    "payload": {
+      "object_id": "obj-3",
+      "label": "person",
+      "state": "VISIBLE",
+      "xy": [
+        4.83,
+        9.7
+      ],
+      "track_id": "drone:3:e1"
+    }
+  },
+  {
+    "seq": 20,
+    "incident_id": "INC-788adb0ec4",
+    "at": "2026-10-25T11:51:56.514293Z",
+    "kind": "responder_position",
+    "payload": {
+      "source": "simulated",
+      "accuracy_m": 0.5,
+      "enu": {
+        "frame": "enu:INC-788adb0ec4",
+        "x": 5.0,
+        "y": 10.0,
+        "z": 0
+      },
+      "heading_deg": 90.0,
+      "heading_accuracy_deg": 5.0,
+      "received_at": "2026-10-25T11:51:56.514290+00:00"
+    }
+  },
+  {
+    "seq": 21,
+    "incident_id": "INC-788adb0ec4",
+    "at": "2026-10-25T11:51:56.593731Z",
+    "kind": "responder_position",
+    "payload": {
+      "source": "simulated",
+      "accuracy_m": 0.5,
+      "enu": {
+        "frame": "enu:INC-788adb0ec4",
+        "x": 5.0,
+        "y": 10.0,
+        "z": 0
+      },
+      "heading_deg": 90.0,
+      "heading_accuracy_deg": 5.0,
+      "received_at": "2026-10-25T11:51:56.593728+00:00"
+    }
+  },
+  {
+    "seq": 22,
+    "incident_id": "INC-788adb0ec4",
+    "at": "2026-10-25T11:51:56.595139Z",
+    "kind": "observation",
+    "payload": {
+      "observation": {
+        "schema_version": "incident-1.0",
+        "id": "OBS-621340af9d",
+        "incident_id": "INC-788adb0ec4",
+        "sensor_source_id": "drone",
+        "observed_at": "2026-10-25T11:51:56.595049Z",
+        "received_at": "2026-10-25T11:51:56.595074Z",
+        "category": "person",
+        "label": "possible assistance candidate",
+        "confidence": 0.781,
+        "detector": "sim-blob-v1",
+        "bounding_box": {
+          "frame": "image:drone",
+          "x0": 667.0,
+          "y0": 258.0,
+          "x1": 691.0,
+          "y1": 273.0
+        },
+        "world_position": {
+          "frame": "enu:INC-788adb0ec4",
+          "x": 20.36,
+          "y": 13.9,
+          "z": 0.0
+        },
+        "horizontal_uncertainty_m": 2.96,
+        "coordinate_frame": "enu:INC-788adb0ec4",
+        "position_estimation_method": "ground_plane",
+        "evidence_frame_reference": "evidence/OBS-621340af9d.jpg#frame=11",
+        "track_id": "drone:2:e1",
+        "stale_after": "2026-10-25T11:53:56.595049Z",
+        "provenance": "simulated",
+        "attributes": {
+          "flagged_by": "sar_rules",
+          "track_state": "CONFIRMED",
+          "incident_track_id": "INC-788adb0ec4.s-6419ef.drone:2:e1",
+          "session_id": "s-6419ef",
+          "confidence_kind": "uncalibrated_model_score",
+          "logical_subject_id": "INC-788adb0ec4.s-6419ef.object.obj-2",
+          "sar": {
+            "logical_subject_id": "INC-788adb0ec4.s-6419ef.object.obj-2",
+            "detected_observation": {
+              "track_id": "drone:2:e1",
+              "frame_id": 11,
+              "capture_ts_ms": 666.6666666666666
+            },
+            "environment": {
+              "source": "simulated environmental map",
+              "position_source": "measured calibrated detection",
+              "sample_ts_ms": 700.0,
+              "flood_depth_m": 0.4,
+              "fire_keep_out": false
+            },
+            "score": {
+              "value": 3.0,
+              "threshold": 3.0,
+              "flag": true,
+              "reasons": [
+                {
+                  "code": "flood_exposure",
+                  "text": "Measured location overlaps simulated flood water",
+                  "weight": 3.0
+                }
+              ],
+              "kind": "deterministic assistance triage, not a medical/intent classifier"
+            },
+            "human_review_required": true
+          },
+          "sim_truth": {
+            "actor_id": "assistance-fixture",
+            "xy": [
+              20.0,
+              14.0
+            ],
+            "iou": 0.744,
+            "source": "simulator ground truth (evaluation only)"
+          }
+        }
+      }
+    }
+  },
+  {
+    "seq": 23,
+    "incident_id": "INC-788adb0ec4",
+    "at": "2026-10-25T11:51:56.595172Z",
+    "kind": "sar_candidate",
+    "payload": {
+      "observation_id": "OBS-621340af9d",
+      "logical_subject_id": "INC-788adb0ec4.s-6419ef.object.obj-2",
+      "score": {
+        "value": 3.0,
+        "threshold": 3.0,
+        "flag": true,
+        "reasons": [
+          {
+            "code": "flood_exposure",
+            "text": "Measured location overlaps simulated flood water",
+            "weight": 3.0
+          }
+        ],
+        "kind": "deterministic assistance triage, not a medical/intent classifier"
+      },
+      "environment": {
+        "source": "simulated environmental map",
+        "position_source": "measured calibrated detection",
+        "sample_ts_ms": 700.0,
+        "flood_depth_m": 0.4,
+        "fire_keep_out": false
+      }
+    }
+  },
+  {
+    "seq": 24,
+    "incident_id": "INC-788adb0ec4",
+    "at": "2026-10-25T11:51:56.595330Z",
+    "kind": "target_state",
+    "payload": {
+      "incident_id": "INC-788adb0ec4",
+      "session_id": "s-6419ef",
+      "logical_subject_id": "INC-788adb0ec4.s-6419ef.object.obj-2",
+      "state": "VISIBLE",
+      "lock_state": "LOCKED",
+      "current_track_id": "drone:2:e1",
+      "last_track_id": "drone:2:e1",
+      "associated_track_ids": [
+        "drone:2:e1"
+      ],
+      "measured_position": {
+        "frame": "enu:INC-788adb0ec4",
+        "x": 20.359322945930987,
+        "y": 13.899119735013434,
+        "z": 0.0
+      },
+      "predicted_position": null,
+      "prediction_ts_ms": 700.0,
+      "last_verified_position": {
+        "frame": "enu:INC-788adb0ec4",
+        "x": 20.359322945930987,
+        "y": 13.899119735013434,
+        "z": 0.0
+      },
+      "last_verified_ts_ms": 666.6666666666666,
+      "last_seen_ts_ms": 666.6666666666666,
+      "last_seen_frame": {
+        "frame_id": 11,
+        "capture_ts_ms": 666.6666666666666,
+        "source_id": "drone"
+      },
+      "position_kind": "measured",
+      "uncertainty_m": 3.0449602710574237,
+      "confidence": 0.777,
+      "confidence_kind": "continuity heuristic, not identity probability",
+      "quality_reasons": [],
+      "binding_verified": true,
+      "appearance_signature": [
+        0.231193,
+        0.074201,
+        0.089589,
+        0.569251,
+        0.0,
+        0.003032,
+        0.022823,
+        0.0,
+        0.0,
+        0.0,
+        0.001082,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0016,
+        0.00723,
+        0.0
+      ],
+      "motion_history": [
+        {
+          "ts_ms": 666.6666666666666,
+          "xy": [
+            20.359322945930987,
+            13.899119735013434
+          ],
+          "track_id": "drone:2:e1",
+          "position_kind": "measured",
+          "uncertainty_m": 2.9616269377240902
+        }
+      ],
+      "candidate_evidence": [],
+      "description": "possible assistance candidate",
+      "role": "assistance_candidate",
+      "source_provenance": "SYNTHETIC"
+    }
+  },
+  {
+    "seq": 25,
+    "incident_id": "INC-788adb0ec4",
+    "at": "2026-10-25T11:51:56.595580Z",
+    "kind": "decision_proposal",
+    "payload": {
+      "id": "ACT-b73c4a973c",
+      "incident_id": "INC-788adb0ec4",
+      "mission": "search",
+      "action_type": "review_candidate",
+      "proposed_by": "rules",
+      "parameters": {
+        "observation_id": "OBS-621340af9d",
+        "key": "review_candidate:OBS-621340af9d",
+        "message": "Review possible assistance candidate: observed at 11:51:56 UTC, position within 3.0 m.",
+        "facts": {
+          "label": "possible assistance candidate",
+          "age_s": 0.0,
+          "review_status": "pending",
+          "stale": false,
+          "verified": true,
+          "uncertainty_m": 2.96,
+          "observation_id": "OBS-621340af9d",
+          "observed_utc": "11:51:56",
+          "where": "position within 3.0 m"
+        },
+        "engine": null,
+        "model_note": null
+      },
+      "approval_status": "not_required",
+      "execution_status": "not_started",
+      "safety_constraints": [
+        "a candidate is not a confirmation"
+      ],
+      "reason": "deterministic rule",
+      "created_at": "2026-10-25T11:51:56.595562Z"
+    }
+  },
+  {
+    "seq": 26,
+    "incident_id": "INC-788adb0ec4",
+    "at": "2026-10-25T11:51:56.598960Z",
+    "kind": "review",
+    "payload": {
+      "id": "REV-5240e8a3d5",
+      "observation_id": "OBS-621340af9d",
+      "status": "confirmed",
+      "reviewer": "scripted acceptance operator",
+      "at": "2026-10-25T11:51:56.598907Z",
+      "note": "SAR assistance review; not a medical or real-world identity finding",
+      "corrected_label": null
+    }
+  },
+  {
+    "seq": 27,
+    "incident_id": "INC-788adb0ec4",
+    "at": "2026-10-25T11:51:56.598992Z",
+    "kind": "sar_reviewed",
+    "payload": {
+      "observation_id": "OBS-621340af9d",
+      "status": "confirmed",
+      "reviewer": "scripted acceptance operator"
+    }
+  },
+  {
+    "seq": 28,
+    "incident_id": "INC-788adb0ec4",
+    "at": "2026-10-25T11:51:56.601167Z",
+    "kind": "decision_proposal",
+    "payload": {
+      "id": "ACT-85131f091e",
+      "incident_id": "INC-788adb0ec4",
+      "mission": "search",
+      "action_type": "notify_responder",
+      "proposed_by": "rules",
+      "parameters": {
+        "observation_id": "OBS-621340af9d",
+        "key": "notify_responder:OBS-621340af9d",
+        "message": "Send to the responder: Simulation: assistance location confirmed. Approximately 16 metres east, plus or minus 3. Follow the marked route only to the approach point; do not enter the hazard. Location last observed 0 seconds ago.",
+        "facts": {
+          "label": "possible assistance candidate",
+          "age_s": 0.0,
+          "review_status": "confirmed",
+          "stale": false,
+          "verified": true,
+          "uncertainty_m": 2.96,
+          "observation_id": "OBS-621340af9d",
+          "observed_utc": "11:51:56",
+          "where": "position within 3.0 m",
+          "brief": "Simulation: assistance location confirmed. Approximately 16 metres east, plus or minus 3. Follow the marked route only to the approach point; do not enter the hazard. Location last observed 0 seconds ago."
+        },
+        "engine": null,
+        "model_note": null
+      },
+      "approval_status": "pending",
+      "execution_status": "not_started",
+      "safety_constraints": [
+        "only confirmed observations are sent",
+        "the responder acknowledges"
+      ],
+      "reason": "deterministic rule",
+      "created_at": "2026-10-25T11:51:56.601144Z"
+    }
+  },
+  {
+    "seq": 29,
+    "incident_id": "INC-788adb0ec4",
+    "at": "2026-10-25T11:51:56.601514Z",
+    "kind": "alert",
+    "payload": {
+      "id": "ALR-386d8ff888",
+      "incident_id": "INC-788adb0ec4",
+      "severity": "attention",
+      "source_observation_ids": [
+        "OBS-621340af9d"
+      ],
+      "message": "Simulation: assistance location confirmed. Approximately 16 metres east, plus or minus 3. Follow the marked route only to the approach point; do not enter the hazard. Location last observed 0 seconds ago.",
+      "created_at": "2026-10-25T11:51:56.601492Z",
+      "delivered_at": null,
+      "acknowledged_at": null,
+      "acknowledged_by": null,
+      "status": "pending",
+      "provenance": "simulated"
+    }
+  },
+  {
+    "seq": 30,
+    "incident_id": "INC-788adb0ec4",
+    "at": "2026-10-25T11:51:56.601555Z",
+    "kind": "action_approved",
+    "payload": {
+      "action_id": "ACT-85131f091e",
+      "approval": "approved",
+      "execution": "done"
+    }
+  },
+  {
+    "seq": 31,
+    "incident_id": "INC-788adb0ec4",
+    "at": "2026-10-25T11:51:56.603605Z",
+    "kind": "alert_delivered",
+    "payload": {
+      "alert_id": "ALR-386d8ff888",
+      "at": "2026-10-25T11:51:56.603605+00:00"
+    }
+  },
+  {
+    "seq": 32,
+    "incident_id": "INC-788adb0ec4",
+    "at": "2026-10-25T11:51:56.605118Z",
+    "kind": "alert_acknowledged",
+    "payload": {
+      "alert_id": "ALR-386d8ff888",
+      "by": "scripted responder",
+      "at": "2026-10-25T11:51:56.605118+00:00"
+    }
+  },
+  {
+    "seq": 33,
+    "incident_id": "INC-788adb0ec4",
+    "at": "2026-10-25T11:51:56.711103Z",
+    "kind": "responder_position",
+    "payload": {
+      "source": "simulated",
+      "accuracy_m": 0.5,
+      "enu": {
+        "frame": "enu:INC-788adb0ec4",
+        "x": 5.0,
+        "y": 10.0,
+        "z": 0
+      },
+      "heading_deg": 90.0,
+      "heading_accuracy_deg": 5.0,
+      "received_at": "2026-10-25T11:51:56.711100+00:00"
+    }
+  },
+  {
+    "seq": 34,
+    "incident_id": "INC-788adb0ec4",
+    "at": "2026-10-25T11:51:56.711414Z",
+    "kind": "action_done",
+    "payload": {
+      "action_id": "ACT-b73c4a973c",
+      "approval": "not_required",
+      "execution": "done"
+    }
+  },
+  {
+    "seq": 35,
+    "incident_id": "INC-788adb0ec4",
+    "at": "2026-10-25T11:51:56.793077Z",
+    "kind": "responder_position",
+    "payload": {
+      "source": "simulated",
+      "accuracy_m": 0.5,
+      "enu": {
+        "frame": "enu:INC-788adb0ec4",
+        "x": 5.0,
+        "y": 10.0,
+        "z": 0
+      },
+      "heading_deg": 90.0,
+      "heading_accuracy_deg": 5.0,
+      "received_at": "2026-10-25T11:51:56.793074+00:00"
+    }
+  },
+  {
+    "seq": 36,
+    "incident_id": "INC-788adb0ec4",
+    "at": "2026-10-25T11:51:56.793386Z",
+    "kind": "pipeline_event",
+    "payload": {
+      "event_id": "e-1",
+      "kind": "LOCK_ENGAGED",
+      "role": "responder",
+      "severity": "info",
+      "text": "Responder locked on track #3 by scripted operator (demo)"
+    }
+  },
+  {
+    "seq": 37,
+    "incident_id": "INC-788adb0ec4",
+    "at": "2026-10-25T11:51:56.876821Z",
+    "kind": "responder_position",
+    "payload": {
+      "source": "simulated",
+      "accuracy_m": 0.5,
+      "enu": {
+        "frame": "enu:INC-788adb0ec4",
+        "x": 5.0,
+        "y": 10.0,
+        "z": 0
+      },
+      "heading_deg": 90.0,
+      "heading_accuracy_deg": 5.0,
+      "received_at": "2026-10-25T11:51:56.876818+00:00"
+    }
+  },
+  {
+    "seq": 38,
+    "incident_id": "INC-788adb0ec4",
+    "at": "2026-10-25T11:51:56.957269Z",
+    "kind": "responder_position",
+    "payload": {
+      "source": "simulated",
+      "accuracy_m": 0.5,
+      "enu": {
+        "frame": "enu:INC-788adb0ec4",
+        "x": 5.0,
+        "y": 10.0,
+        "z": 0
+      },
+      "heading_deg": 90.0,
+      "heading_accuracy_deg": 5.0,
+      "received_at": "2026-10-25T11:51:56.957266+00:00"
+    }
+  },
+  {
+    "seq": 39,
+    "incident_id": "INC-788adb0ec4",
+    "at": "2026-10-25T11:51:57.038483Z",
+    "kind": "target_snapshot",
+    "payload": {
+      "incident_id": "INC-788adb0ec4",
+      "session_id": "s-6419ef",
+      "logical_subject_id": "INC-788adb0ec4.s-6419ef.object.obj-2",
+      "state": "VISIBLE",
+      "lock_state": "LOCKED",
+      "current_track_id": "drone:2:e1",
+      "last_track_id": "drone:2:e1",
+      "associated_track_ids": [
+        "drone:2:e1"
+      ],
+      "measured_position": {
+        "frame": "enu:INC-788adb0ec4",
+        "x": 20.249016713191462,
+        "y": 13.749345607953622,
+        "z": 0.0
+      },
+      "predicted_position": null,
+      "prediction_ts_ms": 1733.3333333333353,
+      "last_verified_position": {
+        "frame": "enu:INC-788adb0ec4",
+        "x": 20.249016713191462,
+        "y": 13.749345607953622,
+        "z": 0.0
+      },
+      "last_verified_ts_ms": 1733.3333333333353,
+      "last_seen_ts_ms": 1733.3333333333353,
+      "last_seen_frame": {
+        "frame_id": 27,
+        "capture_ts_ms": 1733.3333333333353,
+        "source_id": "drone"
+      },
+      "position_kind": "measured",
+      "uncertainty_m": 2.9640113758805193,
+      "confidence": 0.787,
+      "confidence_kind": "continuity heuristic, not identity probability",
+      "quality_reasons": [],
+      "binding_verified": true,
+      "appearance_signature": [
+        0.237048,
+        0.071228,
+        0.086243,
+        0.573579,
+        0.0,
+        0.003111,
+        0.01672,
+        0.0,
+        0.0,
+        7.3e-05,
+        0.005131,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        4.5e-05,
+        0.006822,
+        0.0
+      ],
+      "motion_history": [
+        {
+          "ts_ms": 666.6666666666666,
+          "xy": [
+            20.359322945930987,
+            13.899119735013434
+          ],
+          "track_id": "drone:2:e1",
+          "position_kind": "measured",
+          "uncertainty_m": 2.9616269377240902
+        },
+        {
+          "ts_ms": 933.3333333333333,
+          "xy": [
+            20.342030272505,
+            13.847363588817863
+          ],
+          "track_id": "drone:2:e1",
+          "position_kind": "measured",
+          "uncertainty_m": 2.9628198107188246
+        },
+        {
+          "ts_ms": 1133.3333333333335,
+          "xy": [
+            20.30749647666411,
+            13.784751360463952
+          ],
+          "track_id": "drone:2:e1",
+          "position_kind": "measured",
+          "uncertainty_m": 2.962220094085915
+        },
+        {
+          "ts_ms": 1333.3333333333342,
+          "xy": [
+            20.26176147289528,
+            13.754571449459174
+          ],
+          "track_id": "drone:2:e1",
+          "position_kind": "measured",
+          "uncertainty_m": 2.963415592557347
+        },
+        {
+          "ts_ms": 1533.3333333333348,
+          "xy": [
+            20.245210682491866,
+            13.782918885716388
+          ],
+          "track_id": "drone:2:e1",
+          "position_kind": "measured",
+          "uncertainty_m": 2.9646150569441474
+        },
+        {
+          "ts_ms": 1733.3333333333353,
+          "xy": [
+            20.249016713191462,
+            13.749345607953622
+          ],
+          "track_id": "drone:2:e1",
+          "position_kind": "measured",
+          "uncertainty_m": 2.9640113758805193
+        }
+      ],
+      "candidate_evidence": [],
+      "description": "possible assistance candidate",
+      "role": "assistance_candidate",
+      "source_provenance": "SYNTHETIC"
+    }
+  },
+  {
+    "seq": 40,
+    "incident_id": "INC-788adb0ec4",
+    "at": "2026-10-25T11:51:57.038637Z",
+    "kind": "responder_position",
+    "payload": {
+      "source": "simulated",
+      "accuracy_m": 0.5,
+      "enu": {
+        "frame": "enu:INC-788adb0ec4",
+        "x": 5.0,
+        "y": 10.0,
+        "z": 0
+      },
+      "heading_deg": 90.0,
+      "heading_accuracy_deg": 5.0,
+      "received_at": "2026-10-25T11:51:57.038635+00:00"
+    }
+  },
+  {
+    "seq": 41,
+    "incident_id": "INC-788adb0ec4",
+    "at": "2026-10-25T11:51:57.121239Z",
+    "kind": "responder_position",
+    "payload": {
+      "source": "simulated",
+      "accuracy_m": 0.5,
+      "enu": {
+        "frame": "enu:INC-788adb0ec4",
+        "x": 5.0,
+        "y": 10.0,
+        "z": 0
+      },
+      "heading_deg": 90.0,
+      "heading_accuracy_deg": 5.0,
+      "received_at": "2026-10-25T11:51:57.121235+00:00"
+    }
+  },
+  {
+    "seq": 42,
+    "incident_id": "INC-788adb0ec4",
+    "at": "2026-10-25T11:51:57.202306Z",
+    "kind": "responder_position",
+    "payload": {
+      "source": "simulated",
+      "accuracy_m": 0.5,
+      "enu": {
+        "frame": "enu:INC-788adb0ec4",
+        "x": 5.0,
+        "y": 10.0,
+        "z": 0
+      },
+      "heading_deg": 90.0,
+      "heading_accuracy_deg": 5.0,
+      "received_at": "2026-10-25T11:51:57.202303+00:00"
+    }
+  },
+  {
+    "seq": 43,
+    "incident_id": "INC-788adb0ec4",
+    "at": "2026-10-25T11:51:57.299931Z",
+    "kind": "responder_position",
+    "payload": {
+      "source": "simulated",
+      "accuracy_m": 0.5,
+      "enu": {
+        "frame": "enu:INC-788adb0ec4",
+        "x": 5.0,
+        "y": 10.0,
+        "z": 0
+      },
+      "heading_deg": 90.0,
+      "heading_accuracy_deg": 5.0,
+      "received_at": "2026-10-25T11:51:57.299928+00:00"
+    }
+  },
+  {
+    "seq": 44,
+    "incident_id": "INC-788adb0ec4",
+    "at": "2026-10-25T11:51:57.397993Z",
+    "kind": "responder_position",
+    "payload": {
+      "source": "simulated",
+      "accuracy_m": 0.5,
+      "enu": {
+        "frame": "enu:INC-788adb0ec4",
+        "x": 5.0,
+        "y": 10.0,
+        "z": 0
+      },
+      "heading_deg": 90.0,
+      "heading_accuracy_deg": 5.0,
+      "received_at": "2026-10-25T11:51:57.397989+00:00"
+    }
+  },
+  {
+    "seq": 45,
+    "incident_id": "INC-788adb0ec4",
+    "at": "2026-10-25T11:51:57.480112Z",
+    "kind": "target_snapshot",
+    "payload": {
+      "incident_id": "INC-788adb0ec4",
+      "session_id": "s-6419ef",
+      "logical_subject_id": "INC-788adb0ec4.s-6419ef.object.obj-2",
+      "state": "VISIBLE",
+      "lock_state": "LOCKED",
+      "current_track_id": "drone:2:e1",
+      "last_track_id": "drone:2:e1",
+      "associated_track_ids": [
+        "drone:2:e1"
+      ],
+      "measured_position": {
+        "frame": "enu:INC-788adb0ec4",
+        "x": 19.898120633932383,
+        "y": 13.802054917320392,
+        "z": 0.0
+      },
+      "predicted_position": null,
+      "prediction_ts_ms": 2866.666666666666,
+      "last_verified_position": {
+        "frame": "enu:INC-788adb0ec4",
+        "x": 19.898120633932383,
+        "y": 13.802054917320392,
+        "z": 0.0
+      },
+      "last_verified_ts_ms": 2833.333333333333,
+      "last_seen_ts_ms": 2833.333333333333,
+      "last_seen_frame": {
+        "frame_id": 43,
+        "capture_ts_ms": 2833.333333333333,
+        "source_id": "drone"
+      },
+      "position_kind": "measured",
+      "uncertainty_m": 3.0473486529597498,
+      "confidence": 0.787,
+      "confidence_kind": "continuity heuristic, not identity probability",
+      "quality_reasons": [],
+      "binding_verified": true,
+      "appearance_signature": [
+        0.227654,
+        0.090112,
+        0.082963,
+        0.567262,
+        0.0,
+        0.00074,
+        0.018583,
+        0.0,
+        0.0,
+        2e-06,
+        0.006245,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        1e-06,
+        0.006436,
+        0.0
+      ],
+      "motion_history": [
+        {
+          "ts_ms": 666.6666666666666,
+          "xy": [
+            20.359322945930987,
+            13.899119735013434
+          ],
+          "track_id": "drone:2:e1",
+          "position_kind": "measured",
+          "uncertainty_m": 2.9616269377240902
+        },
+        {
+          "ts_ms": 933.3333333333333,
+          "xy": [
+            20.342030272505,
+            13.847363588817863
+          ],
+          "track_id": "drone:2:e1",
+          "position_kind": "measured",
+          "uncertainty_m": 2.9628198107188246
+        },
+        {
+          "ts_ms": 1133.3333333333335,
+          "xy": [
+            20.30749647666411,
+            13.784751360463952
+          ],
+          "track_id": "drone:2:e1",
+          "position_kind": "measured",
+          "uncertainty_m": 2.962220094085915
+        },
+        {
+          "ts_ms": 1333.3333333333342,
+          "xy": [
+            20.26176147289528,
+            13.754571449459174
+          ],
+          "track_id": "drone:2:e1",
+          "position_kind": "measured",
+          "uncertainty_m": 2.963415592557347
+        },
+        {
+          "ts_ms": 1533.3333333333348,
+          "xy": [
+            20.245210682491866,
+            13.782918885716388
+          ],
+          "track_id": "drone:2:e1",
+          "position_kind": "measured",
+          "uncertainty_m": 2.9646150569441474
+        },
+        {
+          "ts_ms": 1733.3333333333353,
+          "xy": [
+            20.249016713191462,
+            13.749345607953622
+          ],
+          "track_id": "drone:2:e1",
+          "position_kind": "measured",
+          "uncertainty_m": 2.9640113758805193
+        },
+        {
+          "ts_ms": 1933.333333333336,
+          "xy": [
+            20.248020346787204,
+            13.71838874083875
+          ],
+          "track_id": "drone:2:e1",
+          "position_kind": "measured",
+          "uncertainty_m": 2.9628158757149996
+        },
+        {
+          "ts_ms": 2133.3333333333353,
+          "xy": [
+            20.202664105471534,
+            13.715109717882768
+          ],
+          "track_id": "drone:2:e1",
+          "position_kind": "measured",
+          "uncertainty_m": 2.962821124897358
+        },
+        {
+          "ts_ms": 2400.0000000000014,
+          "xy": [
+            20.092232575296695,
+            13.768791683029988
+          ],
+          "track_id": "drone:2:e1",
+          "position_kind": "measured",
+          "uncertainty_m": 2.962821124897358
+        },
+        {
+          "ts_ms": 2633.333333333334,
+          "xy": [
+            19.973697046410567,
+            13.768344743897341
+          ],
+          "track_id": "drone:2:e1",
+          "position_kind": "measured",
+          "uncertainty_m": 2.962216169077515
+        },
+        {
+          "ts_ms": 2833.333333333333,
+          "xy": [
+            19.898120633932383,
+            13.802054917320392
+          ],
+          "track_id": "drone:2:e1",
+          "position_kind": "measured",
+          "uncertainty_m": 2.964015319626417
+        }
+      ],
+      "candidate_evidence": [],
+      "description": "possible assistance candidate",
+      "role": "assistance_candidate",
+      "source_provenance": "SYNTHETIC"
+    }
+  },
+  {
+    "seq": 46,
+    "incident_id": "INC-788adb0ec4",
+    "at": "2026-10-25T11:51:57.480266Z",
+    "kind": "responder_position",
+    "payload": {
+      "source": "simulated",
+      "accuracy_m": 0.5,
+      "enu": {
+        "frame": "enu:INC-788adb0ec4",
+        "x": 5.0,
+        "y": 10.0,
+        "z": 0
+      },
+      "heading_deg": 90.0,
+      "heading_accuracy_deg": 5.0,
+      "received_at": "2026-10-25T11:51:57.480264+00:00"
+    }
+  },
+  {
+    "seq": 47,
+    "incident_id": "INC-788adb0ec4",
+    "at": "2026-10-25T11:51:57.574261Z",
+    "kind": "responder_position",
+    "payload": {
+      "source": "simulated",
+      "accuracy_m": 0.5,
+      "enu": {
+        "frame": "enu:INC-788adb0ec4",
+        "x": 5.0,
+        "y": 10.0,
+        "z": 0
+      },
+      "heading_deg": 90.0,
+      "heading_accuracy_deg": 5.0,
+      "received_at": "2026-10-25T11:51:57.574258+00:00"
+    }
+  },
+  {
+    "seq": 48,
+    "incident_id": "INC-788adb0ec4",
+    "at": "2026-10-25T11:51:57.672756Z",
+    "kind": "responder_position",
+    "payload": {
+      "source": "simulated",
+      "accuracy_m": 0.5,
+      "enu": {
+        "frame": "enu:INC-788adb0ec4",
+        "x": 5.0,
+        "y": 10.0,
+        "z": 0
+      },
+      "heading_deg": 90.0,
+      "heading_accuracy_deg": 5.0,
+      "received_at": "2026-10-25T11:51:57.672753+00:00"
+    }
+  },
+  {
+    "seq": 49,
+    "incident_id": "INC-788adb0ec4",
+    "at": "2026-10-25T11:51:57.769977Z",
+    "kind": "responder_position",
+    "payload": {
+      "source": "simulated",
+      "accuracy_m": 0.5,
+      "enu": {
+        "frame": "enu:INC-788adb0ec4",
+        "x": 5.0,
+        "y": 10.0,
+        "z": 0
+      },
+      "heading_deg": 90.0,
+      "heading_accuracy_deg": 5.0,
+      "received_at": "2026-10-25T11:51:57.769974+00:00"
+    }
+  },
+  {
+    "seq": 50,
+    "incident_id": "INC-788adb0ec4",
+    "at": "2026-10-25T11:51:57.854076Z",
+    "kind": "responder_position",
+    "payload": {
+      "source": "simulated",
+      "accuracy_m": 0.5,
+      "enu": {
+        "frame": "enu:INC-788adb0ec4",
+        "x": 5.0,
+        "y": 10.0,
+        "z": 0
+      },
+      "heading_deg": 90.0,
+      "heading_accuracy_deg": 5.0,
+      "received_at": "2026-10-25T11:51:57.854073+00:00"
+    }
+  },
+  {
+    "seq": 51,
+    "incident_id": "INC-788adb0ec4",
+    "at": "2026-10-25T11:51:57.968106Z",
+    "kind": "target_snapshot",
+    "payload": {
+      "incident_id": "INC-788adb0ec4",
+      "session_id": "s-6419ef",
+      "logical_subject_id": "INC-788adb0ec4.s-6419ef.object.obj-2",
+      "state": "VISIBLE",
+      "lock_state": "LOCKED",
+      "current_track_id": "drone:2:e1",
+      "last_track_id": "drone:2:e1",
+      "associated_track_ids": [
+        "drone:2:e1"
+      ],
+      "measured_position": {
+        "frame": "enu:INC-788adb0ec4",
+        "x": 20.003199197643866,
+        "y": 14.04927781780473,
+        "z": 0.0
+      },
+      "predicted_position": null,
+      "prediction_ts_ms": 4033.333333333329,
+      "last_verified_position": {
+        "frame": "enu:INC-788adb0ec4",
+        "x": 20.003199197643866,
+        "y": 14.04927781780473,
+        "z": 0.0
+      },
+      "last_verified_ts_ms": 4033.333333333329,
+      "last_seen_ts_ms": 4033.333333333329,
+      "last_seen_frame": {
+        "frame_id": 61,
+        "capture_ts_ms": 4033.333333333329,
+        "source_id": "drone"
+      },
+      "position_kind": "measured",
+      "uncertainty_m": 2.962221404924667,
+      "confidence": 0.787,
+      "confidence_kind": "continuity heuristic, not identity probability",
+      "quality_reasons": [],
+      "binding_verified": true,
+      "appearance_signature": [
+        0.233857,
+        0.084133,
+        0.087531,
+        0.567074,
+        0.0,
+        0.00219,
+        0.011719,
+        0.0,
+        0.0,
+        0.000542,
+        0.005239,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.007715,
+        0.0
+      ],
+      "motion_history": [
+        {
+          "ts_ms": 666.6666666666666,
+          "xy": [
+            20.359322945930987,
+            13.899119735013434
+          ],
+          "track_id": "drone:2:e1",
+          "position_kind": "measured",
+          "uncertainty_m": 2.9616269377240902
+        },
+        {
+          "ts_ms": 933.3333333333333,
+          "xy": [
+            20.342030272505,
+            13.847363588817863
+          ],
+          "track_id": "drone:2:e1",
+          "position_kind": "measured",
+          "uncertainty_m": 2.9628198107188246
+        },
+        {
+          "ts_ms": 1133.3333333333335,
+          "xy": [
+            20.30749647666411,
+            13.784751360463952
+          ],
+          "track_id": "drone:2:e1",
+          "position_kind": "measured",
+          "uncertainty_m": 2.962220094085915
+        },
+        {
+          "ts_ms": 1333.3333333333342,
+          "xy": [
+            20.26176147289528,
+            13.754571449459174
+          ],
+          "track_id": "drone:2:e1",
+          "position_kind": "measured",
+          "uncertainty_m": 2.963415592557347
+        },
+        {
+          "ts_ms": 1533.3333333333348,
+          "xy": [
+            20.245210682491866,
+            13.782918885716388
+          ],
+          "track_id": "drone:2:e1",
+          "position_kind": "measured",
+          "uncertainty_m": 2.9646150569441474
+        },
+        {
+          "ts_ms": 1733.3333333333353,
+          "xy": [
+            20.249016713191462,
+            13.749345607953622
+          ],
+          "track_id": "drone:2:e1",
+          "position_kind": "measured",
+          "uncertainty_m": 2.9640113758805193
+        },
+        {
+          "ts_ms": 1933.333333333336,
+          "xy": [
+            20.248020346787204,
+            13.71838874083875
+          ],
+          "track_id": "drone:2:e1",
+          "position_kind": "measured",
+          "uncertainty_m": 2.9628158757149996
+        },
+        {
+          "ts_ms": 2133.3333333333353,
+          "xy": [
+            20.202664105471534,
+            13.715109717882768
+          ],
+          "track_id": "drone:2:e1",
+          "position_kind": "measured",
+          "uncertainty_m": 2.962821124897358
+        },
+        {
+          "ts_ms": 2400.0000000000014,
+          "xy": [
+            20.092232575296695,
+            13.768791683029988
+          ],
+          "track_id": "drone:2:e1",
+          "position_kind": "measured",
+          "uncertainty_m": 2.962821124897358
+        },
+        {
+          "ts_ms": 2633.333333333334,
+          "xy": [
+            19.973697046410567,
+            13.768344743897341
+          ],
+          "track_id": "drone:2:e1",
+          "position_kind": "measured",
+          "uncertainty_m": 2.962216169077515
+        },
+        {
+          "ts_ms": 2833.333333333333,
+          "xy": [
+            19.898120633932383,
+            13.802054917320392
+          ],
+          "track_id": "drone:2:e1",
+          "position_kind": "measured",
+          "uncertainty_m": 2.964015319626417
+        },
+        {
+          "ts_ms": 3099.9999999999986,
+          "xy": [
+            19.808652730548015,
+            13.921749398818585
+          ],
+          "track_id": "drone:2:e1",
+          "position_kind": "measured",
+          "uncertainty_m": 2.9634208551136667
+        },
+        {
+          "ts_ms": 3299.999999999998,
+          "xy": [
+            19.821136426208447,
+            13.976522879284952
+          ],
+          "track_id": "drone:2:e1",
+          "position_kind": "measured",
+          "uncertainty_m": 2.964010063810182
+        },
+        {
+          "ts_ms": 3566.666666666664,
+          "xy": [
+            19.883798703262503,
+            13.998444463665367
+          ],
+          "track_id": "drone:2:e1",
+          "position_kind": "measured",
+          "uncertainty_m": 2.9634142800611603
+        },
+        {
+          "ts_ms": 3766.666666666663,
+          "xy": [
+            19.93920596732812,
+            14.051289518594622
+          ],
+          "track_id": "drone:2:e1",
+          "position_kind": "measured",
+          "uncertainty_m": 2.9622266608353782
+        },
+        {
+          "ts_ms": 4033.333333333329,
+          "xy": [
+            20.003199197643866,
+            14.04927781780473
+          ],
+          "track_id": "drone:2:e1",
+          "position_kind": "measured",
+          "uncertainty_m": 2.962221404924667
+        }
+      ],
+      "candidate_evidence": [],
+      "description": "possible assistance candidate",
+      "role": "assistance_candidate",
+      "source_provenance": "SYNTHETIC"
+    }
+  },
+  {
+    "seq": 52,
+    "incident_id": "INC-788adb0ec4",
+    "at": "2026-10-25T11:51:57.968272Z",
+    "kind": "responder_position",
+    "payload": {
+      "source": "simulated",
+      "accuracy_m": 0.5,
+      "enu": {
+        "frame": "enu:INC-788adb0ec4",
+        "x": 5.0,
+        "y": 10.0,
+        "z": 0
+      },
+      "heading_deg": 90.0,
+      "heading_accuracy_deg": 5.0,
+      "received_at": "2026-10-25T11:51:57.968270+00:00"
+    }
+  },
+  {
+    "seq": 53,
+    "incident_id": "INC-788adb0ec4",
+    "at": "2026-10-25T11:51:58.049548Z",
+    "kind": "responder_position",
+    "payload": {
+      "source": "simulated",
+      "accuracy_m": 0.5,
+      "enu": {
+        "frame": "enu:INC-788adb0ec4",
+        "x": 5.0,
+        "y": 10.0,
+        "z": 0
+      },
+      "heading_deg": 90.0,
+      "heading_accuracy_deg": 5.0,
+      "received_at": "2026-10-25T11:51:58.049545+00:00"
+    }
+  },
+  {
+    "seq": 54,
+    "incident_id": "INC-788adb0ec4",
+    "at": "2026-10-25T11:51:58.148311Z",
+    "kind": "responder_position",
+    "payload": {
+      "source": "simulated",
+      "accuracy_m": 0.5,
+      "enu": {
+        "frame": "enu:INC-788adb0ec4",
+        "x": 5.0,
+        "y": 10.0,
+        "z": 0
+      },
+      "heading_deg": 90.0,
+      "heading_accuracy_deg": 5.0,
+      "received_at": "2026-10-25T11:51:58.148307+00:00"
+    }
+  },
+  {
+    "seq": 55,
+    "incident_id": "INC-788adb0ec4",
+    "at": "2026-10-25T11:51:58.248348Z",
+    "kind": "responder_position",
+    "payload": {
+      "source": "simulated",
+      "accuracy_m": 0.5,
+      "enu": {
+        "frame": "enu:INC-788adb0ec4",
+        "x": 5.0,
+        "y": 10.0,
+        "z": 0
+      },
+      "heading_deg": 90.0,
+      "heading_accuracy_deg": 5.0,
+      "received_at": "2026-10-25T11:51:58.248345+00:00"
+    }
+  },
+  {
+    "seq": 56,
+    "incident_id": "INC-788adb0ec4",
+    "at": "2026-10-25T11:51:58.342774Z",
+    "kind": "responder_position",
+    "payload": {
+      "source": "simulated",
+      "accuracy_m": 0.5,
+      "enu": {
+        "frame": "enu:INC-788adb0ec4",
+        "x": 5.0,
+        "y": 10.0,
+        "z": 0
+      },
+      "heading_deg": 90.0,
+      "heading_accuracy_deg": 5.0,
+      "received_at": "2026-10-25T11:51:58.342771+00:00"
+    }
+  },
+  {
+    "seq": 57,
+    "incident_id": "INC-788adb0ec4",
+    "at": "2026-10-25T11:51:58.423781Z",
+    "kind": "target_snapshot",
+    "payload": {
+      "incident_id": "INC-788adb0ec4",
+      "session_id": "s-6419ef",
+      "logical_subject_id": "INC-788adb0ec4.s-6419ef.object.obj-2",
+      "state": "VISIBLE",
+      "lock_state": "LOCKED",
+      "current_track_id": "drone:2:e1",
+      "last_track_id": "drone:2:e1",
+      "associated_track_ids": [
+        "drone:2:e1"
+      ],
+      "measured_position": {
+        "frame": "enu:INC-788adb0ec4",
+        "x": 20.20443218939253,
+        "y": 13.843256632781952,
+        "z": 0.0
+      },
+      "predicted_position": null,
+      "prediction_ts_ms": 5199.999999999991,
+      "last_verified_position": {
+        "frame": "enu:INC-788adb0ec4",
+        "x": 20.20443218939253,
+        "y": 13.843256632781952,
+        "z": 0.0
+      },
+      "last_verified_ts_ms": 5166.666666666658,
+      "last_seen_ts_ms": 5166.666666666658,
+      "last_seen_frame": {
+        "frame_id": 78,
+        "capture_ts_ms": 5166.666666666658,
+        "source_id": "drone"
+      },
+      "position_kind": "measured",
+      "uncertainty_m": 3.0485402214935853,
+      "confidence": 0.785,
+      "confidence_kind": "continuity heuristic, not identity probability",
+      "quality_reasons": [],
+      "binding_verified": true,
+      "appearance_signature": [
+        0.236504,
+        0.076904,
+        0.088124,
+        0.567415,
+        0.0,
+        0.000464,
+        0.018885,
+        0.0,
+        0.0,
+        1.2e-05,
+        0.005363,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.00633,
+        0.0
+      ],
+      "motion_history": [
+        {
+          "ts_ms": 666.6666666666666,
+          "xy": [
+            20.359322945930987,
+            13.899119735013434
+          ],
+          "track_id": "drone:2:e1",
+          "position_kind": "measured",
+          "uncertainty_m": 2.9616269377240902
+        },
+        {
+          "ts_ms": 933.3333333333333,
+          "xy": [
+            20.342030272505,
+            13.847363588817863
+          ],
+          "track_id": "drone:2:e1",
+          "position_kind": "measured",
+          "uncertainty_m": 2.9628198107188246
+        },
+        {
+          "ts_ms": 1133.3333333333335,
+          "xy": [
+            20.30749647666411,
+            13.784751360463952
+          ],
+          "track_id": "drone:2:e1",
+          "position_kind": "measured",
+          "uncertainty_m": 2.962220094085915
+        },
+        {
+          "ts_ms": 1333.3333333333342,
+          "xy": [
+            20.26176147289528,
+            13.754571449459174
+          ],
+          "track_id": "drone:2:e1",
+          "position_kind": "measured",
+          "uncertainty_m": 2.963415592557347
+        },
+        {
+          "ts_ms": 1533.3333333333348,
+          "xy": [
+            20.245210682491866,
+            13.782918885716388
+          ],
+          "track_id": "drone:2:e1",
+          "position_kind": "measured",
+          "uncertainty_m": 2.9646150569441474
+        },
+        {
+          "ts_ms": 1733.3333333333353,
+          "xy": [
+            20.249016713191462,
+            13.749345607953622
+          ],
+          "track_id": "drone:2:e1",
+          "position_kind": "measured",
+          "uncertainty_m": 2.9640113758805193
+        },
+        {
+          "ts_ms": 1933.333333333336,
+          "xy": [
+            20.248020346787204,
+            13.71838874083875
+          ],
+          "track_id": "drone:2:e1",
+          "position_kind": "measured",
+          "uncertainty_m": 2.9628158757149996
+        },
+        {
+          "ts_ms": 2133.3333333333353,
+          "xy": [
+            20.202664105471534,
+            13.715109717882768
+          ],
+          "track_id": "drone:2:e1",
+          "position_kind": "measured",
+          "uncertainty_m": 2.962821124897358
+        },
+        {
+          "ts_ms": 2400.0000000000014,
+          "xy": [
+            20.092232575296695,
+            13.768791683029988
+          ],
+          "track_id": "drone:2:e1",
+          "position_kind": "measured",
+          "uncertainty_m": 2.962821124897358
+        },
+        {
+          "ts_ms": 2633.333333333334,
+          "xy": [
+            19.973697046410567,
+            13.768344743897341
+          ],
+          "track_id": "drone:2:e1",
+          "position_kind": "measured",
+          "uncertainty_m": 2.962216169077515
+        },
+        {
+          "ts_ms": 2833.333333333333,
+          "xy": [
+            19.898120633932383,
+            13.802054917320392
+          ],
+          "track_id": "drone:2:e1",
+          "position_kind": "measured",
+          "uncertainty_m": 2.964015319626417
+        },
+        {
+          "ts_ms": 3099.9999999999986,
+          "xy": [
+            19.808652730548015,
+            13.921749398818585
+          ],
+          "track_id": "drone:2:e1",
+          "position_kind": "measured",
+          "uncertainty_m": 2.9634208551136667
+        },
+        {
+          "ts_ms": 3299.999999999998,
+          "xy": [
+            19.821136426208447,
+            13.976522879284952
+          ],
+          "track_id": "drone:2:e1",
+          "position_kind": "measured",
+          "uncertainty_m": 2.964010063810182
+        },
+        {
+          "ts_ms": 3566.666666666664,
+          "xy": [
+            19.883798703262503,
+            13.998444463665367
+          ],
+          "track_id": "drone:2:e1",
+          "position_kind": "measured",
+          "uncertainty_m": 2.9634142800611603
+        },
+        {
+          "ts_ms": 3766.666666666663,
+          "xy": [
+            19.93920596732812,
+            14.051289518594622
+          ],
+          "track_id": "drone:2:e1",
+          "position_kind": "measured",
+          "uncertainty_m": 2.9622266608353782
+        },
+        {
+          "ts_ms": 4033.333333333329,
+          "xy": [
+            20.003199197643866,
+            14.04927781780473
+          ],
+          "track_id": "drone:2:e1",
+          "position_kind": "measured",
+          "uncertainty_m": 2.962221404924667
+        },
+        {
+          "ts_ms": 4233.3333333333285,
+          "xy": [
+            20.038868790849858,
+            14.016700119526257
+          ],
+          "track_id": "drone:2:e1",
+          "position_kind": "measured",
+          "uncertainty_m": 2.965204259450098
+        },
+        {
+          "ts_ms": 4499.999999999994,
+          "xy": [
+            20.093995194113614,
+            14.007252439848571
+          ],
+          "track_id": "drone:2:e1",
+          "position_kind": "measured",
+          "uncertainty_m": 2.9646124198215156
+        },
+        {
+          "ts_ms": 4699.999999999993,
+          "xy": [
+            20.12880687417011,
+            13.992245843445088
+          ],
+          "track_id": "drone:2:e1",
+          "position_kind": "measured",
+          "uncertainty_m": 2.9640153196264176
+        },
+        {
+          "ts_ms": 4966.666666666659,
+          "xy": [
+            20.148198335004103,
+            13.890636996504927
+          ],
+          "track_id": "drone:2:e1",
+          "position_kind": "measured",
+          "uncertainty_m": 2.9646045386507116
+        },
+        {
+          "ts_ms": 5166.666666666658,
+          "xy": [
+            20.20443218939253,
+            13.843256632781952
+          ],
+          "track_id": "drone:2:e1",
+          "position_kind": "measured",
+          "uncertainty_m": 2.9652068881602527
+        }
+      ],
+      "candidate_evidence": [],
+      "description": "possible assistance candidate",
+      "role": "assistance_candidate",
+      "source_provenance": "SYNTHETIC"
+    }
+  },
+  {
+    "seq": 58,
+    "incident_id": "INC-788adb0ec4",
+    "at": "2026-10-25T11:51:58.423955Z",
+    "kind": "responder_position",
+    "payload": {
+      "source": "simulated",
+      "accuracy_m": 0.5,
+      "enu": {
+        "frame": "enu:INC-788adb0ec4",
+        "x": 5.0,
+        "y": 10.0,
+        "z": 0
+      },
+      "heading_deg": 90.0,
+      "heading_accuracy_deg": 5.0,
+      "received_at": "2026-10-25T11:51:58.423953+00:00"
+    }
+  },
+  {
+    "seq": 59,
+    "incident_id": "INC-788adb0ec4",
+    "at": "2026-10-25T11:51:58.505374Z",
+    "kind": "responder_position",
+    "payload": {
+      "source": "simulated",
+      "accuracy_m": 0.5,
+      "enu": {
+        "frame": "enu:INC-788adb0ec4",
+        "x": 5.0,
+        "y": 10.0,
+        "z": 0
+      },
+      "heading_deg": 90.0,
+      "heading_accuracy_deg": 5.0,
+      "received_at": "2026-10-25T11:51:58.505370+00:00"
+    }
+  },
+  {
+    "seq": 60,
+    "incident_id": "INC-788adb0ec4",
+    "at": "2026-10-25T11:51:58.620009Z",
+    "kind": "responder_position",
+    "payload": {
+      "source": "simulated",
+      "accuracy_m": 0.5,
+      "enu": {
+        "frame": "enu:INC-788adb0ec4",
+        "x": 5.0,
+        "y": 10.0,
+        "z": 0
+      },
+      "heading_deg": 90.0,
+      "heading_accuracy_deg": 5.0,
+      "received_at": "2026-10-25T11:51:58.620005+00:00"
+    }
+  },
+  {
+    "seq": 61,
+    "incident_id": "INC-788adb0ec4",
+    "at": "2026-10-25T11:51:58.700652Z",
+    "kind": "responder_position",
+    "payload": {
+      "source": "simulated",
+      "accuracy_m": 0.5,
+      "enu": {
+        "frame": "enu:INC-788adb0ec4",
+        "x": 5.0,
+        "y": 10.0,
+        "z": 0
+      },
+      "heading_deg": 90.0,
+      "heading_accuracy_deg": 5.0,
+      "received_at": "2026-10-25T11:51:58.700649+00:00"
+    }
+  },
+  {
+    "seq": 62,
+    "incident_id": "INC-788adb0ec4",
+    "at": "2026-10-25T11:51:58.782353Z",
+    "kind": "responder_position",
+    "payload": {
+      "source": "simulated",
+      "accuracy_m": 0.5,
+      "enu": {
+        "frame": "enu:INC-788adb0ec4",
+        "x": 5.0,
+        "y": 10.0,
+        "z": 0
+      },
+      "heading_deg": 90.0,
+      "heading_accuracy_deg": 5.0,
+      "received_at": "2026-10-25T11:51:58.782351+00:00"
+    }
+  },
+  {
+    "seq": 63,
+    "incident_id": "INC-788adb0ec4",
+    "at": "2026-10-25T11:51:58.880409Z",
+    "kind": "target_snapshot",
+    "payload": {
+      "incident_id": "INC-788adb0ec4",
+      "session_id": "s-6419ef",
+      "logical_subject_id": "INC-788adb0ec4.s-6419ef.object.obj-2",
+      "state": "VISIBLE",
+      "lock_state": "LOCKED",
+      "current_track_id": "drone:2:e1",
+      "last_track_id": "drone:2:e1",
+      "associated_track_ids": [
+        "drone:2:e1"
+      ],
+      "measured_position": {
+        "frame": "enu:INC-788adb0ec4",
+        "x": 20.452245086768382,
+        "y": 13.611123831666609,
+        "z": 0.0
+      },
+      "predicted_position": null,
+      "prediction_ts_ms": 6299.999999999987,
+      "last_verified_position": {
+        "frame": "enu:INC-788adb0ec4",
+        "x": 20.452245086768382,
+        "y": 13.611123831666609,
+        "z": 0.0
+      },
+      "last_verified_ts_ms": 6299.999999999987,
+      "last_seen_ts_ms": 6299.999999999987,
+      "last_seen_frame": {
+        "frame_id": 95,
+        "capture_ts_ms": 6299.999999999987,
+        "source_id": "drone"
+      },
+      "position_kind": "measured",
+      "uncertainty_m": 2.966399778009603,
+      "confidence": 0.784,
+      "confidence_kind": "continuity heuristic, not identity probability",
+      "quality_reasons": [],
+      "binding_verified": true,
+      "appearance_signature": [
+        0.244761,
+        0.065476,
+        0.093528,
+        0.563186,
+        0.0,
+        0.000248,
+        0.017487,
+        0.0,
+        0.0,
+        0.000259,
+        0.005284,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        8.5e-05,
+        0.009687,
+        0.0
+      ],
+      "motion_history": [
+        {
+          "ts_ms": 666.6666666666666,
+          "xy": [
+            20.359322945930987,
+            13.899119735013434
+          ],
+          "track_id": "drone:2:e1",
+          "position_kind": "measured",
+          "uncertainty_m": 2.9616269377240902
+        },
+        {
+          "ts_ms": 933.3333333333333,
+          "xy": [
+            20.342030272505,
+            13.847363588817863
+          ],
+          "track_id": "drone:2:e1",
+          "position_kind": "measured",
+          "uncertainty_m": 2.9628198107188246
+        },
+        {
+          "ts_ms": 1133.3333333333335,
+          "xy": [
+            20.30749647666411,
+            13.784751360463952
+          ],
+          "track_id": "drone:2:e1",
+          "position_kind": "measured",
+          "uncertainty_m": 2.962220094085915
+        },
+        {
+          "ts_ms": 1333.3333333333342,
+          "xy": [
+            20.26176147289528,
+            13.754571449459174
+          ],
+          "track_id": "drone:2:e1",
+          "position_kind": "measured",
+          "uncertainty_m": 2.963415592557347
+        },
+        {
+          "ts_ms": 1533.3333333333348,
+          "xy": [
+            20.245210682491866,
+            13.782918885716388
+          ],
+          "track_id": "drone:2:e1",
+          "position_kind": "measured",
+          "uncertainty_m": 2.9646150569441474
+        },
+        {
+          "ts_ms": 1733.3333333333353,
+          "xy": [
+            20.249016713191462,
+            13.749345607953622
+          ],
+          "track_id": "drone:2:e1",
+          "position_kind": "measured",
+          "uncertainty_m": 2.9640113758805193
+        },
+        {
+          "ts_ms": 1933.333333333336,
+          "xy": [
+            20.248020346787204,
+            13.71838874083875
+          ],
+          "track_id": "drone:2:e1",
+          "position_kind": "measured",
+          "uncertainty_m": 2.9628158757149996
+        },
+        {
+          "ts_ms": 2133.3333333333353,
+          "xy": [
+            20.202664105471534,
+            13.715109717882768
+          ],
+          "track_id": "drone:2:e1",
+          "position_kind": "measured",
+          "uncertainty_m": 2.962821124897358
+        },
+        {
+          "ts_ms": 2400.0000000000014,
+          "xy": [
+            20.092232575296695,
+            13.768791683029988
+          ],
+          "track_id": "drone:2:e1",
+          "position_kind": "measured",
+          "uncertainty_m": 2.962821124897358
+        },
+        {
+          "ts_ms": 2633.333333333334,
+          "xy": [
+            19.973697046410567,
+            13.768344743897341
+          ],
+          "track_id": "drone:2:e1",
+          "position_kind": "measured",
+          "uncertainty_m": 2.962216169077515
+        },
+        {
+          "ts_ms": 2833.333333333333,
+          "xy": [
+            19.898120633932383,
+            13.802054917320392
+          ],
+          "track_id": "drone:2:e1",
+          "position_kind": "measured",
+          "uncertainty_m": 2.964015319626417
+        },
+        {
+          "ts_ms": 3099.9999999999986,
+          "xy": [
+            19.808652730548015,
+            13.921749398818585
+          ],
+          "track_id": "drone:2:e1",
+          "position_kind": "measured",
+          "uncertainty_m": 2.9634208551136667
+        },
+        {
+          "ts_ms": 3299.999999999998,
+          "xy": [
+            19.821136426208447,
+            13.976522879284952
+          ],
+          "track_id": "drone:2:e1",
+          "position_kind": "measured",
+          "uncertainty_m": 2.964010063810182
+        },
+        {
+          "ts_ms": 3566.666666666664,
+          "xy": [
+            19.883798703262503,
+            13.998444463665367
+          ],
+          "track_id": "drone:2:e1",
+          "position_kind": "measured",
+          "uncertainty_m": 2.9634142800611603
+        },
+        {
+          "ts_ms": 3766.666666666663,
+          "xy": [
+            19.93920596732812,
+            14.051289518594622
+          ],
+          "track_id": "drone:2:e1",
+          "position_kind": "measured",
+          "uncertainty_m": 2.9622266608353782
+        },
+        {
+          "ts_ms": 4033.333333333329,
+          "xy": [
+            20.003199197643866,
+            14.04927781780473
+          ],
+          "track_id": "drone:2:e1",
+          "position_kind": "measured",
+          "uncertainty_m": 2.962221404924667
+        },
+        {
+          "ts_ms": 4233.3333333333285,
+          "xy": [
+            20.038868790849858,
+            14.016700119526257
+          ],
+          "track_id": "drone:2:e1",
+          "position_kind": "measured",
+          "uncertainty_m": 2.965204259450098
+        },
+        {
+          "ts_ms": 4499.999999999994,
+          "xy": [
+            20.093995194113614,
+            14.007252439848571
+          ],
+          "track_id": "drone:2:e1",
+          "position_kind": "measured",
+          "uncertainty_m": 2.9646124198215156
+        },
+        {
+          "ts_ms": 4699.999999999993,
+          "xy": [
+            20.12880687417011,
+            13.992245843445088
+          ],
+          "track_id": "drone:2:e1",
+          "position_kind": "measured",
+          "uncertainty_m": 2.9640153196264176
+        },
+        {
+          "ts_ms": 4966.666666666659,
+          "xy": [
+            20.148198335004103,
+            13.890636996504927
+          ],
+          "track_id": "drone:2:e1",
+          "position_kind": "measured",
+          "uncertainty_m": 2.9646045386507116
+        },
+        {
+          "ts_ms": 5166.666666666658,
+          "xy": [
+            20.20443218939253,
+            13.843256632781952
+          ],
+          "track_id": "drone:2:e1",
+          "position_kind": "measured",
+          "uncertainty_m": 2.9652068881602527
+        },
+        {
+          "ts_ms": 5366.666666666657,
+          "xy": [
+            20.248191883027875,
+            13.8261395991234
+          ],
+          "track_id": "drone:2:e1",
+          "position_kind": "measured",
+          "uncertainty_m": 2.965210840663997
+        },
+        {
+          "ts_ms": 5633.333333333323,
+          "xy": [
+            20.32677703921803,
+            13.792099351047474
+          ],
+          "track_id": "drone:2:e1",
+          "position_kind": "measured",
+          "uncertainty_m": 2.9663958356250437
+        },
+        {
+          "ts_ms": 5833.333333333322,
+          "xy": [
+            20.36554799627184,
+            13.742699829429778
+          ],
+          "track_id": "drone:2:e1",
+          "position_kind": "measured",
+          "uncertainty_m": 2.9657987347506927
+        },
+        {
+          "ts_ms": 6033.333333333322,
+          "xy": [
+            20.407799058963064,
+            13.69719165653331
+          ],
+          "track_id": "drone:2:e1",
+          "position_kind": "measured",
+          "uncertainty_m": 2.96580662586715
+        },
+        {
+          "ts_ms": 6299.999999999987,
+          "xy": [
+            20.452245086768382,
+            13.611123831666609
+          ],
+          "track_id": "drone:2:e1",
+          "position_kind": "measured",
+          "uncertainty_m": 2.966399778009603
+        }
+      ],
+      "candidate_evidence": [],
+      "description": "possible assistance candidate",
+      "role": "assistance_candidate",
+      "source_provenance": "SYNTHETIC"
+    }
+  },
+  {
+    "seq": 64,
+    "incident_id": "INC-788adb0ec4",
+    "at": "2026-10-25T11:51:58.880603Z",
+    "kind": "responder_position",
+    "payload": {
+      "source": "simulated",
+      "accuracy_m": 0.5,
+      "enu": {
+        "frame": "enu:INC-788adb0ec4",
+        "x": 5.0,
+        "y": 10.0,
+        "z": 0
+      },
+      "heading_deg": 90.0,
+      "heading_accuracy_deg": 5.0,
+      "received_at": "2026-10-25T11:51:58.880601+00:00"
+    }
+  },
+  {
+    "seq": 65,
+    "incident_id": "INC-788adb0ec4",
+    "at": "2026-10-25T11:51:58.977026Z",
+    "kind": "responder_position",
+    "payload": {
+      "source": "simulated",
+      "accuracy_m": 0.5,
+      "enu": {
+        "frame": "enu:INC-788adb0ec4",
+        "x": 5.0,
+        "y": 10.0,
+        "z": 0
+      },
+      "heading_deg": 90.0,
+      "heading_accuracy_deg": 5.0,
+      "received_at": "2026-10-25T11:51:58.977023+00:00"
+    }
+  },
+  {
+    "seq": 66,
+    "incident_id": "INC-788adb0ec4",
+    "at": "2026-10-25T11:51:59.071488Z",
+    "kind": "responder_position",
+    "payload": {
+      "source": "simulated",
+      "accuracy_m": 0.5,
+      "enu": {
+        "frame": "enu:INC-788adb0ec4",
+        "x": 5.0,
+        "y": 10.0,
+        "z": 0
+      },
+      "heading_deg": 90.0,
+      "heading_accuracy_deg": 5.0,
+      "received_at": "2026-10-25T11:51:59.071485+00:00"
+    }
+  },
+  {
+    "seq": 67,
+    "incident_id": "INC-788adb0ec4",
+    "at": "2026-10-25T11:51:59.154080Z",
+    "kind": "responder_position",
+    "payload": {
+      "source": "simulated",
+      "accuracy_m": 0.5,
+      "enu": {
+        "frame": "enu:INC-788adb0ec4",
+        "x": 5.0,
+        "y": 10.0,
+        "z": 0
+      },
+      "heading_deg": 90.0,
+      "heading_accuracy_deg": 5.0,
+      "received_at": "2026-10-25T11:51:59.154077+00:00"
+    }
+  },
+  {
+    "seq": 68,
+    "incident_id": "INC-788adb0ec4",
+    "at": "2026-10-25T11:51:59.237613Z",
+    "kind": "responder_position",
+    "payload": {
+      "source": "simulated",
+      "accuracy_m": 0.5,
+      "enu": {
+        "frame": "enu:INC-788adb0ec4",
+        "x": 5.0,
+        "y": 10.0,
+        "z": 0
+      },
+      "heading_deg": 90.0,
+      "heading_accuracy_deg": 5.0,
+      "received_at": "2026-10-25T11:51:59.237610+00:00"
+    }
+  },
+  {
+    "seq": 69,
+    "incident_id": "INC-788adb0ec4",
+    "at": "2026-10-25T11:51:59.354299Z",
+    "kind": "target_snapshot",
+    "payload": {
+      "incident_id": "INC-788adb0ec4",
+      "session_id": "s-6419ef",
+      "logical_subject_id": "INC-788adb0ec4.s-6419ef.object.obj-2",
+      "state": "VISIBLE",
+      "lock_state": "LOCKED",
+      "current_track_id": "drone:2:e1",
+      "last_track_id": "drone:2:e1",
+      "associated_track_ids": [
+        "drone:2:e1"
+      ],
+      "measured_position": {
+        "frame": "enu:INC-788adb0ec4",
+        "x": 20.856874626161684,
+        "y": 13.630475331998161,
+        "z": 0.0
+      },
+      "predicted_position": null,
+      "prediction_ts_ms": 7433.333333333317,
+      "last_verified_position": {
+        "frame": "enu:INC-788adb0ec4",
+        "x": 20.856874626161684,
+        "y": 13.630475331998161,
+        "z": 0.0
+      },
+      "last_verified_ts_ms": 7433.333333333317,
+      "last_seen_ts_ms": 7433.333333333317,
+      "last_seen_frame": {
+        "frame_id": 112,
+        "capture_ts_ms": 7433.333333333317,
+        "source_id": "drone"
+      },
+      "position_kind": "measured",
+      "uncertainty_m": 2.9663984626256372,
+      "confidence": 0.781,
+      "confidence_kind": "continuity heuristic, not identity probability",
+      "quality_reasons": [],
+      "binding_verified": true,
+      "appearance_signature": [
+        0.234584,
+        0.085555,
+        0.082869,
+        0.569152,
+        0.0,
+        0.001811,
+        0.016358,
+        0.0,
+        0.0,
+        6e-06,
+        0.002786,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        2e-06,
+        0.005224,
+        0.001653
+      ],
+      "motion_history": [
+        {
+          "ts_ms": 666.6666666666666,
+          "xy": [
+            20.359322945930987,
+            13.899119735013434
+          ],
+          "track_id": "drone:2:e1",
+          "position_kind": "measured",
+          "uncertainty_m": 2.9616269377240902
+        },
+        {
+          "ts_ms": 933.3333333333333,
+          "xy": [
+            20.342030272505,
+            13.847363588817863
+          ],
+          "track_id": "drone:2:e1",
+          "position_kind": "measured",
+          "uncertainty_m": 2.9628198107188246
+        },
+        {
+          "ts_ms": 1133.3333333333335,
+          "xy": [
+            20.30749647666411,
+            13.784751360463952
+          ],
+          "track_id": "drone:2:e1",
+          "position_kind": "measured",
+          "uncertainty_m": 2.962220094085915
+        },
+        {
+          "ts_ms": 1333.3333333333342,
+          "xy": [
+            20.26176147289528,
+            13.754571449459174
+          ],
+          "track_id": "drone:2:e1",
+          "position_kind": "measured",
+          "uncertainty_m": 2.963415592557347
+        },
+        {
+          "ts_ms": 1533.3333333333348,
+          "xy": [
+            20.245210682491866,
+            13.782918885716388
+          ],
+          "track_id": "drone:2:e1",
+          "position_kind": "measured",
+          "uncertainty_m": 2.9646150569441474
+        },
+        {
+          "ts_ms": 1733.3333333333353,
+          "xy": [
+            20.249016713191462,
+            13.749345607953622
+          ],
+          "track_id": "drone:2:e1",
+          "position_kind": "measured",
+          "uncertainty_m": 2.9640113758805193
+        },
+        {
+          "ts_ms": 1933.333333333336,
+          "xy": [
+            20.248020346787204,
+            13.71838874083875
+          ],
+          "track_id": "drone:2:e1",
+          "position_kind": "measured",
+          "uncertainty_m": 2.9628158757149996
+        },
+        {
+          "ts_ms": 2133.3333333333353,
+          "xy": [
+            20.202664105471534,
+            13.715109717882768
+          ],
+          "track_id": "drone:2:e1",
+          "position_kind": "measured",
+          "uncertainty_m": 2.962821124897358
+        },
+        {
+          "ts_ms": 2400.0000000000014,
+          "xy": [
+            20.092232575296695,
+            13.768791683029988
+          ],
+          "track_id": "drone:2:e1",
+          "position_kind": "measured",
+          "uncertainty_m": 2.962821124897358
+        },
+        {
+          "ts_ms": 2633.333333333334,
+          "xy": [
+            19.973697046410567,
+            13.768344743897341
+          ],
+          "track_id": "drone:2:e1",
+          "position_kind": "measured",
+          "uncertainty_m": 2.962216169077515
+        },
+        {
+          "ts_ms": 2833.333333333333,
+          "xy": [
+            19.898120633932383,
+            13.802054917320392
+          ],
+          "track_id": "drone:2:e1",
+          "position_kind": "measured",
+          "uncertainty_m": 2.964015319626417
+        },
+        {
+          "ts_ms": 3099.9999999999986,
+          "xy": [
+            19.808652730548015,
+            13.921749398818585
+          ],
+          "track_id": "drone:2:e1",
+          "position_kind": "measured",
+          "uncertainty_m": 2.9634208551136667
+        },
+        {
+          "ts_ms": 3299.999999999998,
+          "xy": [
+            19.821136426208447,
+            13.976522879284952
+          ],
+          "track_id": "drone:2:e1",
+          "position_kind": "measured",
+          "uncertainty_m": 2.964010063810182
+        },
+        {
+          "ts_ms": 3566.666666666664,
+          "xy": [
+            19.883798703262503,
+            13.998444463665367
+          ],
+          "track_id": "drone:2:e1",
+          "position_kind": "measured",
+          "uncertainty_m": 2.9634142800611603
+        },
+        {
+          "ts_ms": 3766.666666666663,
+          "xy": [
+            19.93920596732812,
+            14.051289518594622
+          ],
+          "track_id": "drone:2:e1",
+          "position_kind": "measured",
+          "uncertainty_m": 2.9622266608353782
+        },
+        {
+          "ts_ms": 4033.333333333329,
+          "xy": [
+            20.003199197643866,
+            14.04927781780473
+          ],
+          "track_id": "drone:2:e1",
+          "position_kind": "measured",
+          "uncertainty_m": 2.962221404924667
+        },
+        {
+          "ts_ms": 4233.3333333333285,
+          "xy": [
+            20.038868790849858,
+            14.016700119526257
+          ],
+          "track_id": "drone:2:e1",
+          "position_kind": "measured",
+          "uncertainty_m": 2.965204259450098
+        },
+        {
+          "ts_ms": 4499.999999999994,
+          "xy": [
+            20.093995194113614,
+            14.007252439848571
+          ],
+          "track_id": "drone:2:e1",
+          "position_kind": "measured",
+          "uncertainty_m": 2.9646124198215156
+        },
+        {
+          "ts_ms": 4699.999999999993,
+          "xy": [
+            20.12880687417011,
+            13.992245843445088
+          ],
+          "track_id": "drone:2:e1",
+          "position_kind": "measured",
+          "uncertainty_m": 2.9640153196264176
+        },
+        {
+          "ts_ms": 4966.666666666659,
+          "xy": [
+            20.148198335004103,
+            13.890636996504927
+          ],
+          "track_id": "drone:2:e1",
+          "position_kind": "measured",
+          "uncertainty_m": 2.9646045386507116
+        },
+        {
+          "ts_ms": 5166.666666666658,
+          "xy": [
+            20.20443218939253,
+            13.843256632781952
+          ],
+          "track_id": "drone:2:e1",
+          "position_kind": "measured",
+          "uncertainty_m": 2.9652068881602527
+        },
+        {
+          "ts_ms": 5366.666666666657,
+          "xy": [
+            20.248191883027875,
+            13.8261395991234
+          ],
+          "track_id": "drone:2:e1",
+          "position_kind": "measured",
+          "uncertainty_m": 2.965210840663997
+        },
+        {
+          "ts_ms": 5633.333333333323,
+          "xy": [
+            20.32677703921803,
+            13.792099351047474
+          ],
+          "track_id": "drone:2:e1",
+          "position_kind": "measured",
+          "uncertainty_m": 2.9663958356250437
+        },
+        {
+          "ts_ms": 5833.333333333322,
+          "xy": [
+            20.36554799627184,
+            13.742699829429778
+          ],
+          "track_id": "drone:2:e1",
+          "position_kind": "measured",
+          "uncertainty_m": 2.9657987347506927
+        },
+        {
+          "ts_ms": 6033.333333333322,
+          "xy": [
+            20.407799058963064,
+            13.69719165653331
+          ],
+          "track_id": "drone:2:e1",
+          "position_kind": "measured",
+          "uncertainty_m": 2.96580662586715
+        },
+        {
+          "ts_ms": 6299.999999999987,
+          "xy": [
+            20.452245086768382,
+            13.611123831666609
+          ],
+          "track_id": "drone:2:e1",
+          "position_kind": "measured",
+          "uncertainty_m": 2.966399778009603
+        },
+        {
+          "ts_ms": 6499.999999999986,
+          "xy": [
+            20.509563884313184,
+            13.569430795134084
+          ],
+          "track_id": "drone:2:e1",
+          "position_kind": "measured",
+          "uncertainty_m": 2.9669929383807854
+        },
+        {
+          "ts_ms": 6766.666666666652,
+          "xy": [
+            20.600179453105124,
+            13.569201766327998
+          ],
+          "track_id": "drone:2:e1",
+          "position_kind": "measured",
+          "uncertainty_m": 2.9675966282323065
+        },
+        {
+          "ts_ms": 6966.6666666666515,
+          "xy": [
+            20.676037530831632,
+            13.601558371109986
+          ],
+          "track_id": "drone:2:e1",
+          "position_kind": "measured",
+          "uncertainty_m": 2.9681950605483127
+        },
+        {
+          "ts_ms": 7166.666666666651,
+          "xy": [
+            20.74847751295828,
+            13.61975613624821
+          ],
+          "track_id": "drone:2:e1",
+          "position_kind": "measured",
+          "uncertainty_m": 2.966994252080851
+        },
+        {
+          "ts_ms": 7433.333333333317,
+          "xy": [
+            20.856874626161684,
+            13.630475331998161
+          ],
+          "track_id": "drone:2:e1",
+          "position_kind": "measured",
+          "uncertainty_m": 2.9663984626256372
+        }
+      ],
+      "candidate_evidence": [],
+      "description": "possible assistance candidate",
+      "role": "assistance_candidate",
+      "source_provenance": "SYNTHETIC"
+    }
+  },
+  {
+    "seq": 70,
+    "incident_id": "INC-788adb0ec4",
+    "at": "2026-10-25T11:51:59.354491Z",
+    "kind": "responder_position",
+    "payload": {
+      "source": "simulated",
+      "accuracy_m": 0.5,
+      "enu": {
+        "frame": "enu:INC-788adb0ec4",
+        "x": 5.0,
+        "y": 10.0,
+        "z": 0
+      },
+      "heading_deg": 90.0,
+      "heading_accuracy_deg": 5.0,
+      "received_at": "2026-10-25T11:51:59.354489+00:00"
+    }
+  },
+  {
+    "seq": 71,
+    "incident_id": "INC-788adb0ec4",
+    "at": "2026-10-25T11:51:59.437417Z",
+    "kind": "responder_position",
+    "payload": {
+      "source": "simulated",
+      "accuracy_m": 0.5,
+      "enu": {
+        "frame": "enu:INC-788adb0ec4",
+        "x": 5.0,
+        "y": 10.0,
+        "z": 0
+      },
+      "heading_deg": 90.0,
+      "heading_accuracy_deg": 5.0,
+      "received_at": "2026-10-25T11:51:59.437414+00:00"
+    }
+  },
+  {
+    "seq": 72,
+    "incident_id": "INC-788adb0ec4",
+    "at": "2026-10-25T11:51:59.518975Z",
+    "kind": "responder_position",
+    "payload": {
+      "source": "simulated",
+      "accuracy_m": 0.5,
+      "enu": {
+        "frame": "enu:INC-788adb0ec4",
+        "x": 5.0,
+        "y": 10.0,
+        "z": 0
+      },
+      "heading_deg": 90.0,
+      "heading_accuracy_deg": 5.0,
+      "received_at": "2026-10-25T11:51:59.518972+00:00"
+    }
+  }
+]

@@ -44,6 +44,8 @@ class IncidentService:
         self._tracks: dict[str, Any] = {}  # session-namespaced pipeline track id -> incident Track
         self._source_state: dict[str, dict[str, str]] = {}
         self.follow: dict[str, Any] = {}  # incident -> missions.follow.FollowTracker
+        self._follow_session: dict[str, str] = {}
+        self._follow_observation: dict[str, str] = {}
         self._follow_logged_ms: dict[str, float] = {}  # incident -> last logged state per source
         self._follow_engaged: dict[str, float] = {}  # incident -> engage time of the last subject lock adopted
         self.flagged_tracks: dict[str, set[str]] = {}  # incident -> tracks the Search mission already flagged
@@ -52,6 +54,8 @@ class IncidentService:
         self.store.subscribe(self._fanout)
         from .person_mark import PersonMarkService
         self.person_mark = PersonMarkService(self)
+        from .targets import TargetCoordinator
+        self.targets = TargetCoordinator(self)
         self._restore()
 
     def _restore(self) -> None:
@@ -112,25 +116,8 @@ class IncidentService:
 
     def create(self, title: str, mission: str = "search", scenario_id: str | None = None,
                notes: str = "") -> Incident:
-        if scenario_id is None and self.rt.sim is not None:
-            scenario_id = self.rt.sim.scenario.id
-        if scenario_id and self.rt.sim is not None and self.rt.sim.scenario.id != scenario_id:
-            self.rt.control("restart", scenario_id)  # validates the id; the simulator loads it next step
-        inc = Incident(title=title, mission_mode=mission, scenario_id=scenario_id, operator_notes=notes,
-                       provenance=self.wire_provenance())  # type: ignore[arg-type]
-        geo = getattr(self.rt.cfg.world, "geo_reference", None) if hasattr(self.rt.cfg, "world") else None
-        if geo is not None and inc.coordinate_reference is not None:
-            # the configured reference is a stand-in until an operator sets a surveyed origin
-            inc.coordinate_reference.origin_lat = float(geo.lat)
-            inc.coordinate_reference.origin_lon = float(geo.lon)
-            inc.coordinate_reference.origin_alt_m = float(getattr(geo, "alt_m", 0.0) or 0.0)
-            inc.coordinate_reference.north_offset_deg = float(getattr(self.rt.cfg.world, "north_offset_deg", 0.0) or 0.0)
-            inc.coordinate_reference.note = "configured reference (config/default.yaml), not surveyed"
-        self.store.create_incident(inc)
-        self.current_id = inc.id
-        self.rt.pipeline.start_incident(inc.id, consent=True)
-        self.store.upsert_source(inc.id, self.drone_source(), log=True)
-        return inc
+        with self.rt.pipeline.lock:
+            return self._create(title, mission, scenario_id, notes)
 
     def current(self) -> Incident | None:
         if self.current_id is None:
@@ -238,9 +225,14 @@ class IncidentService:
         inc = self.current()
         if inc is None:
             return
+        observation_links: dict[str, list[str]] = defaultdict(list)
+        for v in self.store.list_observations(inc_id):
+            key = v.observation.attributes.get("incident_track_id")
+            if key:
+                observation_links[key].append(v.observation.id)
         seen = set()
         for wid, t in snap.items():
-            sid = f"{self.rt.session_id}.{wid}"
+            sid = f"{inc_id}.{self.rt.session_id}.{wid}"
             seen.add(sid)
             known = self._tracks.get(sid)
             if known is None and t.state != "CONFIRMED":
@@ -249,6 +241,7 @@ class IncidentService:
                 known = Track(id=sid, incident_id=inc_id, first_seen=now, last_seen=now, provenance=prov)  # type: ignore[arg-type]
                 self._tracks[sid] = known
                 self.store.upsert_track(known, "track_started")
+            known.observation_ids = observation_links.get(sid, [])
             status = "lost" if t.state == "LOST" or t.visibility == "lost" else "active"
             if t.state != "LOST":
                 known.last_seen = now
@@ -269,7 +262,7 @@ class IncidentService:
                 self.store.upsert_track(known)
         self._log_source_status(inc_id)
         for sid, known in list(self._tracks.items()):
-            if sid not in seen and known.tracking_status != "ended":
+            if known.incident_id == inc_id and sid not in seen and known.tracking_status != "ended":
                 known.tracking_status = "ended"
                 self.store.upsert_track(known, "track_ended")
                 del self._tracks[sid]
@@ -279,6 +272,7 @@ class IncidentService:
         inc = self.current()
         if inc is None:
             return
+        self.targets.update()
         from ..missions import search, structure
 
         structure.register_buildings(self, inc.id)
@@ -288,6 +282,7 @@ class IncidentService:
             structure.simulate_openings(self, inc.id)
         if inc.id in self.follow:
             self.follow_update(inc.id)
+        self.targets.sar.run(inc)
         from ..decisions import recommendations
 
         recommendations.deterministic(self.store, self.store.get_incident(inc.id), bool(self.rt.pipeline.calib.valid))
@@ -296,71 +291,73 @@ class IncidentService:
     def follow_tracker(self, incident_id: str):
         from ..missions.follow import FollowTracker
 
-        if incident_id not in self.follow:
+        if (incident_id not in self.follow or
+                (incident_id == self.current_id and self._follow_session.get(incident_id) != self.rt.pipeline.session_id)):
+            self._follow_session[incident_id] = self.rt.pipeline.session_id
+            self._follow_engaged.pop(incident_id, None)
+            self._follow_observation.pop(incident_id, None)
             self.follow[incident_id] = FollowTracker(lambda kind, payload: self.store.append_event(incident_id, kind, payload))
         return self.follow[incident_id]
 
     def follow_update(self, incident_id: str) -> None:
+        with self.rt.pipeline.lock:
+            self._follow_update(incident_id)
+
+    def follow_designate(self, incident_id: str, track_id: str, by: str = "operator",
+                         session_id: str | None = None, designation: int | None = None) -> dict[str, Any]:
         p = self.rt.pipeline
-        now = self.rt.clock.now_ms()
         with p.lock:
-            lock = p.locks["subject"].snapshot(now)
-            raw = p.locks["subject"]
-            engaged = (raw.since_ms, raw.locked_by) if raw.state != "UNLOCKED" else None
-        tracks = {t.track_id: {"box": t.box_xyxy_px, "visible": t.state != "LOST" and t.visibility != "lost",
-                               "xy": tuple(t.ground_xy_m) if t.ground_xy_m is not None and t.ground_error_m is not None else None,
-                               "err": t.ground_error_m if t.ground_xy_m is not None else None}
-                  for t in p.tracks_snapshot(now)}
-        ft = self.follow_tracker(incident_id)
-        # a person can lock the subject outside this panel (the ops console, the scripted demo operator): the lock's
-        # engage time changes only then, never on an automatic re-bind, so that lock becomes the designation
-        if engaged and engaged[0] is not None and lock.track_id and engaged[0] != self._follow_engaged.get(incident_id):
-            self._follow_engaged[incident_id] = engaged[0]
-            if ft.s.designation == 0 or ft.s.status == "released" or ft.s.track_id != lock.track_id:
-                ft.designate(lock.track_id, engaged[1] or "operator", now)
-        ft.update(lock, tracks, now)
-        last = ft.s.trail[-1] if ft.s.trail else None
-        if last is not None and last.t_ms - self._follow_logged_ms.get(incident_id, -1e12) >= 1000.0:
-            self._follow_logged_ms[incident_id] = last.t_ms
-            self.store.append_event(incident_id, "follow_point", {"t_ms": last.t_ms, "track_id": last.track_id,
-                                                                  "xy": last.xy, "err_m": last.err_m,
-                                                                  "identity": last.identity})
+            self.require_current_control(incident_id, session_id, designation)
+            self._visible_person(track_id)
+            if p.autonomy.mode in ("FOLLOW", "HOLD"):
+                p.set_autonomy_mode("MANUAL", "new target requires explicit Start Follow")
+            p.lock_track("subject", track_id, by)
+            ft = self.follow_tracker(incident_id)
+            ft.designate(track_id, by, self.rt.clock.now_ms())
+            self._follow_engaged[incident_id] = p.locks["subject"].since_ms
+            self._confirm_follow_observation(incident_id, track_id, by)
+            return self.follow_view(incident_id)
 
-    def follow_designate(self, incident_id: str, track_id: str, by: str = "operator") -> dict[str, Any]:
+    def follow_confirm(self, incident_id: str, by: str = "operator", session_id: str | None = None,
+                       designation: int | None = None) -> dict[str, Any]:
         p = self.rt.pipeline
-        p.lock_track("subject", track_id, by)
-        ft = self.follow_tracker(incident_id)
-        ft.designate(track_id, by, self.rt.clock.now_ms())
-        return ft.view(self.rt.clock.now_ms())
+        with p.lock:
+            self.require_current_control(incident_id, session_id, designation)
+            self.follow_update(incident_id)
+            ft = self.follow_tracker(incident_id)
+            tid = ft.s.track_id
+            if not tid or tid != p.locks["subject"].track_id:
+                raise ValueError("the subject binding changed")
+            self._visible_person(tid)
+            if ft.s.status != "unverified":
+                raise ValueError("no unverified binding to confirm")
+            p.confirm_candidate(tid)
+            ft.confirm_binding(by, self.rt.clock.now_ms())
+            self._confirm_follow_observation(incident_id, tid, by)
+            return self.follow_view(incident_id)
 
-    def follow_confirm(self, incident_id: str, by: str = "operator") -> dict[str, Any]:
-        ft = self.follow_tracker(incident_id)
-        tid = ft.s.track_id
-        ft.confirm_binding(by, self.rt.clock.now_ms())
-        try:
-            self.rt.pipeline.confirm_candidate(tid)  # the lock is marked verified too
-        except KeyError:
-            pass
-        return ft.view(self.rt.clock.now_ms())
-
-    def follow_reject(self, incident_id: str, by: str = "operator") -> dict[str, Any]:
+    def follow_reject(self, incident_id: str, by: str = "operator", session_id: str | None = None, designation: int | None = None) -> dict[str, Any]:
         """'Not them': the unverified re-binding is the wrong person; the lock searches again and the belief drops
         that person's hypothesis (pipeline.reject_rebind logs it)."""
-        ft = self.follow_tracker(incident_id)
-        self.rt.pipeline.reject_rebind(by)
-        return ft.view(self.rt.clock.now_ms())
+        with self.rt.pipeline.lock:
+            self.require_current_control(incident_id, session_id, designation)
+            self.rt.pipeline.reject_rebind(by)
+            self.follow_update(incident_id)
+            return self.follow_view(incident_id)
 
-    def follow_release(self, incident_id: str, by: str = "operator") -> dict[str, Any]:
-        ft = self.follow_tracker(incident_id)
-        self.rt.pipeline.unlock("subject")
-        ft.release(by, self.rt.clock.now_ms())
-        return ft.view(self.rt.clock.now_ms())
+    def follow_release(self, incident_id: str, by: str = "operator", session_id: str | None = None,
+                       designation: int | None = None) -> dict[str, Any]:
+        with self.rt.pipeline.lock:
+            self.require_current_control(incident_id, session_id, designation)
+            ft = self.follow_tracker(incident_id)
+            self.rt.pipeline.unlock("subject")
+            ft.release(by, self.rt.clock.now_ms())
+            self._follow_observation.pop(incident_id, None)
+            return self.follow_view(incident_id)
 
     # -- recommendations -------------------------------------------------------------------------------------
     def brief_text(self, incident_id: str, observation_id: str) -> str | None:
-        from .briefing import responder_targets
-
-        t = responder_targets(self.store, incident_id, self.responder.get(incident_id))
+        t = self.responder_brief(incident_id)
         return next((x["text"] for x in t["targets"] if x["observation_id"] == observation_id), None)
 
     def propose(self, incident_id: str, kind: str, params: dict[str, Any], proposed_by: str,
@@ -455,12 +452,15 @@ class IncidentService:
         now = utcnow()
         obs = Observation(
             id=oid, incident_id=incident_id, sensor_source_id="drone", observed_at=now, category=category,  # type: ignore[arg-type]
-            label=label, confidence=None,  # the simulated blob detector is not a calibrated detector
+            label=label, confidence=trk.confidence,  # raw model score, not a calibrated probability
             detector=trk.model_id, track_id=track_id,
             bounding_box=BoundingBox(frame="image:drone", x0=box[0], y0=box[1], x1=box[2], y1=box[3]) if box else None,
             world_position=pos, horizontal_uncertainty_m=unc, position_estimation_method=method,  # type: ignore[arg-type]
             evidence_frame_reference=ev, stale_after=stale_at(now, 120.0), provenance=prov,  # type: ignore[arg-type]
-            attributes={"flagged_by": flagged_by, "track_state": trk.state, **(attributes or {}),
+            attributes={"flagged_by": flagged_by, "track_state": trk.state,
+                        "incident_track_id": f"{incident_id}.{self.rt.session_id}.{track_id}",
+                        "session_id": self.rt.session_id, "confidence_kind": "uncalibrated_model_score",
+                        **(attributes or {}),
                         **({"sim_truth": truth} if (truth := self.sim_truth(box)) else {})})
         return self.store.add_observation(obs)
 
@@ -487,3 +487,117 @@ class IncidentService:
     @staticmethod
     def provenance_of(wire: str) -> str:
         return PROVENANCE_FROM_WIRE.get(wire, "simulated")
+
+    def _create(self, title: str, mission: str, scenario_id: str | None, notes: str) -> Incident:
+        if scenario_id is None and self.rt.sim is not None:
+            scenario_id = self.rt.sim.scenario.id
+        if scenario_id and self.rt.sim is not None and self.rt.sim.scenario.id != scenario_id:
+            self.rt.control("restart", scenario_id)  # validates the id; the simulator loads it next step
+        inc = Incident(title=title, mission_mode=mission, scenario_id=scenario_id, operator_notes=notes,
+                       provenance=self.wire_provenance())  # type: ignore[arg-type]
+        geo = getattr(self.rt.cfg.world, "geo_reference", None) if hasattr(self.rt.cfg, "world") else None
+        if geo is not None and inc.coordinate_reference is not None:
+            # the configured reference is a stand-in until an operator sets a surveyed origin
+            inc.coordinate_reference.origin_lat = float(geo.lat)
+            inc.coordinate_reference.origin_lon = float(geo.lon)
+            inc.coordinate_reference.origin_alt_m = float(getattr(geo, "alt_m", 0.0) or 0.0)
+            inc.coordinate_reference.north_offset_deg = float(getattr(self.rt.cfg.world, "north_offset_deg", 0.0) or 0.0)
+            inc.coordinate_reference.note = "configured reference (config/default.yaml), not surveyed"
+        self.store.create_incident(inc)
+        self.current_id = inc.id
+        self.rt.pipeline.start_incident(inc.id, consent=True)
+        self.store.upsert_source(inc.id, self.drone_source(), log=True)
+        return inc
+
+    def _follow_update(self, incident_id: str) -> None:
+        if incident_id != self.current_id:
+            return  # Historical views never adopt the global lock from another incident.
+        p = self.rt.pipeline
+        now = self.rt.clock.now_ms()
+        with p.lock:
+            lock = p.locks["subject"].snapshot(now)
+            raw = p.locks["subject"]
+            engaged = (raw.since_ms, raw.locked_by) if raw.state != "UNLOCKED" else None
+        tracks = {t.track_id: {"box": t.box_xyxy_px, "visible": t.state != "LOST" and t.visibility != "lost",
+                               "xy": tuple(t.ground_xy_m) if t.ground_xy_m is not None and t.ground_error_m is not None else None,
+                               "err": t.ground_error_m if t.ground_xy_m is not None else None}
+                  for t in p.tracks_snapshot(now)}
+        ft = self.follow_tracker(incident_id)
+        # a person can lock the subject outside this panel (the ops console, the scripted demo operator): the lock's
+        # engage time changes only then, never on an automatic re-bind, so that lock becomes the designation
+        if engaged and engaged[0] is not None and lock.track_id and engaged[0] != self._follow_engaged.get(incident_id):
+            self._follow_engaged[incident_id] = engaged[0]
+            if ft.s.designation == 0 or ft.s.status == "released" or ft.s.track_id != lock.track_id:
+                ft.designate(lock.track_id, engaged[1] or "operator", now)
+        ft.update(lock, tracks, now)
+        last = ft.s.trail[-1] if ft.s.trail else None
+        if last is not None and last.t_ms - self._follow_logged_ms.get(incident_id, -1e12) >= 1000.0:
+            self._follow_logged_ms[incident_id] = last.t_ms
+            self.store.append_event(incident_id, "follow_point", {"t_ms": last.t_ms, "track_id": last.track_id,
+                                                                  "xy": last.xy, "err_m": last.err_m,
+                                                                  "identity": last.identity})
+
+    def require_current_control(self, incident_id: str, session_id: str | None = None,
+                                designation: int | None = None) -> None:
+        """Called under the pipeline RLock, before any shared target/control mutation."""
+        p = self.rt.pipeline
+        inc = self.store.get_incident(incident_id)
+        if (incident_id != self.current_id or inc.status != "active" or not p.incident.active
+                or p.incident.incident_id != incident_id):
+            raise PermissionError("target control requires the current active incident")
+        if session_id is not None and session_id != p.session_id:
+            raise PermissionError("target control session changed; refresh the current view")
+        if designation is not None and designation != self.follow_tracker(incident_id).s.designation:
+            raise PermissionError("target designation changed; refresh the current view")
+
+    def follow_view(self, incident_id: str) -> dict[str, Any]:
+        with self.rt.pipeline.lock:
+            return {**self.follow_tracker(incident_id).view(self.rt.clock.now_ms()),
+                    "session_id": self._follow_session.get(incident_id),
+                    "observation_id": self._follow_observation.get(incident_id)}
+
+    def _confirm_follow_observation(self, incident_id: str, track_id: str, by: str) -> None:
+        """Keep immutable detector evidence separate from this explicit human review/binding event."""
+        from .models import Review
+        p = self.rt.pipeline
+        key = f"{incident_id}.{p.session_id}.{track_id}"
+        obs = next((v.observation for v in reversed(self.store.list_observations(incident_id))
+                    if v.observation.attributes.get("incident_track_id") == key and not v.stale), None)
+        if obs is None:
+            obs = self.observation_from_track(incident_id, track_id, label="operator selected person", flagged_by=by)
+        self.store.review(Review(observation_id=obs.id, status="confirmed", reviewer=by,
+                                 note="Human confirmed the current subject track; does not arm or start aircraft follow."))
+        self._follow_observation[incident_id] = obs.id
+        self.store.append_event(incident_id, "follow_observation_bound", {
+            "observation_id": obs.id, "incident_track_id": key, "track_id": track_id,
+            "session_id": p.session_id, "designation": self.follow_tracker(incident_id).s.designation, "by": by})
+
+    def _visible_person(self, track_id: str) -> None:
+        p = self.rt.pipeline
+        if not any(t.track_id == track_id for t in p.raw_tracks):
+            raise KeyError(track_id)
+        if not any(t.track_id == track_id and t.state == "CONFIRMED" and t.matched_now and t.class_name == "person"
+                   for t in p.raw_tracks):
+            raise ValueError("target must be a currently observed confirmed person track")
+        age = p._age("drone", self.rt.clock.now_ms())
+        if age is None or age > p.cfg.sources.drone.max_age_ms:
+            raise ValueError("fresh drone video is required to confirm a target")
+
+    def responder_brief(self, incident_id: str) -> dict[str, Any]:
+        from .briefing import responder_targets
+
+        brief = responder_targets(self.store, incident_id, self.responder.get(incident_id))
+        for target in brief["targets"]:
+            obs = self.store.get_observation(target["observation_id"])
+            if obs.attributes.get("sar"):
+                guidance = self.targets.sar.guidance(obs)
+                target.update(text=guidance["callout"], assistance_guidance=guidance)
+                if "distance_m" in guidance:
+                    target.update(range_m=guidance["distance_m"], bearing_deg=guidance["bearing_deg"],
+                                  clock=guidance.get("clock"), uncertainty_m=guidance["uncertainty_m"],
+                                  map_position=guidance["target_position"])
+                else:
+                    target["grounded"] = False
+                    for field in ("range_m", "bearing_deg", "clock"):
+                        target.pop(field, None)
+        return brief

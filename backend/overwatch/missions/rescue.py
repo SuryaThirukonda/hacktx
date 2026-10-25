@@ -32,6 +32,7 @@ class RescueMission:
         self.no_route = False
         self.look_until = self.search_plan = self.vantage = None
         self.confirmed = False
+        self.last_assessment = None
         self.rejected = set()
 
     def sim(self):
@@ -39,7 +40,7 @@ class RescueMission:
 
     def active(self):
         sim = self.sim()
-        return (self.p.mode == "SIMULATED" and sim is not None and
+        return (self.p.mode == "SIMULATED" and self.p.incident.active and sim is not None and
                 bool(getattr(sim.scenario, "rescue", None)) and self.p.autonomy.target_is_sim)
 
     def event(self, kind, text, now):
@@ -73,9 +74,15 @@ class RescueMission:
             return
         spec = sim.scenario.rescue
         crew = sim.actor("responder")
+        if self.phase in ("SEARCH", "REVIEW", "HOLD") and self.p.autonomy.mode in ("MANUAL", "ESTOP"):
+            self.phase = "PAUSED"
+            self.route = []
+            self.event("rescue_paused", "Operator stopped the simulation rescue; restart to resume.", now)
+            return
         if self.phase == "IDLE" and now >= 1000 and self.p.telemetry:
-            self.p.dispatch(spec["description"], tuple(spec["last_seen_xy"]), spec.get("radius_m", 25),
-                            altitude_m=spec.get("altitude_m", 24), by="simulated rescue dispatch")
+            if self.p.autonomy.plan is None:
+                self.p.dispatch(spec["description"], tuple(spec["last_seen_xy"]), spec.get("radius_m", 25),
+                                altitude_m=spec.get("altitude_m", 24), by="simulated rescue dispatch")
             self.p.autonomy.plan.gimbal_deg = -50.
             self.vantage = np.array(spec["last_seen_xy"], float) + np.array([0., 18.])
             self.p.autonomy.plan.waypoints.insert(0, tuple(self.vantage))
@@ -100,7 +107,9 @@ class RescueMission:
             age = self.p._age("drone", now)
             if (info is not None and info.world_xy is not None and raw is not None and raw.matched_now
                     and age is not None and age <= self.p.cfg.sources.drone.max_age_ms
-                    and subject.track_id not in self.rejected):
+                    and subject.track_id not in self.rejected
+                    and self.p.counters["drone"].last_capture_ms is not None
+                    and -100 <= now - self.p.counters["drone"].last_capture_ms <= self.p.cfg.sources.drone.max_age_ms):
                 xy = tuple(map(float, info.world_xy))
                 self.beacon = dict(xy=xy, label="SIMULATED rescue beacon", created_ms=now,
                                    track_id=subject.track_id, status="pending", uncertainty_m=info.world_err)
@@ -118,14 +127,23 @@ class RescueMission:
             self.ping = dict(xy=crew.pos.tolist(), heading=crew.heading, t=now / 1000,
                              speed=float(np.linalg.norm(crew.vel)))
         if self.phase == "HOLD" and crew is not None and self.beacon:
+            info = self.p._track_info(self.beacon["track_id"])
+            age = self.p._age("drone", now)
+            if info is None or not info.matched_now or age is None or age > self.p.cfg.sources.drone.max_age_ms:
+                self.route = []
+                self.no_route = True
+                return
+            self.beacon["xy"] = tuple(map(float, info.world_xy)) if info.world_xy is not None else self.beacon["xy"]
+            self.p.autonomy.rescue_target = self.beacon["xy"]
             if now - self.last_plan >= 2000:
                 self.last_plan = now
                 self.plan(now, crew.pos)
-            if math.dist(crew.pos, self.beacon["xy"]) <= 3:
+            arrival_radius = 3 + min(3, max(0, self.beacon.get("uncertainty_m") or 0))
+            if math.dist(crew.pos, self.beacon["xy"]) <= arrival_radius and not self.no_route:
                 self.phase = "CREW_ON_SCENE"
                 self.arrived_ms = now
                 self.route = []
-                self.say("Simulation: crew at the approach point. Drone holding for ten seconds.", now, True)
+                self.say("Simulation: crew at the assessed approach, within beacon uncertainty. Drone holding for ten seconds.", now, True)
             elif now - self.last_callout >= 6000:
                 self.last_callout = now
                 delta = np.array(self.beacon["xy"]) - np.array(self.ping["xy"])
@@ -144,35 +162,22 @@ class RescueMission:
             self.phase = "COMPLETE"
             self.event("rescue_complete", "Simulation: rescue handoff complete; drone returned to pad.", now)
 
-    def plan(self, now, start):
+    def assess(self, start, now):
+        from .crew_routing import assessed_route
         sim = self.sim()
-        spec = sim.scenario.rescue
-        speed = spec.get("crew_speed_mps", 3)
-        goal = self.beacon["xy"]
-        if spec["kind"] == "flood":
-            from ..sim.worlds.flood import roads
-            graph = roads()
-            road_edges = list(graph.edges)
-            for key, point in (("crew-now", tuple(start)), ("beacon", goal)):
-                p = np.array(point, float)
-                def projection(edge):
-                    a, b = (np.array(graph.nodes[k], float) for k in edge)
-                    delta = b - a
-                    return a + delta * np.clip(np.dot(p - a, delta) / max(np.dot(delta, delta), 1e-9), 0, 1)
-                edge = min(road_edges, key=lambda e: np.linalg.norm(p - projection(e)))
-                road_key = key + "-road"
-                graph.nodes[key], graph.nodes[road_key] = point, tuple(projection(edge))
-                graph.edges.extend([(key, road_key), (road_key, edge[0]), (road_key, edge[1])])
-            result = flood_route(graph, sim.scenario.hazards.flood, now / 1000, "crew-now", "beacon", walk_mps=speed)
-            if result:
-                result.update(waypoints=[graph.nodes[n] for n in result["path"]], target="beacon")
-        elif spec["kind"] == "fire":
-            from ..sim.worlds.fire import static_blocked, KEEP_OUT_MARGIN_S
-            fire = sim.scenario.hazards.fire
-            result = fire_routes(fire, now / 1000, tuple(start), {"beacon": goal}, static_blocked(fire),
-                                 KEEP_OUT_MARGIN_S, walk_mps=speed, smoke=fire.smoke(now / 1000))["beacon"]
-        else:
-            result = None  # the integrated guidance adapter supplies forest paths
+        layers = sim.scenario.hazards
+        return assessed_route(tuple(start), tuple(self.beacon["xy"]), world=sim.world,
+                              flood=getattr(layers, "flood", None), fire=getattr(layers, "fire", None),
+                              t_s=sim.t_s, max_depth_m=sim.scenario.rescue.get("max_depth_m", .15),
+                              fire_margin_s=getattr(layers, "margin", 120.),
+                              walk_mps=sim.scenario.rescue.get("crew_speed_mps", 3))
+
+    def plan(self, now, start):
+        assessment = self.assess(start, now)
+        self.last_assessment = assessment
+        result = None
+        if assessment["status"] in ("access_route", "approach_only"):
+            result = dict(assessment, waypoints=assessment["points"], target="beacon", keep_out_cells=0)
         self.set_route(result, start, now)
 
     def set_route(self, result, start, now):
@@ -191,6 +196,17 @@ class RescueMission:
     def safe(self, point, t):
         sim = self.sim()
         spec = sim.scenario.rescue
+        x0, x1, y0, y1 = sim.world.bounds
+        if not (x0 <= point[0] <= x1 and y0 <= point[1] <= y1):
+            return False
+        for box in sim.world.boxes:
+            if box.size_lwh[2] < .15:
+                continue
+            h = math.radians(box.heading_deg)
+            dx, dy = point[0] - box.center_xy[0], point[1] - box.center_xy[1]
+            along, across = dx * math.sin(h) + dy * math.cos(h), dx * math.cos(h) - dy * math.sin(h)
+            if abs(along) < box.size_lwh[0] / 2 + .5 and abs(across) < box.size_lwh[1] / 2 + .5:
+                return False
         if spec["kind"] == "flood":
             return sim.scenario.hazards.flood.depth(float(point[0]), float(point[1]), t) <= spec.get("max_depth_m", .15)
         if spec["kind"] == "fire":
@@ -205,7 +221,13 @@ class RescueMission:
 
     def step_sim(self, dt):
         sim = self.sim()
-        if not self.active() or self.phase != "HOLD" or not self.confirmed or not self.route:
+        if (not self.active() or self.phase != "HOLD" or not self.confirmed or not self.route
+                or self.p.autonomy.mode != "HOLD"):
+            return
+        age = self.p._age("drone", self.p.clock.now_ms())
+        capture = self.p.counters["drone"].last_capture_ms
+        if (age is None or age > self.p.cfg.sources.drone.max_age_ms or capture is None
+                or not -100 <= self.p.clock.now_ms() - capture <= self.p.cfg.sources.drone.max_age_ms):
             return
         crew = sim.actor("responder")
         if crew is None:

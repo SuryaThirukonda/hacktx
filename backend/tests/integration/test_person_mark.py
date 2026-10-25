@@ -63,7 +63,7 @@ def request(scene, text="Hey mark the guy wearing the blue tshirt and black pant
     return response.json(), jobs[-1]
 
 
-@pytest.mark.parametrize("confidence,expected", [(.9, "approved"), (.95, "approved"), (.899, "review"), (None, "review")])
+@pytest.mark.parametrize("confidence,expected", [(.9, "review"), (.95, "review"), (.899, "review"), (None, "review")])
 def test_confidence_boundary_and_no_implicit_flight(scene, confidence, expected):
     client, rt, iid, _ = scene
     state, job = request(scene)
@@ -133,6 +133,7 @@ def test_mark_to_follow_requires_real_gate_and_rc_priority(scene):
     p = rt.pipeline
     state, job = request(scene)
     result(rt, job)
+    assert client.post(f"/api/incidents/{iid}/person-mark/confirm", json={"request_id": state["request_id"]}).status_code == 200
     base = f"/api/incidents/{iid}/person-mark/follow"
     body = {"request_id": state["request_id"]}
     assert client.post(base, json=body).status_code == 409
@@ -173,10 +174,11 @@ def test_voice_upload_transcribes_but_does_not_execute_unreviewed_audio(scene, m
 
 
 def test_physical_rebinding_requires_confirmed_track_before_movement(scene):
-    _, rt, _, _ = scene
+    client, rt, iid, _ = scene
     p = rt.pipeline
-    _, job = request(scene)
+    state, job = request(scene)
     result(rt, job)
+    assert client.post(f"/api/incidents/{iid}/person-mark/confirm", json={"request_id": state["request_id"]}).status_code == 200
     original = p.flight_confirmed_track_id
     p.autonomy.bridge = SimpleNamespace(is_sim=False)
     other = p.raw_tracks[1].track_id
@@ -190,11 +192,27 @@ def test_physical_rebinding_requires_confirmed_track_before_movement(scene):
 
 def test_new_request_replaces_previous_mark_and_extra_details_do_not_auto_approve(scene):
     client, rt, iid, _ = scene
-    _, first = request(scene)
+    state, first = request(scene)
     result(rt, first)
+    assert not rt.pipeline.locks["subject"].active
+    assert client.post(f"/api/incidents/{iid}/person-mark/confirm", json={"request_id": state["request_id"]}).status_code == 200
     assert rt.pipeline.locks["subject"].active
     _, next_job = request(scene, "blue shirt black pants with a hat")
     assert not rt.pipeline.locks["subject"].active
     result(rt, next_job, .99)
     assert client.get(f"/api/incidents/{iid}/person-mark").json()["status"] == "review"
     assert not rt.pipeline.locks["subject"].active
+
+
+def test_high_confidence_proposal_creates_no_review_or_flight_binding(scene):
+    client, rt, iid, _ = scene
+    state, job = request(scene)
+    result(rt, job, .999)
+    assert client.get(f"/api/incidents/{iid}/person-mark").json()["status"] == "review"
+    assert rt.incidents.store.list_observations(iid) == []
+    assert rt.pipeline.flight_confirmed_track_id is None
+    approved = client.post(f"/api/incidents/{iid}/person-mark/confirm", json={"request_id": state["request_id"]})
+    assert approved.status_code == 200 and not approved.json()["auto_approved"]
+    views = rt.incidents.store.list_observations(iid)
+    assert len(views) == 1 and views[0].review_status == "confirmed"
+    assert not rt.cfg.autonomy.allow_real_flight and rt.pipeline.autonomy.mode == "MANUAL"

@@ -106,6 +106,16 @@
     }
   },
   "properties": {
+    "motion_profile": {
+      "default": "full",
+      "enum": [
+        "full",
+        "camera_only",
+        "visual_follow"
+      ],
+      "title": "Motion Profile",
+      "type": "string"
+    },
     "mode": {
       "default": "MANUAL",
       "enum": [
@@ -113,7 +123,9 @@
         "FOLLOW",
         "HOLD",
         "RTL",
-        "ESTOP"
+        "ESTOP",
+        "DISPATCH",
+        "GOTO"
       ],
       "title": "Mode",
       "type": "string"
@@ -126,7 +138,11 @@
         "VERIFY",
         "COAST",
         "REACQUIRE",
-        "HOLD"
+        "HOLD",
+        "TAKEOFF",
+        "TRANSIT",
+        "SEARCH",
+        "COVERED"
       ],
       "title": "Fsm",
       "type": "string"
@@ -256,6 +272,42 @@
       ],
       "default": null,
       "title": "Route Label"
+    },
+    "reflex": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Reflex"
+    },
+    "maneuver": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Maneuver"
+    },
+    "scene_ahead_m": {
+      "anyOf": [
+        {
+          "type": "number"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Scene Ahead M"
     }
   },
   "title": "AutonomyState",

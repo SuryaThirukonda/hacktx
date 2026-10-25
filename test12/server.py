@@ -45,7 +45,7 @@ from typing import Any
 
 import cv2
 import numpy as np
-from fastapi import APIRouter, FastAPI, HTTPException
+from fastapi import APIRouter, Depends, FastAPI, HTTPException, Request, WebSocket, WebSocketDisconnect
 from fastapi.responses import FileResponse, Response, StreamingResponse
 from pydantic import BaseModel
 
@@ -78,6 +78,8 @@ class Manager:
         self.callouts: dict[int, str] = {}  # the current run's callouts as they are said, by number
         self.voice_lock: asyncio.Lock | None = None
         self.started = False
+        self.stop_ack = threading.Event()
+        self.frame3d = None
         self._resume_main = False
         self._idle_jpeg: bytes | None = None
         self._world_json: bytes | None = None
@@ -119,7 +121,10 @@ class Manager:
             elif kind in ("state", "end"):
                 with self.lock:
                     self.state_json = msg[2]
+                    self.frame3d = json.loads(msg[2]).get("frame3d")
                 if kind == "end":
+                    self.started = False
+                    self.stop_ack.set()
                     self._resume_main_if_paused()
 
     def _play_out(self) -> None:
@@ -163,6 +168,8 @@ class Manager:
         self._ensure_child()
         seed = int(seed) if seed is not None else random.randrange(1, 100000)
         with self.lock:
+            self.stop_ack.clear()
+            self.frame3d = None
             self.run_no += 1
             self.started = True
             self.inbox.clear()
@@ -184,8 +191,11 @@ class Manager:
         return tts if tts is not None and tts.available else None
 
     def stop(self) -> None:
-        if self.conn is not None:
+        if self.conn is not None and self.started:
+            self.stop_ack.clear()
             self.conn.send(("stop", self.run_no))
+            if not self.stop_ack.wait(8):
+                raise RuntimeError("City process did not acknowledge stop; main simulation remains paused")
 
     def latest_jpeg(self) -> bytes | None:
         with self.lock:
@@ -268,10 +278,24 @@ class ViewBody(BaseModel):
 def mount(app: FastAPI) -> None:
     """Adds the routes ahead of the dashboard's catch-all route, so /test12 is not served the dashboard."""
     MGR.rt = getattr(app.state, "rt", None)
-    r = APIRouter()
+    if MGR.rt is not None:
+        MGR.rt.external_simulator_stop = MGR.stop
+    def authorized(connection):
+        token = MGR.rt.cfg.secrets.overwatch_token if MGR.rt is not None else None
+        got = connection.query_params.get("token") or connection.headers.get("authorization", "").removeprefix("Bearer ").strip()
+        return not token or got == token
+
+    def auth(request: Request):
+        if not authorized(request):
+            raise HTTPException(401, "access token required")
+
+    r = APIRouter(dependencies=[Depends(auth)])
+    pages = APIRouter()
 
     @r.post("/api/test12/start")
     def start(body: StartBody | None = None) -> dict[str, Any]:
+        if MGR.rt is None or MGR.rt.mode != "SIMULATED":
+            raise HTTPException(409, "City chase runs only in the labelled simulation mode")
         spawn = body.spawn if body else None
         if spawn is not None and (len(spawn) != 2 or not all(np.isfinite(spawn))):
             raise HTTPException(422, "spawn is [x, y] in metres")
@@ -357,19 +381,43 @@ def mount(app: FastAPI) -> None:
         return StreamingResponse(gen(), media_type="multipart/x-mixed-replace; boundary=frame",
                                  headers={"Cache-Control": "no-store"})
 
-    @r.get("/test12")
+    @pages.get("/test12")
     def page() -> FileResponse:
         return FileResponse(WEB / "index.html", headers={"Cache-Control": "no-store"})
 
-    @r.get("/test12/{name}")
+    @pages.get("/test12/{name}")
     def asset(name: str) -> FileResponse:
         f = (WEB / name).resolve()
         if f.parent != WEB or not f.is_file():
             raise HTTPException(404)
         return FileResponse(f, headers={"Cache-Control": "no-store"})
 
+    @r.get("/api/test12/ortho.jpg")
+    def ortho():
+        image = shared()["renderer"].levels[0].image
+        return Response(cv2.imencode(".jpg", image)[1].tobytes(), media_type="image/jpeg")
+
+    @pages.websocket("/ws/test12/sim3d")
+    async def sim3d_socket(ws: WebSocket):
+        if not authorized(ws):
+            await ws.close(code=4401)
+            return
+        await ws.accept()
+        try:
+            from .sim3d import world as world3d
+            payload = await asyncio.to_thread(lambda: world3d(shared()))
+            await ws.send_json(payload)
+            while True:
+                with MGR.lock:
+                    current = MGR.frame3d
+                if current:
+                    await ws.send_json(current)
+                await asyncio.sleep(.2)
+        except (WebSocketDisconnect, RuntimeError):
+            return
+
     # the route objects go straight in, just before the dashboard's catch-all (include_router may wrap them in one
     # entry appended after it, where GET /test12 would never be reached); every other route keeps its place
     routes = app.router.routes
     at = next((i for i, rt in enumerate(routes) if getattr(rt, "path", None) == "/{path:path}"), len(routes))
-    routes[at:at] = list(r.routes)
+    routes[at:at] = [*r.routes, *pages.routes]

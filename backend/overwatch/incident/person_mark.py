@@ -47,11 +47,9 @@ class PersonMarkService:
         return age is not None and age <= self.rt.cfg.sources.drone.max_age_ms
 
     def _current(self, iid: str) -> None:
-        inc = self.service.store.get_incident(iid)
-        if iid != self.service.current_id or inc.status != "active":
-            raise ValueError("marking is available only in the current active incident")
+        self.service.require_current_control(iid)
 
-    def request(self, iid: str, description: str) -> dict:
+    def request(self, iid: str, description: str, *, continuous: bool = False) -> dict:
         p = self.rt.pipeline
         with p.lock:
             self._current(iid)
@@ -84,12 +82,92 @@ class PersonMarkService:
                      "confidence": None, "engine": None, "track_id": None, "reason": "Matching visible clothing…",
                      "threshold": AUTO_THRESHOLD, "session_id": p.session_id, "created_ms": self.rt.clock.now_ms(),
                      "lock_version": [previous.since_ms, previous.track_id], "auto_approved": False}
+            state.update(continuous=continuous, candidates=[], stable_frames=0, stable_track=None, last_frame_id=None,
+                         tracker_epoch=p.tracker.epoch)
             self.requests.clear()
             self.requests[iid] = state
-            if not p.describe(description, {"person_mark_request": request_id, "incident_id": iid}):
+            if continuous:
+                state.update(status="searching", engine="clothing_rules", reason="Searching current clothing measurements.")
+            elif not p.describe(description, {"person_mark_request": request_id, "incident_id": iid}):
                 state.update(status="no_match", reason="No confirmed people in view, or the decision engine is busy. Try again.")
             self.service.store.append_event(iid, "person_mark_requested", self._public(state))
             return self.view(iid)
+
+    def refresh_continuous(self, iid: str) -> None:
+        """Continuous measured-fact acquisition; never waits for a language-model result.
+
+        Existing one-shot person-mark API retains its human-confirmation policy. Only
+        this explicit search request can select automatically, and only in simulation.
+        """
+        state = self.requests.get(iid)
+        if not state or not state.get("continuous") or state["status"] in ("approved", "released", "superseded"):
+            return
+        p = self.rt.pipeline
+        if (iid != self.service.current_id or state["session_id"] != p.session_id or not p.incident.active
+                or state.get("tracker_epoch") != p.tracker.epoch):
+            state.update(status="released", reason="Incident/session changed; request again.")
+            return
+        if not self._fresh():
+            state.update(status="searching", stable_frames=0, candidates=[], track_id=None,
+                         reason="Video stale or disconnected; no fresh candidate.")
+            return
+        capture = p.counters["drone"].last_capture_ms
+        if capture is None or not -100 <= self.rt.clock.now_ms() - capture <= self.rt.cfg.sources.drone.max_age_ms:
+            state.update(status="searching", stable_frames=0, candidates=[], track_id=None,
+                         reason="Captured frame is stale; waiting for a current measurement.")
+            return
+        lock = p.locks["subject"]
+        if [lock.since_ms, lock.track_id] != state["lock_version"]:
+            state.update(status="superseded", reason="Operator changed the designation; request a new search.")
+            return
+        constraints = clothing_constraints(state["description"])
+        from ..vision.quality import measurement_problems
+
+        candidates = []
+        for t in p.raw_tracks:
+            if t.track_id in (getattr(p.locks["subject"], "rejected", set()) | p._dispatch_rejected):
+                continue
+            if (t.class_name != "person" or t.state != "CONFIRMED" or not t.matched_now
+                    or t.track_id == p.locks["responder"].track_id):
+                continue
+            colors = p.track_colors.get(t.track_id, ("unknown", "unknown"))
+            facts = {"torso": colors[0].replace("gray", "grey"), "lower": colors[1].replace("gray", "grey")}
+            if not constraints or not all(facts[k] == v for k, v in constraints.items()):
+                continue
+            problems = measurement_problems(t, p.raw_tracks, p.last_frame_size,
+                                            self.rt.cfg.perception.tracker.high_thresh, p.last_detections)
+            candidates.append({"track_id": t.track_id, "colors": facts, "score": t.conf,
+                               "quality_reasons": list(problems), "well_supported": not problems and t.hits >= 5})
+        candidates.sort(key=lambda c: c["track_id"])
+        state["candidates"] = candidates
+        state["confidence"] = None  # deterministic clothing evidence is not an identity probability
+        if not candidates:
+            state.update(status="searching", track_id=None, stable_frames=0, reason="No current clothing match; search continues.")
+            return
+        if len(candidates) != 1:
+            state.update(status="review", track_id=None, stable_frames=0,
+                         reason="Multiple clothing matches; select and confirm a candidate.")
+            return
+        candidate = candidates[0]
+        tid = candidate["track_id"]
+        if state["stable_track"] != tid:
+            state.update(stable_track=tid, stable_frames=0)
+        if state["last_frame_id"] != p.last_frame_id:
+            state["stable_frames"] = state["stable_frames"] + 1 if candidate["well_supported"] else 0
+            state["last_frame_id"] = p.last_frame_id
+        state.update(status="review", track_id=tid,
+                     reason="Clothing candidate proposed; explicit human confirmation required.")
+        simulation = (self.rt.mode == "SIMULATED" and self.rt.sim is not None and p.autonomy.target_is_sim
+                      and p.counters["drone"].provenance == "SYNTHETIC")
+        if (simulation and state["stable_frames"] >= 3 and not p.crowd
+                and supports_automatic_match(state["description"])):
+            # Operational selection, not a human review or physical flight-target confirmation.
+            p.lock_track("subject", tid, "simulation clothing rules", state["description"])
+            self.service.follow_update(iid)
+            state.update(status="approved", auto_approved=True, human_confirmed=False,
+                         designation=self.service.follow_tracker(iid).s.designation,
+                         reason="Unique repeated clothing match selected in simulation; no aircraft command issued.")
+            self.service.store.append_event(iid, "target_auto_selected", self._public(state))
 
     @staticmethod
     def _public(state: dict) -> dict:
@@ -131,14 +209,16 @@ class PersonMarkService:
             elif probs and margin < 0.15:
                 state.update(status="review", reason="The candidate scores are too close; confirm visually.")
             else:
-                self._approve(iid, state, "OpenAI clothing match ≥90%", automatic=True)
+                state.update(status="review", reason="Strong clothing match proposed. Confirm the visible person before binding the target.")
         self.service.store.append_event(iid, "person_mark_result", self._public(state))
 
     def _candidate_problem(self, iid: str, state: dict, check_request_age: bool = False) -> str | None:
         p = self.rt.pipeline
-        if iid != self.service.current_id or state["session_id"] != p.session_id or not p.incident.active or p.crowd:
+        if (iid != self.service.current_id or state["session_id"] != p.session_id or not p.incident.active or p.crowd
+                or state.get("tracker_epoch", p.tracker.epoch) != p.tracker.epoch):
             return "Incident/session changed; request a new mark."
-        max_age = self.rt.cfg.decisions.stale_after_s * 1000 if check_request_age else 30000
+        max_age = (float("inf") if state.get("continuous") else
+                   self.rt.cfg.decisions.stale_after_s * 1000 if check_request_age else 30000)
         if self.rt.clock.now_ms() - state["created_ms"] > max_age:
             return "Match expired; request a fresh match."
         if not self._fresh():
@@ -155,20 +235,32 @@ class PersonMarkService:
     def _approve(self, iid: str, state: dict, by: str, automatic: bool) -> None:
         if self.rt.pipeline.autonomy.mode in ("FOLLOW", "HOLD"):
             self.rt.pipeline.set_autonomy_mode("MANUAL", "new marked target requires explicit follow start")
-        self.service.follow_designate(iid, state["track_id"], by)
-        state["designation"] = self.service.follow_tracker(iid).s.designation
+        binding = self.service.follow_designate(iid, state["track_id"], by)
+        state.update(designation=binding["designation"], observation_id=binding["observation_id"])
         state.update(status="approved", auto_approved=automatic, reason="Person marked. Tracking active; aircraft follow requires a separate start.")
 
-    def confirm(self, iid: str, request_id: str) -> dict:
+    def confirm(self, iid: str, request_id: str, track_id: str | None = None) -> dict:
         with self.rt.pipeline.lock:
             self._current(iid)
             state = self.requests.get(iid)
             if not state or state["request_id"] != request_id or state["status"] != "review":
                 raise ValueError("no current match awaiting confirmation")
+            if state.get("continuous"):
+                self.refresh_continuous(iid)
+                if track_id is not None:
+                    if not any(c["track_id"] == track_id and c["well_supported"] for c in state["candidates"]):
+                        raise ValueError("candidate needs fresh supported clothing evidence")
+                    state["track_id"] = track_id
+                if not state.get("track_id"):
+                    raise ValueError("select one of the current candidate alternatives")
+                candidate = next((c for c in state["candidates"] if c["track_id"] == state["track_id"]), None)
+                if candidate is None or not candidate["well_supported"]:
+                    raise ValueError("candidate measurement quality is insufficient")
             problem = self._candidate_problem(iid, state)
             if problem:
                 raise ValueError(problem)
             self._approve(iid, state, "responder confirmed clothing match", automatic=False)
+            state["human_confirmed"] = True
             self.service.store.append_event(iid, "person_mark_confirmed", self._public(state))
             return self.view(iid)
 

@@ -616,6 +616,7 @@ class WorldState(Msg):
     dispatch: DispatchStatus | None = None
     pursuit: PursuitState | None = None
     voice: dict[str, Any] | None = None  # operator commands: transcript, intent, primitive, question, approval
+    rescue: dict[str, Any] | None = None  # labelled simulator beacon and crew state
     crew_routing: dict[str, Any] | None = None  # ground-crew routes through water or fire, planned live
     decisions: DecisionStatus | None = None
     alerts_active: list[Alert] = []

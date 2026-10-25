@@ -1,0 +1,9 @@
+{
+  "sar_explanation_visible": true,
+  "continuous_search_and_persistent_subject": true,
+  "confirmed_guidance_and_map_route": true,
+  "responder_delivery_ack_and_dashboard_update": true,
+  "no_physical_permission_or_follow_start": true,
+  "no_browser_errors": true,
+  "pass": true
+}

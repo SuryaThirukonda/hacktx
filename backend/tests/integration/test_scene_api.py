@@ -75,3 +75,15 @@ def test_synthetic_indoor_sample_is_labelled_and_unaligned(client, inc):
     a = client.post(f"/api/incidents/{inc['id']}/scene/sample-indoor", params=client.params).json()
     assert a["frame"].startswith("arkit:") and "SYNTHETIC" in a["origin"] and a["transforms"] == []
     assert b"SYNTHETIC" in client.get(a["url"]).content[:200]
+
+
+def test_native_mesh_samples_keep_local_arkit_frame(client, inc):
+    payload = PLY.replace(b"element vertex", b"comment ARKit local frame test units metres up_axis y\ncomment capture_system_uptime_s 123.45\nelement vertex")
+    r = client.post(f"/api/incidents/{inc['id']}/scene/assets", content=payload,
+                    params={**client.params, "name": "iPhone LiDAR", "format": "ply", "frame_kind": "arkit",
+                            "up_axis": "y", "provenance": "live", "origin": "ARKit mesh samples; local metres; unaligned"})
+    assert r.status_code == 200, r.text
+    asset = r.json()
+    assert asset["frame"].startswith("arkit:") and asset["up_axis"] == "y"
+    assert asset["transforms"] == [] and asset["provenance"] == "live"
+    assert client.get(asset["url"]).content == payload

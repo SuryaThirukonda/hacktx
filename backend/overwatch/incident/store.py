@@ -33,6 +33,7 @@ CREATE TABLE IF NOT EXISTS transforms (id TEXT PRIMARY KEY, incident_id TEXT, bo
 CREATE TABLE IF NOT EXISTS alerts (id TEXT PRIMARY KEY, incident_id TEXT, created_at TEXT, body TEXT NOT NULL);
 CREATE TABLE IF NOT EXISTS actions (id TEXT PRIMARY KEY, incident_id TEXT, created_at TEXT, body TEXT NOT NULL);
 CREATE TABLE IF NOT EXISTS scene_assets (id TEXT PRIMARY KEY, incident_id TEXT, created_at TEXT, body TEXT NOT NULL);
+CREATE TABLE IF NOT EXISTS target_memory (id TEXT PRIMARY KEY, incident_id TEXT, body TEXT NOT NULL);
 CREATE TABLE IF NOT EXISTS events (seq INTEGER PRIMARY KEY AUTOINCREMENT, incident_id TEXT, at TEXT, kind TEXT,
                                    payload TEXT NOT NULL);
 CREATE INDEX IF NOT EXISTS obs_inc ON observations_raw(incident_id, observed_at);
@@ -233,26 +234,28 @@ class IncidentStore:
         return self._get("alerts", Alert, alert_id)
 
     def mark_delivered(self, alert_id: str) -> Alert:
-        a = self.get_alert(alert_id)
-        if a.delivered_at is None:
-            a.delivered_at = utcnow()
-            if a.status == "pending":
-                a.status = "delivered"
-            self._put("alerts", {"id": a.id, "incident_id": a.incident_id, "created_at": self._ts(a.created_at)}, a)
-            self.append_event(a.incident_id, "alert_delivered", {"alert_id": a.id, "at": self._ts(a.delivered_at)},
-                              at=a.delivered_at)
-        return a
+        with self._lock:  # atomic read/update/log: retries from concurrent clients are idempotent
+            a = self.get_alert(alert_id)
+            if a.delivered_at is None:
+                a.delivered_at = utcnow()
+                if a.status == "pending":
+                    a.status = "delivered"
+                self._put("alerts", {"id": a.id, "incident_id": a.incident_id, "created_at": self._ts(a.created_at)}, a)
+                self.append_event(a.incident_id, "alert_delivered", {"alert_id": a.id, "at": self._ts(a.delivered_at)},
+                                  at=a.delivered_at)
+            return a
 
     def acknowledge_alert(self, alert_id: str, by: str = "responder") -> Alert:
-        a = self.get_alert(alert_id)
-        if a.acknowledged_at is None:
-            a.acknowledged_at = utcnow()
-            a.acknowledged_by = by
-            a.status = "acknowledged"
-            self._put("alerts", {"id": a.id, "incident_id": a.incident_id, "created_at": self._ts(a.created_at)}, a)
-            self.append_event(a.incident_id, "alert_acknowledged",
-                              {"alert_id": a.id, "by": by, "at": self._ts(a.acknowledged_at)}, at=a.acknowledged_at)
-        return a
+        with self._lock:  # atomic read/update/log: retries from concurrent clients are idempotent
+            a = self.get_alert(alert_id)
+            if a.acknowledged_at is None:
+                a.acknowledged_at = utcnow()
+                a.acknowledged_by = by
+                a.status = "acknowledged"
+                self._put("alerts", {"id": a.id, "incident_id": a.incident_id, "created_at": self._ts(a.created_at)}, a)
+                self.append_event(a.incident_id, "alert_acknowledged",
+                                  {"alert_id": a.id, "by": by, "at": self._ts(a.acknowledged_at)}, at=a.acknowledged_at)
+            return a
 
     def list_alerts(self, incident_id: str) -> list[Alert]:
         return self._list("alerts", Alert, incident_id, "created_at")
@@ -273,3 +276,18 @@ class IncidentStore:
 
     def list_actions(self, incident_id: str) -> list[MissionAction]:
         return self._list("actions", MissionAction, incident_id, "created_at")
+
+    def save_target(self, incident_id: str, target: dict[str, Any], event: str | None = None) -> None:
+        """Latest read model plus append-only snapshots/transitions in the existing incident log."""
+        if target.get("incident_id") != incident_id or not target.get("logical_subject_id"):
+            raise ValueError("target memory must belong to its incident")
+        self.get_incident(incident_id)
+        with self._lock:
+            self._db.execute("INSERT OR REPLACE INTO target_memory (id, incident_id, body) VALUES (?,?,?)",
+                             (target["logical_subject_id"], incident_id, json.dumps(target, allow_nan=False)))
+        if event:
+            self.append_event(incident_id, event, target)
+
+    def list_targets(self, incident_id: str) -> list[dict[str, Any]]:
+        return [json.loads(r[0]) for r in self._q("SELECT body FROM target_memory WHERE incident_id=? ORDER BY rowid",
+                                               (incident_id,))]

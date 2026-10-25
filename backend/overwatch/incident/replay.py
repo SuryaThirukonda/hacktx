@@ -8,6 +8,7 @@ recomputed from the log can be compared with the live values.
 
 from __future__ import annotations
 
+import json
 from typing import Iterable
 
 from .models import Alert, IncidentEvent, MissionAction, Observation, Review, SceneAnchor, Track, Transform
@@ -57,6 +58,9 @@ def rebuild(events: Iterable[IncidentEvent]) -> IncidentStore:
         elif k == "decision_proposal":
             act = MissionAction.model_validate(p)
             st._put("actions", {"id": act.id, "incident_id": act.incident_id, "created_at": ts(act.created_at)}, act)  # noqa: SLF001
+        elif k in ("target_state", "target_snapshot", "target_archived"):
+            st._db.execute("INSERT OR REPLACE INTO target_memory (id, incident_id, body) VALUES (?,?,?)",  # noqa: SLF001
+                           (p["logical_subject_id"], e.incident_id, json.dumps(p)))
         # copy the event itself so event-based metrics see the same log
         st._append_raw(e)  # noqa: SLF001
     return st

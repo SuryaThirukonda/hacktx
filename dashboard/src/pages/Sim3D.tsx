@@ -144,7 +144,7 @@ export function Sim3D() {
   const [unavailable, setUnavailable] = useState(false);
 
   useEffect(() => {
-    document.documentElement.setAttribute("data-theme", "dark");
+    document.documentElement.setAttribute("data-theme", localStorage.getItem("overwatch.theme") === "light" ? "light" : "dark");
     document.title = "Overwatch · 3D decision view";
     if (!host.current) return;
     const c = new SceneController(host.current);

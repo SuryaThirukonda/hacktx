@@ -29,7 +29,7 @@ dashboard:        ## run the dashboard dev server on :5188 (proxies /api and /ws
 	cd dashboard && npx vite --host 0.0.0.0 --port 5188
 
 build:            ## build the dashboard; the backend then serves it at http://<mac>:8000/
-	cd dashboard && npx vite build
+	cd dashboard && npm run build
 
 test:             ## backend unit + integration tests and dashboard typecheck
 	cd backend && .venv/bin/python -m pytest -q
@@ -67,3 +67,22 @@ e2e:              ## the demo end to end in headless Chrome, twice, outcomes com
 
 bench-incident:   ## SIMULATED incident benchmark: demo world, scripted operator and responder, metrics from the log
 	cd backend && .venv/bin/python scripts/benchmark_incident.py
+
+.PHONY: sar-demo sar-eval rescue-eval e2e-workspace e2e-live e2e-sar
+sar-demo:         ## deterministic SAR review/ACK demo, loopback :8011
+	PYTHONPATH=backend $(PY) backend/scripts/run_sar_demo.py --port 8011
+
+sar-eval:         ## rendered SAR1 acceptance through incident API and ACK
+	PYTHONPATH=backend OVERWATCH_DB=:memory: $(PY) backend/scripts/evaluate_sar.py --output evaluation/current/sar-acceptance
+
+rescue-eval:      ## flood/fire/forest launch, beacon, human review, crew and return
+	PYTHONPATH=backend $(PY) backend/scripts/evaluate_rescue.py --output evaluation/current/rescue
+
+e2e-workspace:    ## redesigned workspace, City handoff, coverage and review
+	PYTHONPATH=backend $(PY) backend/scripts/e2e_workspace.py
+
+e2e-live:         ## LIVE UI and disarmed startup without hardware
+	PYTHONPATH=backend $(PY) backend/scripts/e2e_live_dashboard.py
+
+e2e-sar:          ## incident-command SAR review and responder ACK
+	PYTHONPATH=backend $(PY) backend/scripts/e2e_sar.py

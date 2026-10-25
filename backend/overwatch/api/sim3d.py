@@ -53,7 +53,7 @@ def world_payload(sim) -> dict[str, Any]:
         "zones": [{"name": z.name, "polygon": z.polygon} for z in w.zones],
         "geofence": w.geofence,
         "hazards": hz.world_3d() if hz is not None and hasattr(hz, "world_3d") else None,
-        "drone_mesh": {"obj": "/api/sim3d/asset/x2.obj", "texture": "/api/sim3d/asset/x2.png",
+        "drone_mesh": {"model": "jev-x2" if getattr(sim.scenario, "stack", "mini2") == "jev-x2" else "mini2", "obj": "/api/sim3d/asset/x2.obj", "texture": "/api/sim3d/asset/x2.png",
                        "scale": 0.01, "quat_wxyz": [0.0, 0.0, 0.70710678, 0.70710678],
                        "source": "Skydio X2, MuJoCo Menagerie (Apache-2.0)"},
     }
@@ -167,6 +167,8 @@ def frame_payload(rt) -> dict[str, Any]:
         "decisions": dec,
         "pursuit": pursuit,
         "crew_route": _crew_route(p),
+        "survey": sim.survey.encode(sim.t_s),
+        "beacon": p.rescue.beacon if p.rescue.active() else None,
     }
 
 

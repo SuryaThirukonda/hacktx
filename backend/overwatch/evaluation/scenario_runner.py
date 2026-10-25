@@ -172,6 +172,7 @@ class RunResult:
     registration: dict[str, Any] = field(default_factory=dict)
     engine: dict[str, Any] = field(default_factory=dict)
     voice: list[dict] = field(default_factory=list)  # operator commands: transcript, intent, primitive, approval
+    rescue: dict[str, Any] | None = None
     crew_routes: list[dict] = field(default_factory=list)  # the live crew planner's routes: {ts_ms, depart_s, route}
 
 
@@ -200,13 +201,16 @@ class HeadlessRunner:
         from ..voice.grounding import world_entities
         self.pipeline.voice.entities_provider = lambda: world_entities(self.sim.world, self.sim.map_data())
         self.pipeline.crew.problem_provider = self.sim.crew_problem
+        self.pipeline.rescue.sim_provider = lambda: self.sim
+        self.sim.rescue = self.pipeline.rescue
         self.pipeline.detector_override = self.sim.scenario.detector
         self.pipeline.autonomy.obstacle_sensor = self.sim.obstacle_scene if self.sim.scenario.stack == "jev-x2" else None
         self.operator = OperatorEmulator(self.pipeline, self.sim)
         self._phone_gt: tuple[int, list[dict]] | None = None
 
     def run(self, duration_s: float | None = None, record_every_ms: float = 100.0,
-            on_step: Callable[[HeadlessRunner, float], None] | None = None) -> RunResult:
+            on_step: Callable[[HeadlessRunner, float], None] | None = None,
+            stop_when: Callable[[HeadlessRunner, float], bool] | None = None) -> RunResult:
         sim, p = self.sim, self.pipeline
         dur = duration_s or sim.scenario.duration_s
         dt = 1.0 / sim.WORLD_HZ
@@ -244,6 +248,9 @@ class HeadlessRunner:
                 res.steps.append(self._record(t))
             if on_step:
                 on_step(self, t)
+            if stop_when and stop_when(self, t):
+                res.duration_s = sim.t_s
+                break
         res.wall_s = time.perf_counter() - t_wall
         res.events = [e.model_dump() for e in p.events]
         res.alerts = [a.model_dump() for a in p.arbiter.history]
@@ -252,6 +259,7 @@ class HeadlessRunner:
         res.operator_log = self.operator.log
         res.voice = [dict(c) for c in p.voice.cmds]
         res.crew_routes = list(p.crew.history)
+        res.rescue = p.rescue.view()
         res.registration = p.registration.status.model_dump()
         res.engine = {"requested": self.engine_requested, "used": self.engine_used,
                       "note": None if not self.engine_requested or self.engine_used == self.engine_requested

@@ -1,6 +1,6 @@
 # Combined integration and simulation dashboard
 
-This is the current implementation record. The two earlier audits remain historical snapshots.
+This report describes the earlier platform integration. The current manual synchronization, repairs, feature inventory and measured validation are recorded in [6am.md](../6am.md). Test counts and implementation claims below are historical snapshots, not the current acceptance record.
 
 ## What was combined - `main` was clean at `2d75621` before integration. The previously uncommitted hazards work was checkpointed as `9b34d6d` in its worktree before merging.
 - `f14030f` merges `feat/fire-water-3d`, preserving pursuit, belief and story overlays while adding richer flood and fire geometry. It also fixes scenario-specific locks being loaded from the previous scenario.

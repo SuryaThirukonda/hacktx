@@ -81,6 +81,8 @@ def _run(conn, run_no: int, seed: int, spawn, ctl: dict, detector, frames):
 
     def state(extra: dict | None = None) -> bytes:
         st = run.state()
+        from .sim3d import frame as frame3d
+        st["frame3d"] = frame3d(run, st)
         st["run_no"] = run_no
         st["view"] = ctl["view"]
         st["speed"] = round(speed, 2)

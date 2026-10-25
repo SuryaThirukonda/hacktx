@@ -1,0 +1,797 @@
+{
+  "compared_to": "abe3a67",
+  "description": "Files changed by repair and integration, excluding this generated inventory itself.",
+  "count": 158,
+  "files": [
+    {
+      "status": "A",
+      "path": "6am.md",
+      "category": "documentation"
+    },
+    {
+      "status": "M",
+      "path": "Makefile",
+      "category": "implementation or tooling"
+    },
+    {
+      "status": "M",
+      "path": "README.md",
+      "category": "documentation"
+    },
+    {
+      "status": "M",
+      "path": "backend/overwatch/api/app.py",
+      "category": "implementation or tooling"
+    },
+    {
+      "status": "M",
+      "path": "backend/overwatch/api/incidents.py",
+      "category": "implementation or tooling"
+    },
+    {
+      "status": "M",
+      "path": "backend/overwatch/api/sim3d.py",
+      "category": "implementation or tooling"
+    },
+    {
+      "status": "A",
+      "path": "backend/overwatch/api/targets.py",
+      "category": "implementation or tooling"
+    },
+    {
+      "status": "M",
+      "path": "backend/overwatch/autonomy/controller.py",
+      "category": "implementation or tooling"
+    },
+    {
+      "status": "M",
+      "path": "backend/overwatch/config.py",
+      "category": "implementation or tooling"
+    },
+    {
+      "status": "M",
+      "path": "backend/overwatch/decisions/router.py",
+      "category": "implementation or tooling"
+    },
+    {
+      "status": "M",
+      "path": "backend/overwatch/evaluation/scenario_runner.py",
+      "category": "implementation or tooling"
+    },
+    {
+      "status": "M",
+      "path": "backend/overwatch/incident/briefing.py",
+      "category": "implementation or tooling"
+    },
+    {
+      "status": "M",
+      "path": "backend/overwatch/incident/person_mark.py",
+      "category": "implementation or tooling"
+    },
+    {
+      "status": "M",
+      "path": "backend/overwatch/incident/replay.py",
+      "category": "implementation or tooling"
+    },
+    {
+      "status": "M",
+      "path": "backend/overwatch/incident/service.py",
+      "category": "implementation or tooling"
+    },
+    {
+      "status": "M",
+      "path": "backend/overwatch/incident/store.py",
+      "category": "implementation or tooling"
+    },
+    {
+      "status": "A",
+      "path": "backend/overwatch/incident/targets.py",
+      "category": "implementation or tooling"
+    },
+    {
+      "status": "M",
+      "path": "backend/overwatch/missions/crew_routing.py",
+      "category": "implementation or tooling"
+    },
+    {
+      "status": "M",
+      "path": "backend/overwatch/missions/rescue.py",
+      "category": "implementation or tooling"
+    },
+    {
+      "status": "A",
+      "path": "backend/overwatch/missions/sar.py",
+      "category": "implementation or tooling"
+    },
+    {
+      "status": "A",
+      "path": "backend/overwatch/missions/sar_guidance.py",
+      "category": "implementation or tooling"
+    },
+    {
+      "status": "M",
+      "path": "backend/overwatch/pipeline.py",
+      "category": "implementation or tooling"
+    },
+    {
+      "status": "M",
+      "path": "backend/overwatch/runtime.py",
+      "category": "implementation or tooling"
+    },
+    {
+      "status": "M",
+      "path": "backend/overwatch/schemas.py",
+      "category": "implementation or tooling"
+    },
+    {
+      "status": "M",
+      "path": "backend/overwatch/sim/driver.py",
+      "category": "implementation or tooling"
+    },
+    {
+      "status": "M",
+      "path": "backend/overwatch/sim/scenarios.py",
+      "category": "implementation or tooling"
+    },
+    {
+      "status": "M",
+      "path": "backend/overwatch/sim/survey.py",
+      "category": "implementation or tooling"
+    },
+    {
+      "status": "M",
+      "path": "backend/overwatch/sim/visibility.py",
+      "category": "implementation or tooling"
+    },
+    {
+      "status": "A",
+      "path": "backend/overwatch/sim/worlds/assistance.py",
+      "category": "implementation or tooling"
+    },
+    {
+      "status": "M",
+      "path": "backend/overwatch/sim/worlds/fire.py",
+      "category": "implementation or tooling"
+    },
+    {
+      "status": "A",
+      "path": "backend/overwatch/sim/worlds/rescue.py",
+      "category": "implementation or tooling"
+    },
+    {
+      "status": "M",
+      "path": "backend/overwatch/tracking/memory.py",
+      "category": "implementation or tooling"
+    },
+    {
+      "status": "M",
+      "path": "backend/overwatch/usecases.py",
+      "category": "implementation or tooling"
+    },
+    {
+      "status": "M",
+      "path": "backend/overwatch/vision/detectors.py",
+      "category": "implementation or tooling"
+    },
+    {
+      "status": "M",
+      "path": "backend/pyproject.toml",
+      "category": "implementation or tooling"
+    },
+    {
+      "status": "M",
+      "path": "backend/scripts/benchmark_models.py",
+      "category": "implementation or tooling"
+    },
+    {
+      "status": "M",
+      "path": "backend/scripts/e2e_demo.py",
+      "category": "implementation or tooling"
+    },
+    {
+      "status": "A",
+      "path": "backend/scripts/e2e_live_dashboard.py",
+      "category": "implementation or tooling"
+    },
+    {
+      "status": "A",
+      "path": "backend/scripts/e2e_sar.py",
+      "category": "implementation or tooling"
+    },
+    {
+      "status": "A",
+      "path": "backend/scripts/e2e_workspace.py",
+      "category": "implementation or tooling"
+    },
+    {
+      "status": "A",
+      "path": "backend/scripts/evaluate_rescue.py",
+      "category": "implementation or tooling"
+    },
+    {
+      "status": "A",
+      "path": "backend/scripts/evaluate_sar.py",
+      "category": "implementation or tooling"
+    },
+    {
+      "status": "A",
+      "path": "backend/scripts/run_sar_demo.py",
+      "category": "implementation or tooling"
+    },
+    {
+      "status": "A",
+      "path": "backend/scripts/small_target_sweep.py",
+      "category": "implementation or tooling"
+    },
+    {
+      "status": "A",
+      "path": "backend/tests/integration/test_city_handoff.py",
+      "category": "test"
+    },
+    {
+      "status": "M",
+      "path": "backend/tests/integration/test_drone_bridge_live.py",
+      "category": "test"
+    },
+    {
+      "status": "M",
+      "path": "backend/tests/integration/test_incident_api.py",
+      "category": "test"
+    },
+    {
+      "status": "A",
+      "path": "backend/tests/integration/test_incident_control_scope.py",
+      "category": "test"
+    },
+    {
+      "status": "M",
+      "path": "backend/tests/integration/test_person_mark.py",
+      "category": "test"
+    },
+    {
+      "status": "A",
+      "path": "backend/tests/integration/test_sar_workflow.py",
+      "category": "test"
+    },
+    {
+      "status": "M",
+      "path": "backend/tests/integration/test_scene_api.py",
+      "category": "test"
+    },
+    {
+      "status": "A",
+      "path": "backend/tests/integration/test_search_responder_workflow.py",
+      "category": "test"
+    },
+    {
+      "status": "A",
+      "path": "backend/tests/integration/test_target_acquisition.py",
+      "category": "test"
+    },
+    {
+      "status": "M",
+      "path": "backend/tests/integration/test_web_bridge_setup.py",
+      "category": "test"
+    },
+    {
+      "status": "A",
+      "path": "backend/tests/unit/test_benchmark_models_cli.py",
+      "category": "test"
+    },
+    {
+      "status": "M",
+      "path": "backend/tests/unit/test_incident_store.py",
+      "category": "test"
+    },
+    {
+      "status": "M",
+      "path": "backend/tests/unit/test_perception.py",
+      "category": "test"
+    },
+    {
+      "status": "M",
+      "path": "backend/tests/unit/test_responder_briefing.py",
+      "category": "test"
+    },
+    {
+      "status": "A",
+      "path": "backend/tests/unit/test_sar_triage_guidance.py",
+      "category": "test"
+    },
+    {
+      "status": "A",
+      "path": "backend/tests/unit/test_small_target_sweep.py",
+      "category": "test"
+    },
+    {
+      "status": "A",
+      "path": "backend/tests/unit/test_subject_memory.py",
+      "category": "test"
+    },
+    {
+      "status": "A",
+      "path": "backend/tests/unit/test_survey_rescue.py",
+      "category": "test"
+    },
+    {
+      "status": "M",
+      "path": "backend/tests/unit/test_worlds.py",
+      "category": "test"
+    },
+    {
+      "status": "A",
+      "path": "dashboard/src/components/SimulationScene.tsx",
+      "category": "implementation or tooling"
+    },
+    {
+      "status": "M",
+      "path": "dashboard/src/components/SurveyMap.tsx",
+      "category": "implementation or tooling"
+    },
+    {
+      "status": "A",
+      "path": "dashboard/src/components/TargetSARPanel.tsx",
+      "category": "implementation or tooling"
+    },
+    {
+      "status": "M",
+      "path": "dashboard/src/components/mission/RightRail.tsx",
+      "category": "implementation or tooling"
+    },
+    {
+      "status": "M",
+      "path": "dashboard/src/lib/api.ts",
+      "category": "implementation or tooling"
+    },
+    {
+      "status": "M",
+      "path": "dashboard/src/lib/incident.ts",
+      "category": "implementation or tooling"
+    },
+    {
+      "status": "M",
+      "path": "dashboard/src/lib/sim3d.ts",
+      "category": "implementation or tooling"
+    },
+    {
+      "status": "M",
+      "path": "dashboard/src/lib/useSimulationFeed.ts",
+      "category": "implementation or tooling"
+    },
+    {
+      "status": "M",
+      "path": "dashboard/src/main.tsx",
+      "category": "implementation or tooling"
+    },
+    {
+      "status": "M",
+      "path": "dashboard/src/pages/Demo.tsx",
+      "category": "implementation or tooling"
+    },
+    {
+      "status": "M",
+      "path": "dashboard/src/pages/Mission.tsx",
+      "category": "implementation or tooling"
+    },
+    {
+      "status": "M",
+      "path": "dashboard/src/pages/Sim3D.tsx",
+      "category": "implementation or tooling"
+    },
+    {
+      "status": "A",
+      "path": "dashboard/src/pages/SimulationDashboard.tsx",
+      "category": "implementation or tooling"
+    },
+    {
+      "status": "M",
+      "path": "dashboard/src/types/contracts.ts",
+      "category": "implementation or tooling"
+    },
+    {
+      "status": "M",
+      "path": "dashboard/tsconfig.tsbuildinfo",
+      "category": "implementation or tooling"
+    },
+    {
+      "status": "M",
+      "path": "docs/MERGE_AND_DASHBOARD_REPORT.md",
+      "category": "documentation"
+    },
+    {
+      "status": "A",
+      "path": "docs/TARGET_MEMORY_SAR.md",
+      "category": "documentation"
+    },
+    {
+      "status": "A",
+      "path": "evaluation/current/api-contract.txt",
+      "category": "validation evidence"
+    },
+    {
+      "status": "A",
+      "path": "evaluation/current/backend-tests.txt",
+      "category": "validation evidence"
+    },
+    {
+      "status": "A",
+      "path": "evaluation/current/briefing-city-tests.txt",
+      "category": "validation evidence"
+    },
+    {
+      "status": "A",
+      "path": "evaluation/current/browser-demo.txt",
+      "category": "validation evidence"
+    },
+    {
+      "status": "A",
+      "path": "evaluation/current/browser-demo/backend-run1.log",
+      "category": "validation evidence"
+    },
+    {
+      "status": "A",
+      "path": "evaluation/current/browser-demo/backend-run2.log",
+      "category": "validation evidence"
+    },
+    {
+      "status": "A",
+      "path": "evaluation/current/browser-demo/operator-run1.png",
+      "category": "validation evidence"
+    },
+    {
+      "status": "A",
+      "path": "evaluation/current/browser-demo/operator-run2.png",
+      "category": "validation evidence"
+    },
+    {
+      "status": "A",
+      "path": "evaluation/current/browser-demo/responder-run1.png",
+      "category": "validation evidence"
+    },
+    {
+      "status": "A",
+      "path": "evaluation/current/browser-demo/responder-run2.png",
+      "category": "validation evidence"
+    },
+    {
+      "status": "A",
+      "path": "evaluation/current/browser-demo/summary.json",
+      "category": "validation evidence"
+    },
+    {
+      "status": "A",
+      "path": "evaluation/current/browser-live.txt",
+      "category": "validation evidence"
+    },
+    {
+      "status": "A",
+      "path": "evaluation/current/browser-live/backend-live.log",
+      "category": "validation evidence"
+    },
+    {
+      "status": "A",
+      "path": "evaluation/current/browser-live/live-dashboard.png",
+      "category": "validation evidence"
+    },
+    {
+      "status": "A",
+      "path": "evaluation/current/browser-live/summary.json",
+      "category": "validation evidence"
+    },
+    {
+      "status": "A",
+      "path": "evaluation/current/browser-sar.txt",
+      "category": "validation evidence"
+    },
+    {
+      "status": "A",
+      "path": "evaluation/current/browser-sar/01-review.png",
+      "category": "validation evidence"
+    },
+    {
+      "status": "A",
+      "path": "evaluation/current/browser-sar/02-guidance.png",
+      "category": "validation evidence"
+    },
+    {
+      "status": "A",
+      "path": "evaluation/current/browser-sar/03-responder.png",
+      "category": "validation evidence"
+    },
+    {
+      "status": "A",
+      "path": "evaluation/current/browser-sar/04-acknowledged.png",
+      "category": "validation evidence"
+    },
+    {
+      "status": "A",
+      "path": "evaluation/current/browser-sar/backend.log",
+      "category": "validation evidence"
+    },
+    {
+      "status": "A",
+      "path": "evaluation/current/browser-sar/summary.json",
+      "category": "validation evidence"
+    },
+    {
+      "status": "A",
+      "path": "evaluation/current/browser-workspace.txt",
+      "category": "validation evidence"
+    },
+    {
+      "status": "A",
+      "path": "evaluation/current/browser-workspace/backend.log",
+      "category": "validation evidence"
+    },
+    {
+      "status": "A",
+      "path": "evaluation/current/browser-workspace/city.png",
+      "category": "validation evidence"
+    },
+    {
+      "status": "A",
+      "path": "evaluation/current/browser-workspace/review.png",
+      "category": "validation evidence"
+    },
+    {
+      "status": "A",
+      "path": "evaluation/current/browser-workspace/shared-3d.png",
+      "category": "validation evidence"
+    },
+    {
+      "status": "A",
+      "path": "evaluation/current/browser-workspace/summary.json",
+      "category": "validation evidence"
+    },
+    {
+      "status": "A",
+      "path": "evaluation/current/city-headless.txt",
+      "category": "validation evidence"
+    },
+    {
+      "status": "A",
+      "path": "evaluation/current/city-headless/runs.json",
+      "category": "validation evidence"
+    },
+    {
+      "status": "A",
+      "path": "evaluation/current/city-headless/runs.jsonl",
+      "category": "validation evidence"
+    },
+    {
+      "status": "A",
+      "path": "evaluation/current/city-headless/summary.md",
+      "category": "validation evidence"
+    },
+    {
+      "status": "A",
+      "path": "evaluation/current/fix-safety-worlds.txt",
+      "category": "validation evidence"
+    },
+    {
+      "status": "A",
+      "path": "evaluation/current/frontend-build.txt",
+      "category": "validation evidence"
+    },
+    {
+      "status": "A",
+      "path": "evaluation/current/frontend-typecheck.txt",
+      "category": "validation evidence"
+    },
+    {
+      "status": "A",
+      "path": "evaluation/current/integration-summary.json",
+      "category": "validation evidence"
+    },
+    {
+      "status": "A",
+      "path": "evaluation/current/platform-scenarios.txt",
+      "category": "validation evidence"
+    },
+    {
+      "status": "A",
+      "path": "evaluation/current/repair-backend.txt",
+      "category": "validation evidence"
+    },
+    {
+      "status": "A",
+      "path": "evaluation/current/rescue-acceptance.txt",
+      "category": "validation evidence"
+    },
+    {
+      "status": "A",
+      "path": "evaluation/current/rescue-boundary-tests.txt",
+      "category": "validation evidence"
+    },
+    {
+      "status": "A",
+      "path": "evaluation/current/rescue/FF3-events.json",
+      "category": "validation evidence"
+    },
+    {
+      "status": "A",
+      "path": "evaluation/current/rescue/FF3.json",
+      "category": "validation evidence"
+    },
+    {
+      "status": "A",
+      "path": "evaluation/current/rescue/FR3-events.json",
+      "category": "validation evidence"
+    },
+    {
+      "status": "A",
+      "path": "evaluation/current/rescue/FR3.json",
+      "category": "validation evidence"
+    },
+    {
+      "status": "A",
+      "path": "evaluation/current/rescue/SR5-events.json",
+      "category": "validation evidence"
+    },
+    {
+      "status": "A",
+      "path": "evaluation/current/rescue/SR5.json",
+      "category": "validation evidence"
+    },
+    {
+      "status": "A",
+      "path": "evaluation/current/route-tests.txt",
+      "category": "validation evidence"
+    },
+    {
+      "status": "A",
+      "path": "evaluation/current/sar-acceptance.txt",
+      "category": "validation evidence"
+    },
+    {
+      "status": "A",
+      "path": "evaluation/current/sar-acceptance/incident-events.json",
+      "category": "validation evidence"
+    },
+    {
+      "status": "A",
+      "path": "evaluation/current/sar-acceptance/summary.json",
+      "category": "validation evidence"
+    },
+    {
+      "status": "A",
+      "path": "evaluation/current/schemas.txt",
+      "category": "validation evidence"
+    },
+    {
+      "status": "A",
+      "path": "evaluation/current/static-check.txt",
+      "category": "validation evidence"
+    },
+    {
+      "status": "A",
+      "path": "evaluation/current/sync-focused.txt",
+      "category": "validation evidence"
+    },
+    {
+      "status": "A",
+      "path": "evaluation/current/sync-typecheck.txt",
+      "category": "validation evidence"
+    },
+    {
+      "status": "M",
+      "path": "evaluation/merge/api.json",
+      "category": "validation evidence"
+    },
+    {
+      "status": "M",
+      "path": "evaluation/merge/platform/PP0.json",
+      "category": "validation evidence"
+    },
+    {
+      "status": "M",
+      "path": "evaluation/merge/platform/PP5.json",
+      "category": "validation evidence"
+    },
+    {
+      "status": "M",
+      "path": "evaluation/merge/platform/PP6.json",
+      "category": "validation evidence"
+    },
+    {
+      "status": "M",
+      "path": "evaluation/merge/platform/PP7.json",
+      "category": "validation evidence"
+    },
+    {
+      "status": "M",
+      "path": "evaluation/merge/platform/PP8.json",
+      "category": "validation evidence"
+    },
+    {
+      "status": "M",
+      "path": "evaluation/merge/platform/SR4.json",
+      "category": "validation evidence"
+    },
+    {
+      "status": "M",
+      "path": "evaluation/merge/verify_api.py",
+      "category": "validation evidence"
+    },
+    {
+      "status": "M",
+      "path": "evaluation/merge/verify_platform.py",
+      "category": "validation evidence"
+    },
+    {
+      "status": "M",
+      "path": "evaluation/merge/verify_rescue.py",
+      "category": "validation evidence"
+    },
+    {
+      "status": "M",
+      "path": "evaluation/merge/verify_results.py",
+      "category": "validation evidence"
+    },
+    {
+      "status": "M",
+      "path": "schemas/AutonomyState.json",
+      "category": "wire schema"
+    },
+    {
+      "status": "M",
+      "path": "schemas/DecisionRecord.json",
+      "category": "wire schema"
+    },
+    {
+      "status": "A",
+      "path": "schemas/DispatchStatus.json",
+      "category": "wire schema"
+    },
+    {
+      "status": "A",
+      "path": "schemas/PursuitCandidate.json",
+      "category": "wire schema"
+    },
+    {
+      "status": "A",
+      "path": "schemas/PursuitHypothesis.json",
+      "category": "wire schema"
+    },
+    {
+      "status": "A",
+      "path": "schemas/PursuitRoute.json",
+      "category": "wire schema"
+    },
+    {
+      "status": "A",
+      "path": "schemas/PursuitState.json",
+      "category": "wire schema"
+    },
+    {
+      "status": "M",
+      "path": "schemas/SimStatus.json",
+      "category": "wire schema"
+    },
+    {
+      "status": "M",
+      "path": "schemas/WorldState.json",
+      "category": "wire schema"
+    },
+    {
+      "status": "M",
+      "path": "test12/live.py",
+      "category": "implementation or tooling"
+    },
+    {
+      "status": "M",
+      "path": "test12/server.py",
+      "category": "implementation or tooling"
+    },
+    {
+      "status": "M",
+      "path": "test12/sim.py",
+      "category": "implementation or tooling"
+    },
+    {
+      "status": "M",
+      "path": "test12/sim3d.py",
+      "category": "implementation or tooling"
+    }
+  ]
+}

@@ -8,6 +8,30 @@
       "title": "Scenario Name",
       "type": "string"
     },
+    "drone_model": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Drone Model"
+    },
+    "stack": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Stack"
+    },
     "t_s": {
       "title": "T S",
       "type": "number"

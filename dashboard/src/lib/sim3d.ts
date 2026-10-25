@@ -89,7 +89,7 @@ export interface World3D {
   zones: { name: string; polygon: XY[] }[];
   geofence: XY[];
   hazards?: WorldHazard3D | null;
-  drone_mesh: { obj: string; texture: string; scale: number; quat_wxyz: [number, number, number, number]; source: string };
+  drone_mesh: { model?: string; obj: string; texture: string; scale: number; quat_wxyz: [number, number, number, number]; source: string };
 }
 
 export interface Decision3D {
@@ -114,6 +114,7 @@ export interface Decision3D {
 
 export interface Frame3D {
   type: "frame";
+  beacon?: { xy: XY; status?: string } | null;
   t_s: number;
   scenario: string;
   scenario_name: string;
@@ -232,6 +233,7 @@ export class SceneController {
   private people = new Map<string, THREE.Group>();
   private drone = new THREE.Group();
   private droneBody = new THREE.Group();
+  private beaconMark: THREE.Group | null = null;
   private footFill: THREE.Mesh;
   private footRays: THREE.LineSegments;
   private trail: THREE.Line;
@@ -447,6 +449,22 @@ export class SceneController {
   }
 
   loadDroneMesh(mesh: World3D["drone_mesh"]) {
+    if (mesh.model === "mini2") {
+      clearGroup(this.droneBody);
+      const material = new THREE.MeshStandardMaterial({ color: "#c8cdd0", roughness: .6 });
+      const body = new THREE.Mesh(new THREE.BoxGeometry(.10, .045, .16), material);
+      this.droneBody.add(body);
+      for (const x of [-.10, .10]) for (const z of [-.10, .10]) {
+        const arm = new THREE.Mesh(new THREE.BoxGeometry(.15, .018, .018), material);
+        arm.position.set(x / 2, 0, z / 2); arm.rotation.y = x * z > 0 ? -.785 : .785;
+        this.droneBody.add(arm);
+        const rotor = new THREE.Mesh(new THREE.CylinderGeometry(.045, .045, .006, 16),
+          new THREE.MeshStandardMaterial({ color: "#2c3338" }));
+        rotor.position.set(x, .02, z); this.droneBody.add(rotor);
+      }
+      for (const child of this.drone.children) if (child instanceof CSS2DObject) child.element.textContent = "DJI Mini 2 · simulated";
+      return;
+    }
     const tex = new THREE.TextureLoader().load(mesh.texture);
     tex.colorSpace = THREE.SRGBColorSpace;
     new OBJLoader().load(mesh.obj, (obj) => {
@@ -1223,6 +1241,17 @@ export class SceneController {
 
   update(f: Frame3D) {
     this.frame = f;
+    if (this.beaconMark) { clearGroup(this.beaconMark); this.scene.remove(this.beaconMark); this.beaconMark = null; }
+    if (f.beacon && f.beacon.status !== "rejected") {
+      const group = new THREE.Group();
+      const ring = new THREE.Mesh(new THREE.RingGeometry(.7, 1, 32), new THREE.MeshBasicMaterial({
+        color: f.beacon.status === "confirmed" ? "#9ef0bf" : "#ffe196", side: THREE.DoubleSide }));
+      ring.rotation.x = -Math.PI / 2; group.add(ring);
+      const text = label(`Rescue beacon · ${f.beacon.status ?? "pending"}`, "s3d-lbl");
+      text.position.y = 1.8; group.add(text);
+      group.position.copy(v3(f.beacon.xy[0], f.beacon.xy[1], .2));
+      this.scene.add(group); this.beaconMark = group;
+    }
     if (f.t_s < this.lastT - 0.5) {
       // scenario restarted
       this.trailN = 0;

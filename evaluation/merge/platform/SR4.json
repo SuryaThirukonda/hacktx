@@ -1,2 +1,459 @@
-{ "label": "synthetic", "scenario": "SR4", "name": "Dispatch (autonomous): find the hiker in the yellow jacket", "duration_s": 150.0, "wall_s": 353.56, "realtime_factor": 0.42, "detection": { "criterion": "track box IoU>0.2 with GT box, visibility>=0.5", "hits": 1194, "total": 1207, "recall": 0.989, "recall_by_size": { "lt8px": { "hits": 9, "total": 17, "recall": 0.529 }, "8-16px": { "hits": 28, "total": 29, "recall": 0.966 }, "16-32px": { "hits": 132, "total": 136, "recall": 0.971 }, "32-64px": { "hits": 1025, "total": 1025, "recall": 1.0 }, "ge64px": { "hits": 0, "total": 0, "recall": null } } }, "tracking": { "id_switches": { "lost": 0, "responder": 1, "walker": 1 }, "total_id_switches": 2 }, "projection_error_m": { "telemetry": { "n": 1194, "p50": 0.884, "p95": 1.694, "mean": 0.938 } }, "subject_lock": { "steps_subject_visible_and_locked": 0, "correct": 0, "wrong_target": 0, "not_locked_on_anything": 0, "correct_fraction": null }, "range_error_m": { "n": 0, "p50": null, "p95": null, "mean": null, "valid_steps": 0, "total_steps": 1501 }, "autonomy": { "follow_steps": 0, "subject_in_frame_fraction": null }, "phone_vision": { "landscape": { "criterion": "on-device box -> nearest GT actor whose torso projects inside it", "boxes": 275, "gt_matched": 274, "range_coverage": 0.069, "range_error_m": { "n": 19, "p50": 0.003, "p95": 0.021, "mean": 0.006 }, "bearing_error_deg": { "n": 271, "p50": 0.18, "p95": 0.4, "mean": 0.196 }, "edge_clipped_boxes": 4 } }, "cross_view": { "landscape": { "associated": 0, "correct": 0, "accuracy": null, "coverage": 0.0 } }, "expected_events": [], "alerts": { "POSITION_CALLOUT": 14, "LIDAR_PROXIMITY": 1 }, "decisions": { "D5_priority:rules": { "n": 14, "acted": 14, "sim_latency_ms": { "n": 14, "p50": 0.1, "p95": 0.1, "mean": 0.1 } }, "D4_motion:rules": { "n": 68, "acted": 68, "sim_latency_ms": { "n": 68, "p50": 0.1, "p95": 0.1, "mean": 0.1 } } }, "registration": { "method": "none", "valid": false, "confidence": "none", "residual_m": null, "pairs": 0, "yaw_deg": null, "translation_m": null, "reason": "phone frame not registered to the local map" }, "operator_actions": [ { "t_ms": 2000.0000000000027, "action": "dispatch", "description": "yellow jacket, jeans", "last_seen_xy": [ -50.0, -50.0 ], "radius_m": 40.0, "altitude_m": 30.0 } ], "events_timeline": [ [ 2.0, "DISPATCH_STARTED", "Dispatched by scripted operator (demo): looking for 'yellow jacket, jeans' over 6 legs at 30 m, launching from (-116, -106) m" ], [ 39.73, "DISPATCH_SEEN", "Person seen (green top, green lower): does not match 'yellow jacket, jeans'" ], [ 40.63, "LOCK_ENGAGED", "Subject locked on track #1 by autonomy: matched 'yellow jacket, jeans' by clothing colours (yellow top, green lower)" ], [ 40.63, "DISPATCH_MATCH", "Match: track #1 (yellow top, green lower) fits 'yellow jacket, jeans'. Tracking it; reject with Release if it is the wrong person" ], [ 40.63, "POSITION_REPORT", "Target 87 m from the launch point, bearing 047 (NE), stationary; position \u00b10 m; 30.26648, -97.77344" ], [ 41.63, "POSITION_CALLOUT", "Subject 11 o'clock, 28 meters, walking away" ], [ 42.13, "LIDAR_PROXIMITY", "Obstacle front, 1.2 m (LiDAR)" ], [ 44.73, "POSITION_REPORT", "Target 88 m from the launch point, bearing 047 (NE), stationary; position \u00b13 m; 30.26649, -97.77344" ], [ 47.73, "POSITION_CALLOUT", "Subject 10 o'clock, 20 meters, stationary" ], [ 48.83, "POSITION_REPORT", "Target 88 m from the launch point, bearing 047 (NE), stationary; position \u00b13 m; 30.26649, -97.77344" ], [ 52.93, "POSITION_REPORT", "Target 88 m from the launch point, bearing 047 (NE), moving SE at 0.5 m/s; position \u00b13 m; 30.26649, -97.77344" ], [ 55.83, "POSITION_CALLOUT", "Subject 9 o'clock, 15 meters, stationary" ], [ 57.03, "POSITION_REPORT", "Target 89 m from the launch point, bearing 047 (NE), stationary; position \u00b13 m; 30.26649, -97.77343" ], [ 61.13, "POSITION_REPORT", "Target 89 m from the launch point, bearing 047 (NE), stationary; position \u00b13 m; 30.26649, -97.77343" ], [ 63.93, "POSITION_CALLOUT", "Subject 8 o'clock, 19 meters, walking toward responder" ], [ 65.23, "POSITION_REPORT", "Target 88 m from the launch point, bearing 047 (NE), moving W at 0.6 m/s; position \u00b13 m; 30.26648, -97.77344" ], [ 69.33, "POSITION_REPORT", "Target 88 m from the launch point, bearing 048 (NE), stationary; position \u00b13 m; 30.26648, -97.77343" ], [ 72.03, "POSITION_CALLOUT", "Subject 7 o'clock, 22 meters, stationary" ], [ 73.43, "POSITION_REPORT", "Target 88 m from the launch point, bearing 048 (NE), stationary; position \u00b13 m; 30.26647, -97.77343" ], [ 77.53, "POSITION_REPORT", "Target 88 m from the launch point, bearing 048 (NE), stationary; position \u00b13 m; 30.26647, -97.77343" ], [ 80.13, "POSITION_CALLOUT", "Subject 7 o'clock, 23 meters, stationary" ], [ 81.63, "POSITION_REPORT", "Target 87 m from the launch point, bearing 047 (NE), stationary; position \u00b13 m; 30.26648, -97.77344" ], [ 85.73, "POSITION_REPORT", "Target 87 m from the launch point, bearing 048 (NE), stationary; position \u00b13 m; 30.26647, -97.77344" ], [ 88.23, "POSITION_CALLOUT", "Subject 8 o'clock, 20 meters, stationary" ], [ 89.83, "POSITION_REPORT", "Target 87 m from the launch point, bearing 048 (NE), stationary; position \u00b13 m; 30.26648, -97.77344" ], [ 93.93, "POSITION_REPORT", "Target 88 m from the launch point, bearing 048 (NE), moving E at 0.4 m/s; position \u00b13 m; 30.26647, -97.77343" ], [ 96.33, "POSITION_CALLOUT", "Subject 7 o'clock, 20 meters, stationary" ], [ 98.03, "POSITION_REPORT", "Target 87 m from the launch point, bearing 048 (NE), stationary; position \u00b13 m; 30.26647, -97.77343" ], [ 102.13, "POSITION_REPORT", "Target 87 m from the launch point, bearing 048 (NE), stationary; position \u00b13 m; 30.26647, -97.77344" ], [ 104.43, "POSITION_CALLOUT", "Subject 8 o'clock, 24 meters, stationary" ], [ 106.23, "POSITION_REPORT", "Target 87 m from the launch point, bearing 048 (NE), stationary; position \u00b13 m; 30.26647, -97.77344" ], [ 110.33, "POSITION_REPORT", "Target 88 m from the launch point, bearing 048 (NE), stationary; position \u00b13 m; 30.26648, -97.77343" ], [ 112.53, "POSITION_CALLOUT", "Subject 8 o'clock, 21 meters, stationary" ], [ 114.43, "POSITION_REPORT", "Target 88 m from the launch point, bearing 047 (NE), stationary; position \u00b13 m; 30.26648, -97.77344" ], [ 118.53, "POSITION_REPORT", "Target 88 m from the launch point, bearing 047 (NE), stationary; position \u00b13 m; 30.26648, -97.77344" ], [ 120.63, "POSITION_CALLOUT", "Subject 7 o'clock, 23 meters, stationary" ], [ 122.63, "POSITION_REPORT", "Target 88 m from the launch point, bearing 047 (NE), stationary; position \u00b13 m; 30.26648, -97.77344" ], [ 126.73, "POSITION_REPORT", "Target 88 m from the launch point, bearing 046 (NE), stationary; position \u00b13 m; 30.26649, -97.77344" ], [ 128.73, "POSITION_CALLOUT", "Subject 7 o'clock, 21 meters, stationary" ], [ 130.83, "POSITION_REPORT", "Target 88 m from the launch point, bearing 047 (NE), stationary; position \u00b13 m; 30.26649, -97.77344" ], [ 134.93, "POSITION_REPORT", "Target 88 m from the launch point, bearing 047 (NE), stationary; position \u00b13 m; 30.26649, -97.77343" ], [ 136.83, "POSITION_CALLOUT", "Subject 8 o'clock, 18 meters, stationary" ], [ 139.03, "POSITION_REPORT", "Target 88 m from the launch point, bearing 048 (NE), stationary; position \u00b13 m; 30.26648, -97.77343" ], [ 143.13, "POSITION_REPORT", "Target 88 m from the launch point, bearing 047 (NE), stationary; position \u00b13 m; 30.26648, -97.77344" ], [ 144.93, "POSITION_CALLOUT", "Subject 8 o'clock, 22 meters, stationary" ], [ 147.23, "POSITION_REPORT", "Target 88 m from the launch point, bearing 047 (NE), stationary; position \u00b13 m; 30.26648, -97.77344" ] ], "engine": { "requested": "rules", "used": "rules", "note": null }, "memory": { "criterion": "ids given to each simulated person while a track overlaps them (1 = perfect)", "tracker_id_count": 5, "memory_id_count": 5, "people": 3, "tracker_swaps": 1, "wrong_merges": 0, "per_person": { "lost": { "tracker_ids": 1, "memory_ids": 1 }, "responder": { "tracker_ids": 2, "memory_ids": 2 }, "walker": { "tracker_ids": 2, "memory_ids": 2 } } }, "world": { "lost_person": { "found": 1, "first_detected_s": 39.4, "visible_steps": 1108, "detected_fraction_when_visible": 0.999 }, "false_candidate_objects": 0, "matched": 1, "time_to_match_s": 38.6, "wrong_match": 0, "people_seen": 1, "phase_steps": { "TAKEOFF": 199, "TRANSIT": 144, "SEARCH": 43, "TRACKING": 1095 }, "position_reports": 54, "report_distance_error_m": 0.7 }, "expected_metrics": [ { "metric": "world.wrong_match", "value": 0, "min": null, "max": 0, "pass": true }, { "metric": "world.matched", "value": 1, "min": 1, "max": null, "pass": true }, { "metric": "world.lost_person.found", "value": 1, "min": 1, "max": null, "pass": true } ], "expected_pass": true
+{
+  "label": "synthetic",
+  "scenario": "SR4",
+  "name": "Dispatch (autonomous): find the hiker in the yellow jacket",
+  "duration_s": 150.0,
+  "wall_s": 168.46,
+  "realtime_factor": 0.89,
+  "detection": {
+    "criterion": "track box IoU>0.2 with GT box, visibility>=0.5",
+    "hits": 1194,
+    "total": 1207,
+    "recall": 0.989,
+    "recall_by_size": {
+      "lt8px": {
+        "hits": 9,
+        "total": 17,
+        "recall": 0.529
+      },
+      "8-16px": {
+        "hits": 28,
+        "total": 29,
+        "recall": 0.966
+      },
+      "16-32px": {
+        "hits": 132,
+        "total": 136,
+        "recall": 0.971
+      },
+      "32-64px": {
+        "hits": 1025,
+        "total": 1025,
+        "recall": 1.0
+      },
+      "ge64px": {
+        "hits": 0,
+        "total": 0,
+        "recall": null
+      }
+    }
+  },
+  "tracking": {
+    "id_switches": {
+      "lost": 0,
+      "responder": 1,
+      "walker": 1
+    },
+    "total_id_switches": 2
+  },
+  "projection_error_m": {
+    "telemetry": {
+      "n": 1194,
+      "p50": 0.884,
+      "p95": 1.694,
+      "mean": 0.938
+    }
+  },
+  "subject_lock": {
+    "steps_subject_visible_and_locked": 0,
+    "correct": 0,
+    "wrong_target": 0,
+    "not_locked_on_anything": 0,
+    "correct_fraction": null
+  },
+  "range_error_m": {
+    "n": 0,
+    "p50": null,
+    "p95": null,
+    "mean": null,
+    "valid_steps": 0,
+    "total_steps": 1501
+  },
+  "autonomy": {
+    "follow_steps": 0,
+    "subject_in_frame_fraction": null
+  },
+  "phone_vision": {
+    "landscape": {
+      "criterion": "on-device box -> nearest GT actor whose torso projects inside it",
+      "boxes": 276,
+      "gt_matched": 275,
+      "range_coverage": 0.069,
+      "range_error_m": {
+        "n": 19,
+        "p50": 0.003,
+        "p95": 0.021,
+        "mean": 0.006
+      },
+      "bearing_error_deg": {
+        "n": 272,
+        "p50": 0.18,
+        "p95": 0.4,
+        "mean": 0.196
+      },
+      "edge_clipped_boxes": 4
+    }
+  },
+  "cross_view": {
+    "landscape": {
+      "associated": 0,
+      "correct": 0,
+      "accuracy": null,
+      "coverage": 0.0
+    }
+  },
+  "expected_events": [],
+  "alerts": {
+    "POSITION_CALLOUT": 14,
+    "LIDAR_PROXIMITY": 1
+  },
+  "decisions": {
+    "D5_priority:rules": {
+      "n": 14,
+      "acted": 14,
+      "sim_latency_ms": {
+        "n": 14,
+        "p50": 0.1,
+        "p95": 0.1,
+        "mean": 0.1
+      }
+    },
+    "D4_motion:rules": {
+      "n": 68,
+      "acted": 68,
+      "sim_latency_ms": {
+        "n": 68,
+        "p50": 0.1,
+        "p95": 0.1,
+        "mean": 0.1
+      }
+    }
+  },
+  "registration": {
+    "method": "none",
+    "valid": false,
+    "confidence": "none",
+    "residual_m": null,
+    "pairs": 0,
+    "yaw_deg": null,
+    "translation_m": null,
+    "reason": "phone frame not registered to the local map"
+  },
+  "operator_actions": [
+    {
+      "t_ms": 2000.0000000000027,
+      "action": "dispatch",
+      "description": "yellow jacket, jeans",
+      "last_seen_xy": [
+        -50.0,
+        -50.0
+      ],
+      "radius_m": 40.0,
+      "altitude_m": 30.0
+    }
+  ],
+  "events_timeline": [
+    [
+      2.0,
+      "DISPATCH_STARTED",
+      "Dispatched by scripted operator (demo): looking for 'yellow jacket, jeans' over 6 legs at 30 m, launching from (-116, -106) m"
+    ],
+    [
+      39.73,
+      "DISPATCH_SEEN",
+      "Person seen (green top, green lower): does not match 'yellow jacket, jeans'"
+    ],
+    [
+      40.63,
+      "LOCK_ENGAGED",
+      "Subject locked on track #1 by autonomy: matched 'yellow jacket, jeans' by clothing colours (yellow top, green lower)"
+    ],
+    [
+      40.63,
+      "DISPATCH_MATCH",
+      "Match: track #1 (yellow top, green lower) fits 'yellow jacket, jeans'. Tracking it; reject with Release if it is the wrong person"
+    ],
+    [
+      40.63,
+      "POSITION_REPORT",
+      "Target 87 m from the launch point, bearing 047 (NE), stationary; position \u00b10 m; 30.26648, -97.77344"
+    ],
+    [
+      41.63,
+      "POSITION_CALLOUT",
+      "Subject 11 o'clock, 28 meters, walking away"
+    ],
+    [
+      42.13,
+      "LIDAR_PROXIMITY",
+      "Obstacle front, 1.2 m (LiDAR)"
+    ],
+    [
+      44.73,
+      "POSITION_REPORT",
+      "Target 88 m from the launch point, bearing 047 (NE), stationary; position \u00b13 m; 30.26649, -97.77344"
+    ],
+    [
+      47.73,
+      "POSITION_CALLOUT",
+      "Subject 10 o'clock, 20 meters, stationary"
+    ],
+    [
+      48.83,
+      "POSITION_REPORT",
+      "Target 88 m from the launch point, bearing 047 (NE), stationary; position \u00b13 m; 30.26649, -97.77344"
+    ],
+    [
+      52.93,
+      "POSITION_REPORT",
+      "Target 88 m from the launch point, bearing 047 (NE), moving SE at 0.5 m/s; position \u00b13 m; 30.26649, -97.77344"
+    ],
+    [
+      55.83,
+      "POSITION_CALLOUT",
+      "Subject 9 o'clock, 15 meters, stationary"
+    ],
+    [
+      57.03,
+      "POSITION_REPORT",
+      "Target 89 m from the launch point, bearing 047 (NE), stationary; position \u00b13 m; 30.26649, -97.77343"
+    ],
+    [
+      61.13,
+      "POSITION_REPORT",
+      "Target 89 m from the launch point, bearing 047 (NE), stationary; position \u00b13 m; 30.26649, -97.77343"
+    ],
+    [
+      63.93,
+      "POSITION_CALLOUT",
+      "Subject 8 o'clock, 19 meters, walking toward responder"
+    ],
+    [
+      65.23,
+      "POSITION_REPORT",
+      "Target 88 m from the launch point, bearing 047 (NE), moving W at 0.6 m/s; position \u00b13 m; 30.26648, -97.77344"
+    ],
+    [
+      69.33,
+      "POSITION_REPORT",
+      "Target 88 m from the launch point, bearing 048 (NE), stationary; position \u00b13 m; 30.26648, -97.77343"
+    ],
+    [
+      72.03,
+      "POSITION_CALLOUT",
+      "Subject 7 o'clock, 22 meters, stationary"
+    ],
+    [
+      73.43,
+      "POSITION_REPORT",
+      "Target 88 m from the launch point, bearing 048 (NE), stationary; position \u00b13 m; 30.26647, -97.77343"
+    ],
+    [
+      77.53,
+      "POSITION_REPORT",
+      "Target 88 m from the launch point, bearing 048 (NE), stationary; position \u00b13 m; 30.26647, -97.77343"
+    ],
+    [
+      80.13,
+      "POSITION_CALLOUT",
+      "Subject 7 o'clock, 23 meters, stationary"
+    ],
+    [
+      81.63,
+      "POSITION_REPORT",
+      "Target 87 m from the launch point, bearing 047 (NE), stationary; position \u00b13 m; 30.26648, -97.77344"
+    ],
+    [
+      85.73,
+      "POSITION_REPORT",
+      "Target 87 m from the launch point, bearing 048 (NE), stationary; position \u00b13 m; 30.26647, -97.77344"
+    ],
+    [
+      88.23,
+      "POSITION_CALLOUT",
+      "Subject 8 o'clock, 20 meters, stationary"
+    ],
+    [
+      89.83,
+      "POSITION_REPORT",
+      "Target 87 m from the launch point, bearing 048 (NE), stationary; position \u00b13 m; 30.26648, -97.77344"
+    ],
+    [
+      93.93,
+      "POSITION_REPORT",
+      "Target 88 m from the launch point, bearing 048 (NE), moving E at 0.4 m/s; position \u00b13 m; 30.26647, -97.77343"
+    ],
+    [
+      96.33,
+      "POSITION_CALLOUT",
+      "Subject 7 o'clock, 20 meters, stationary"
+    ],
+    [
+      98.03,
+      "POSITION_REPORT",
+      "Target 87 m from the launch point, bearing 048 (NE), stationary; position \u00b13 m; 30.26647, -97.77343"
+    ],
+    [
+      102.13,
+      "POSITION_REPORT",
+      "Target 87 m from the launch point, bearing 048 (NE), stationary; position \u00b13 m; 30.26647, -97.77344"
+    ],
+    [
+      104.43,
+      "POSITION_CALLOUT",
+      "Subject 8 o'clock, 24 meters, stationary"
+    ],
+    [
+      106.23,
+      "POSITION_REPORT",
+      "Target 87 m from the launch point, bearing 048 (NE), stationary; position \u00b13 m; 30.26647, -97.77344"
+    ],
+    [
+      110.33,
+      "POSITION_REPORT",
+      "Target 88 m from the launch point, bearing 048 (NE), stationary; position \u00b13 m; 30.26648, -97.77343"
+    ],
+    [
+      112.53,
+      "POSITION_CALLOUT",
+      "Subject 8 o'clock, 21 meters, stationary"
+    ],
+    [
+      114.43,
+      "POSITION_REPORT",
+      "Target 88 m from the launch point, bearing 047 (NE), stationary; position \u00b13 m; 30.26648, -97.77344"
+    ],
+    [
+      118.53,
+      "POSITION_REPORT",
+      "Target 88 m from the launch point, bearing 047 (NE), stationary; position \u00b13 m; 30.26648, -97.77344"
+    ],
+    [
+      120.63,
+      "POSITION_CALLOUT",
+      "Subject 7 o'clock, 23 meters, stationary"
+    ],
+    [
+      122.63,
+      "POSITION_REPORT",
+      "Target 88 m from the launch point, bearing 047 (NE), stationary; position \u00b13 m; 30.26648, -97.77344"
+    ],
+    [
+      126.73,
+      "POSITION_REPORT",
+      "Target 88 m from the launch point, bearing 046 (NE), stationary; position \u00b13 m; 30.26649, -97.77344"
+    ],
+    [
+      128.73,
+      "POSITION_CALLOUT",
+      "Subject 7 o'clock, 21 meters, stationary"
+    ],
+    [
+      130.83,
+      "POSITION_REPORT",
+      "Target 88 m from the launch point, bearing 047 (NE), stationary; position \u00b13 m; 30.26649, -97.77344"
+    ],
+    [
+      134.93,
+      "POSITION_REPORT",
+      "Target 88 m from the launch point, bearing 047 (NE), stationary; position \u00b13 m; 30.26649, -97.77343"
+    ],
+    [
+      136.83,
+      "POSITION_CALLOUT",
+      "Subject 8 o'clock, 18 meters, stationary"
+    ],
+    [
+      139.03,
+      "POSITION_REPORT",
+      "Target 88 m from the launch point, bearing 048 (NE), stationary; position \u00b13 m; 30.26648, -97.77343"
+    ],
+    [
+      143.13,
+      "POSITION_REPORT",
+      "Target 88 m from the launch point, bearing 047 (NE), stationary; position \u00b13 m; 30.26648, -97.77344"
+    ],
+    [
+      144.93,
+      "POSITION_CALLOUT",
+      "Subject 8 o'clock, 22 meters, stationary"
+    ],
+    [
+      147.23,
+      "POSITION_REPORT",
+      "Target 88 m from the launch point, bearing 047 (NE), stationary; position \u00b13 m; 30.26648, -97.77344"
+    ]
+  ],
+  "engine": {
+    "requested": "rules",
+    "used": "rules",
+    "note": null
+  },
+  "memory": {
+    "criterion": "ids given to each simulated person while a track overlaps them (1 = perfect)",
+    "tracker_id_count": 5,
+    "memory_id_count": 5,
+    "people": 3,
+    "tracker_swaps": 1,
+    "wrong_merges": 0,
+    "per_person": {
+      "lost": {
+        "tracker_ids": 1,
+        "memory_ids": 1
+      },
+      "responder": {
+        "tracker_ids": 2,
+        "memory_ids": 2
+      },
+      "walker": {
+        "tracker_ids": 2,
+        "memory_ids": 2
+      }
+    }
+  },
+  "world": {
+    "lost_person": {
+      "found": 1,
+      "first_detected_s": 39.4,
+      "visible_steps": 1108,
+      "detected_fraction_when_visible": 0.999
+    },
+    "false_candidate_objects": 0,
+    "matched": 1,
+    "time_to_match_s": 38.6,
+    "wrong_match": 0,
+    "people_seen": 1,
+    "phase_steps": {
+      "TAKEOFF": 199,
+      "TRANSIT": 144,
+      "SEARCH": 43,
+      "TRACKING": 1095
+    },
+    "position_reports": 54,
+    "report_distance_error_m": 0.7
+  },
+  "expected_metrics": [
+    {
+      "metric": "world.wrong_match",
+      "value": 0,
+      "min": null,
+      "max": 0,
+      "pass": true
+    },
+    {
+      "metric": "world.matched",
+      "value": 1,
+      "min": 1,
+      "max": null,
+      "pass": true
+    },
+    {
+      "metric": "world.lost_person.found",
+      "value": 1,
+      "min": 1,
+      "max": null,
+      "pass": true
+    }
+  ],
+  "expected_pass": true
 }

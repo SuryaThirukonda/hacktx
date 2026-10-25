@@ -216,3 +216,17 @@ class CrewRoutingService:
 
     def view(self) -> dict[str, Any] | None:
         return self.state
+
+
+def assessed_route(start, target, *, world, flood=None, fire=None, t_s=0., max_depth_m=.15,
+                   approach_radius_m=3., fire_margin_s=120., walk_mps=None):
+    """Shared off-road access assessment for SAR guidance and simulated rescue execution.
+
+    Existing road/cell crew assignments still use their time-dependent Dijkstra
+    planners. This bounded connector preserves strict approach-only/blocked results.
+    With walk_mps, each edge is checked at its estimated arrival time as well.
+    """
+    from .sar_guidance import access_route
+    return access_route(start, target, world=world, flood=flood, fire=fire, t_s=t_s,
+                        max_depth_m=max_depth_m, approach_radius_m=approach_radius_m,
+                        fire_margin_s=fire_margin_s, walk_mps=walk_mps)

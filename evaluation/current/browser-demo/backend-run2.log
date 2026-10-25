@@ -1,0 +1,127 @@
+INFO:     Started server process [14895]
+INFO:     Waiting for application startup.
+2026-10-25 07:17:08,822 INFO overwatch.api.app: Overwatch 0.1.0 running in SIMULATED mode (session s-912997)
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://127.0.0.1:8012 (Press CTRL+C to quit)
+2026-10-25 07:17:08,888 INFO overwatch.pipeline: detector: sim-blob-v1 for SYNTHETIC frames
+INFO:     127.0.0.1:59697 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59701 - "GET /command HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59701 - "GET /assets/index-DE-dGB2k.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59702 - "GET /assets/index-CgpKv3du.css HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59704 - "WebSocket /ws/state" [accepted]
+INFO:     connection open
+INFO:     127.0.0.1:59702 - "GET /api/incidents HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59705 - "GET /icon-192.png HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59706 - "WebSocket /ws/events" [accepted]
+INFO:     connection open
+INFO:     127.0.0.1:59701 - "GET /api/usecases HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59707 - "WebSocket /ws/video/drone" [accepted]
+INFO:     connection open
+INFO:     127.0.0.1:59701 - "GET /api/world/meta HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59701 - "GET /api/world/ortho.jpg?w=training-field HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59701 - "POST /api/incidents HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59708 - "WebSocket /ws/incidents/INC-9c60712905" [accepted]
+INFO:     connection open
+INFO:     127.0.0.1:59702 - "GET /api/incidents/INC-9c60712905/sar HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59705 - "GET /api/incidents/INC-9c60712905/target HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59701 - "GET /api/incidents/INC-9c60712905/person-mark HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59701 - "GET /api/incidents/INC-9c60712905 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59710 - "GET /api/incidents/INC-9c60712905/sources HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59702 - "GET /api/incidents/INC-9c60712905/alerts HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59705 - "GET /api/incidents/INC-9c60712905/observations HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59711 - "GET /api/incidents/INC-9c60712905/scene HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59712 - "GET /api/incidents/INC-9c60712905/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59702 - "GET /api/incidents/INC-9c60712905/follow HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59710 - "GET /api/incidents/INC-9c60712905/actions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59701 - "GET /api/incidents/INC-9c60712905/structure HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59710 - "GET /api/evidence/OBS-5b204153f6.jpg HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59701 - "GET /api/evidence/OBS-e3dc1e3ba9.jpg HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59701 - "POST /api/observations/OBS-e3dc1e3ba9/review HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59713 - "WebSocket /ws/events" [accepted]
+INFO:     connection open
+INFO:     127.0.0.1:59701 - "GET /api/incidents/INC-9c60712905/observations HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59710 - "GET /api/incidents/INC-9c60712905/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59702 - "GET /api/incidents/INC-9c60712905/structure HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59702 - "GET /api/incidents/INC-9c60712905/target HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59710 - "GET /api/incidents/INC-9c60712905/sar HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59710 - "GET /api/incidents/INC-9c60712905/person-mark HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59710 - "GET /api/incidents/INC-9c60712905/actions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59710 - "GET /api/incidents/INC-9c60712905/target HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59702 - "GET /api/incidents/INC-9c60712905/sar HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59714 - "GET /responder HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59714 - "GET /assets/index-DE-dGB2k.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59715 - "GET /assets/index-CgpKv3du.css HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59714 - "GET /api/incidents HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59715 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59716 - "GET /icon-192.png HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59715 - "GET /sw.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59715 - "GET /manifest.webmanifest HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59716 - "GET /icon-512.png HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59718 - "WebSocket /ws/incidents/INC-9c60712905" [accepted]
+INFO:     connection open
+INFO:     127.0.0.1:59716 - "GET /api/incidents/INC-9c60712905/person-mark HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59714 - "GET /api/incidents/INC-9c60712905/alerts HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59715 - "GET /api/incidents/INC-9c60712905 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59717 - "GET /api/incidents/INC-9c60712905/responder-brief HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59719 - "GET /api/incidents HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59702 - "POST /api/actions/ACT-fbd00afb43/approve HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59717 - "POST /api/alerts/ALR-d118b67ef1/delivered HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59720 - "GET /api/incidents/INC-9c60712905/alerts HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59717 - "POST /api/alerts/ALR-d118b67ef1/acknowledge HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59702 - "GET /api/world/meta HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59702 - "GET /api/incidents/INC-9c60712905/alerts HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59701 - "GET /api/incidents/INC-9c60712905/actions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59710 - "GET /api/incidents/INC-9c60712905/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59710 - "GET /api/incidents/INC-9c60712905/person-mark HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59710 - "GET /api/incidents/INC-9c60712905/target HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59701 - "GET /api/incidents/INC-9c60712905/sar HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59722 - "GET /api/incidents/INC-9c60712905/alerts HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59701 - "POST /api/incidents/INC-9c60712905/mission HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59701 - "GET /api/incidents/INC-9c60712905 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59701 - "POST /api/incidents/INC-9c60712905/structure/side-a HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59717 - "GET /api/incidents/INC-9c60712905/person-mark HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59701 - "GET /api/incidents/INC-9c60712905/structure HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59701 - "GET /api/incidents/INC-9c60712905/person-mark HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59710 - "GET /api/incidents/INC-9c60712905/target HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59702 - "GET /api/incidents/INC-9c60712905/sar HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59712 - "GET /api/incidents/INC-9c60712905/actions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59702 - "GET /api/incidents/INC-9c60712905/observations HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59701 - "GET /api/incidents/INC-9c60712905/structure HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59710 - "GET /api/incidents/INC-9c60712905/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59710 - "GET /api/evidence/OBS-9a5b80b384.jpg HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59701 - "GET /api/evidence/OBS-8c1e2a744b.jpg HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59717 - "GET /api/incidents/INC-9c60712905/person-mark HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59715 - "GET /api/incidents/INC-9c60712905/responder-brief HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59701 - "GET /api/incidents/INC-9c60712905/target HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59710 - "GET /api/incidents/INC-9c60712905/sar HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59710 - "GET /api/world/meta HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59710 - "GET /api/incidents/INC-9c60712905/person-mark HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59723 - "GET /api/incidents/INC-9c60712905/structure HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59701 - "GET /assets/sim3d-BjlkpIqm.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59712 - "GET /assets/droplets-CTE5pjbW.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59710 - "GET /assets/Scene3DPanel-CVlq75x9.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59702 - "GET /assets/CSS2DRenderer-D5oXWFoN.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59724 - "WebSocket /ws/video/drone" [accepted]
+INFO:     connection open
+INFO:     127.0.0.1:59702 - "GET /api/incidents/INC-9c60712905/target HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59712 - "GET /api/incidents/INC-9c60712905/sar HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59715 - "GET /api/incidents/INC-9c60712905/person-mark HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59712 - "GET /api/incidents/INC-9c60712905/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59712 - "GET /api/incidents/INC-9c60712905/person-mark HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59712 - "GET /api/incidents/INC-9c60712905/target HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59702 - "GET /api/incidents/INC-9c60712905/sar HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59715 - "GET /api/incidents/INC-9c60712905/person-mark HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59717 - "GET /api/incidents/INC-9c60712905/responder-brief HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59702 - "GET /api/world/meta HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59712 - "GET /api/incidents/INC-9c60712905/target HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59702 - "GET /api/incidents/INC-9c60712905/person-mark HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59710 - "GET /api/incidents/INC-9c60712905/sar HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59717 - "GET /api/incidents/INC-9c60712905/person-mark HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59710 - "GET /api/incidents/INC-9c60712905/target HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59702 - "GET /api/incidents/INC-9c60712905/sar HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59725 - "GET /api/incidents/INC-9c60712905/events?limit=10000 HTTP/1.1" 200 OK
+INFO:     Shutting down
+INFO:     Waiting for background tasks to complete. (CTRL+C to force quit)
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [14895]

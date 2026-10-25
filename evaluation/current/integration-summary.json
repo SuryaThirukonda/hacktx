@@ -1,0 +1,278 @@
+{
+  "published_base": "abe3a67d305aa872fdd46e0a1426bc91429e91ab",
+  "synchronized_source": "4ed230002f9a651b59b988ebd175da879bff48c4",
+  "repair_checkpoint": "7eac8098b2093c888806263c2d80bbea3e147516",
+  "repository": "https://github.com/SuryaThirukonda/hacktx.git",
+  "branch": "main",
+  "pushed": false,
+  "old_source_clean": true,
+  "native_ios_unchanged": true,
+  "preserved_module_sha256": {
+    "backend/overwatch/autonomy/belief.py": "e2be5aa90e160089335d43ee4c2dd86319bc86e993fc1a3371d12559be0d56c6",
+    "backend/overwatch/autonomy/pursuit.py": "9f85887125353a111990a11eba252241ccc61f1f733496bb9789df6aeb05d6df",
+    "backend/overwatch/autonomy/safety.py": "eb8519a890c824c55927f81991cc655e59759ded2c6b97319f0f3f0776101f68",
+    "backend/overwatch/tracking/lock.py": "87fcc5532c095bea36bf6cf8ad25f0681894bd16b84a0e2a1f485c7c8a43ca15",
+    "backend/overwatch/vision/tracker.py": "38e07d9062cf023640bc0ff0e0d6d1f36fcc455e82d6d21f7d5c326ebdbc7c28",
+    "backend/overwatch/vision/appearance.py": "0da1a332882b9f83f346a4c0dcd785341d653bc4e3d026ecea5005a3029ddd0e",
+    "backend/overwatch/vision/cmc.py": "ec75b8fb0e3fb2442a2d0cacf69c516fe44a58e74eed3e3ee60d38fbe9152815",
+    "backend/overwatch/vision/quality.py": "87b51499a615782fb9749687ce39d8f3220ffeb37be928962b7c4d2155fd8bcd"
+  },
+  "original_test_functions_retained": {
+    "hacktx": 232,
+    "gaurav_integrated": 283
+  },
+  "backend": {
+    "passed": 356,
+    "skipped": 2,
+    "failed": 0,
+    "evidence": "backend-tests.txt"
+  },
+  "frontend": {
+    "typecheck": "passed",
+    "production_build": "passed"
+  },
+  "browser": {
+    "live": {
+      "Drone controls": true,
+      "Incident map": true,
+      "Review queue": true,
+      "Recommendations": true,
+      "Alerts": true,
+      "Timeline": true,
+      "Chat with Overwatch": true,
+      "startup_disarmed": true,
+      "routes_rendered": true,
+      "no_browser_errors": true,
+      "pass": true
+    },
+    "sar": {
+      "sar_explanation_visible": true,
+      "continuous_search_and_persistent_subject": true,
+      "confirmed_guidance_and_map_route": true,
+      "responder_delivery_ack_and_dashboard_update": true,
+      "no_physical_permission_or_follow_start": true,
+      "no_browser_errors": true,
+      "pass": true
+    },
+    "workspace": {
+      "picker_and_saved_theme": true,
+      "beacon_human_review_route_delivery_ack": true,
+      "shared_3d_and_survey": true,
+      "callout_history": true,
+      "city_shared_3d_coverage_and_process": true,
+      "city_to_main_ownership_handoff": true,
+      "no_page_errors": true,
+      "passed": true
+    },
+    "demo": {
+      "run1": {
+        "1_candidate_flagged": true,
+        "2_notify_recommended": true,
+        "2_brief_sent_after_approval": true,
+        "3_responder_acknowledged": true,
+        "4_side_a_set": true,
+        "4_openings_by_side": true,
+        "5_3d_view_rendered": true,
+        "5_replay_started": true,
+        "log_has_core_events": true
+      },
+      "run1_wall_s": 10.9,
+      "run2": {
+        "1_candidate_flagged": true,
+        "2_notify_recommended": true,
+        "2_brief_sent_after_approval": true,
+        "3_responder_acknowledged": true,
+        "4_side_a_set": true,
+        "4_openings_by_side": true,
+        "5_3d_view_rendered": true,
+        "5_replay_started": true,
+        "log_has_core_events": true
+      },
+      "run2_wall_s": 9.9,
+      "identical_outcomes": true,
+      "pass": true
+    }
+  },
+  "sar": {
+    "passed": true,
+    "criteria": {
+      "detected_assistance_candidate": true,
+      "real_pixel_detector": true,
+      "evidence_saved": true,
+      "normal_person_not_flagged": true,
+      "responder_excluded": true,
+      "no_duplicate_assistance_candidates": true,
+      "human_review_recorded": true,
+      "guidance_is_simulated": true,
+      "distance_and_bearing_derived": true,
+      "route_stops_before_flood": true,
+      "alert_delivered_and_acknowledged": true,
+      "audit_backlog_available": true,
+      "no_physical_flight": true
+    }
+  },
+  "rescue": {
+    "FR3": {
+      "passed": true,
+      "criteria": {
+        "measured_beacon": true,
+        "human_review_before_crew_movement": true,
+        "beacon_linked_to_incident_observation": true,
+        "crew_arrived": true,
+        "returned_to_base": true,
+        "crew_moved": true,
+        "no_unsafe_steps": true,
+        "delivery_ack": true,
+        "survey_published": true,
+        "no_physical_permission": true
+      },
+      "beacon_error_m": 0.6043078100821687,
+      "arrived_s": 16.333333333333304,
+      "unsafe_steps": 0
+    },
+    "FF3": {
+      "passed": true,
+      "criteria": {
+        "measured_beacon": true,
+        "human_review_before_crew_movement": true,
+        "beacon_linked_to_incident_observation": true,
+        "crew_arrived": true,
+        "returned_to_base": true,
+        "crew_moved": true,
+        "no_unsafe_steps": true,
+        "delivery_ack": true,
+        "survey_published": true,
+        "no_physical_permission": true
+      },
+      "beacon_error_m": 0.6165039031412703,
+      "arrived_s": 16.333333333333304,
+      "unsafe_steps": 0
+    },
+    "SR5": {
+      "passed": true,
+      "criteria": {
+        "measured_beacon": true,
+        "human_review_before_crew_movement": true,
+        "beacon_linked_to_incident_observation": true,
+        "crew_arrived": true,
+        "returned_to_base": true,
+        "crew_moved": true,
+        "no_unsafe_steps": true,
+        "delivery_ack": true,
+        "survey_published": true,
+        "no_physical_permission": true
+      },
+      "beacon_error_m": 0.6165039031412703,
+      "arrived_s": 16.333333333333304,
+      "unsafe_steps": 0
+    }
+  },
+  "platform": [
+    {
+      "scenario": "PP0",
+      "expected_pass": true,
+      "wall_s": 99.52,
+      "subject_lock": {
+        "steps_subject_visible_and_locked": 931,
+        "correct": 931,
+        "wrong_target": 0,
+        "not_locked_on_anything": 0,
+        "correct_fraction": 1.0
+      },
+      "autonomy": {
+        "follow_steps": 933,
+        "subject_in_frame_fraction": 1.0
+      }
+    },
+    {
+      "scenario": "PP8",
+      "expected_pass": true,
+      "wall_s": 122.61,
+      "subject_lock": {
+        "steps_subject_visible_and_locked": 1200,
+        "correct": 1200,
+        "wrong_target": 0,
+        "not_locked_on_anything": 0,
+        "correct_fraction": 1.0
+      },
+      "autonomy": {
+        "follow_steps": 1200,
+        "subject_in_frame_fraction": 1.0
+      }
+    },
+    {
+      "scenario": "PP5",
+      "expected_pass": true,
+      "wall_s": 42.3,
+      "subject_lock": {
+        "steps_subject_visible_and_locked": 409,
+        "correct": 408,
+        "wrong_target": 0,
+        "not_locked_on_anything": 1,
+        "correct_fraction": 0.998
+      },
+      "autonomy": {
+        "follow_steps": 576,
+        "subject_in_frame_fraction": 0.7
+      }
+    },
+    {
+      "scenario": "PP6",
+      "expected_pass": true,
+      "wall_s": 55.37,
+      "subject_lock": {
+        "steps_subject_visible_and_locked": 266,
+        "correct": 266,
+        "wrong_target": 0,
+        "not_locked_on_anything": 0,
+        "correct_fraction": 1.0
+      },
+      "autonomy": {
+        "follow_steps": 726,
+        "subject_in_frame_fraction": 0.357
+      }
+    },
+    {
+      "scenario": "PP7",
+      "expected_pass": true,
+      "wall_s": 43.66,
+      "subject_lock": {
+        "steps_subject_visible_and_locked": 364,
+        "correct": 363,
+        "wrong_target": 0,
+        "not_locked_on_anything": 1,
+        "correct_fraction": 0.997
+      },
+      "autonomy": {
+        "follow_steps": 576,
+        "subject_in_frame_fraction": 0.622
+      }
+    },
+    {
+      "scenario": "SR4",
+      "expected_pass": true,
+      "wall_s": 168.46,
+      "subject_lock": {
+        "steps_subject_visible_and_locked": 0,
+        "correct": 0,
+        "wrong_target": 0,
+        "not_locked_on_anything": 0,
+        "correct_fraction": null
+      },
+      "autonomy": {
+        "follow_steps": 0,
+        "subject_in_frame_fraction": null
+      }
+    }
+  ],
+  "city": {
+    "seeds": [
+      0
+    ],
+    "duration_s": 240,
+    "wrong_matches": 0,
+    "losses": 4,
+    "reacquired": 4,
+    "evidence": "city-headless/runs.json"
+  }
+}

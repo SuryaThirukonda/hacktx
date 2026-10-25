@@ -221,6 +221,7 @@ def test_real_flight_requires_readiness_and_stale_telemetry_returns_manual(live)
         now = rt.clock.now_ms()
         for src in ("drone", "telemetry"):
             p.counters[src].last_rx_ms = now
+        p.counters["drone"].provenance = "LIVE"; p.last_drone_source_id = "dji-bridge"
         original_calib, original_drone_state = p.calib, p.drone_state
         try:
             p.drone_state = lambda _: DroneState(position_xy_m=(0, 0), alt_m=18, yaw_deg=0, battery_pct=80, flying=True)
@@ -252,6 +253,7 @@ def test_camera_only_uses_image_geometry_without_requiring_gps_or_ground_calibra
         now = rt.clock.now_ms()
         for src in ("drone", "telemetry"):
             p.counters[src].last_rx_ms = now
+        p.counters["drone"].provenance = "LIVE"; p.last_drone_source_id = "dji-bridge"
         original = p.drone_state
         try:
             state = DroneState(alt_m=3, yaw_deg=0, battery_pct=80, gimbal_pitch_deg=-30, flying=True)

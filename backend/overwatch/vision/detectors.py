@@ -15,6 +15,7 @@ import logging
 import math
 import time
 from dataclasses import dataclass, field
+from pathlib import Path
 from typing import Protocol
 
 import cv2
@@ -158,7 +159,7 @@ class UltralyticsDetector:
         for w in tried:
             try:
                 self.model = YOLO(w)
-                self.weights = w.rsplit("/", 1)[-1]
+                self.weights = Path(w).name
                 break
             except Exception as e:  # noqa: BLE001 - try next checkpoint
                 last_err = e

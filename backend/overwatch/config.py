@@ -271,6 +271,19 @@ class Secrets(_Section):
     overwatch_token: str | None = None
 
 
+class SARCfg(_Section):
+    enabled: bool = True  # simulated hazard worlds only; never aircraft control
+    threshold: float = Field(default=3.0, gt=0)
+    flood_depth_m: float = Field(default=0.15, ge=0)
+    flood_weight: float = Field(default=3.0, ge=0)
+    fire_weight: float = Field(default=3.0, ge=0)
+    stationary_weight: float = Field(default=1.0, ge=0)
+    stationary_s: float = Field(default=10.0, gt=0)
+    min_frames: int = Field(default=3, ge=2)
+    route_max_depth_m: float = Field(default=0.15, ge=0, le=0.3)
+    approach_radius_m: float = Field(default=3.0, gt=0, le=10)
+
+
 class Config(_Section):
     session: SessionCfg = SessionCfg()
     server: ServerCfg = ServerCfg()
@@ -287,6 +300,7 @@ class Config(_Section):
     autonomy: AutonomyCfg = AutonomyCfg()
     voice: VoiceCfg = VoiceCfg()
     privacy: PrivacyCfg = PrivacyCfg()
+    sar: SARCfg = SARCfg()
     secrets: Secrets = Field(default_factory=Secrets, exclude=True)
 
     def public_dict(self) -> dict[str, Any]:

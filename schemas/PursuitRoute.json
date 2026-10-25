@@ -1,0 +1,127 @@
+{
+  "properties": {
+    "candidate_id": {
+      "title": "Candidate Id",
+      "type": "string"
+    },
+    "label": {
+      "title": "Label",
+      "type": "string"
+    },
+    "waypoints": {
+      "default": [],
+      "items": {
+        "maxItems": 2,
+        "minItems": 2,
+        "prefixItems": [
+          {
+            "type": "number"
+          },
+          {
+            "type": "number"
+          }
+        ],
+        "type": "array"
+      },
+      "title": "Waypoints",
+      "type": "array"
+    },
+    "source": {
+      "title": "Source",
+      "type": "string"
+    },
+    "engine": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Engine"
+    },
+    "model_pick": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Model Pick"
+    },
+    "baseline_pick": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Baseline Pick"
+    },
+    "confidence": {
+      "anyOf": [
+        {
+          "type": "number"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Confidence"
+    },
+    "acted": {
+      "default": false,
+      "title": "Acted",
+      "type": "boolean"
+    },
+    "reason": {
+      "default": "",
+      "title": "Reason",
+      "type": "string"
+    },
+    "decision_id": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Decision Id"
+    },
+    "ts_ms": {
+      "title": "Ts Ms",
+      "type": "number"
+    },
+    "provenance": {
+      "default": "simulated",
+      "enum": [
+        "live",
+        "replay",
+        "simulated",
+        "manual"
+      ],
+      "title": "Provenance",
+      "type": "string"
+    }
+  },
+  "required": [
+    "candidate_id",
+    "label",
+    "source",
+    "ts_ms"
+  ],
+  "title": "PursuitRoute",
+  "type": "object"
+}

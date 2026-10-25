@@ -174,7 +174,8 @@ def test_flag_track_creates_candidate_with_evidence(client, incident):
     assert r.status_code == 200, r.text
     o = r.json()
     assert o["provenance"] == "simulated" and o["bounding_box"]["frame"] == "image:drone"
-    assert o["confidence"] is None  # the simulated detector is not calibrated
+    assert 0 <= o["confidence"] <= 1
+    assert o["attributes"]["confidence_kind"] == "uncalibrated_model_score"  # the simulated detector is not calibrated
     if o["world_position"] is not None:
         assert o["horizontal_uncertainty_m"] is not None and o["position_estimation_method"] == "ground_plane"
     name = o["evidence_frame_reference"].split("/")[1].split("#")[0]

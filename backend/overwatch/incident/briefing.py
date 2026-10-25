@@ -63,14 +63,23 @@ def responder_targets(st: IncidentStore, incident_id: str, responder: dict[str, 
         rpos, racc, how = None, responder.get("accuracy_m"), "a real GPS fix cannot be placed in a simulated incident"
     else:
         rpos, racc, how = enu_of_responder(responder, inc.enu_frame, origin, ref.north_offset_deg if ref else 0.0)
+    # Browser fixes stop arriving when the client disconnects. Never keep using an old fix.
+    if responder and responder.get("received_at"):
+        try:
+            age = (now - datetime.fromisoformat(responder["received_at"])).total_seconds()
+        except (ValueError, TypeError):
+            age = float("inf")
+        if age > 10 or age < -2:
+            rpos, how = None, "responder position is stale"
     heading = responder.get("heading_deg") if responder else None
     hacc = responder.get("heading_accuracy_deg") if responder else None
-    heading_ok = heading is not None and hacc is not None and float(hacc) <= TRUSTED_HEADING_DEG
+    heading_ok = (rpos is not None and heading is not None and hacc is not None
+                  and math.isfinite(float(heading)) and 0 <= float(hacc) <= TRUSTED_HEADING_DEG)
 
     targets = []
     for v in st.list_observations(incident_id, status="confirmed", now=now) + [
-            v for v in st.list_observations(incident_id, now=now) if v.observation.provenance == "manual"]:
-        targets.append(_target(v, rpos, racc, heading if heading_ok else None, now))
+            v for v in st.list_observations(incident_id, now=now) if v.observation.provenance == "manual" and v.review_status == "pending"]:
+        targets.append(_target(v, rpos, racc, heading if heading_ok else None, now, ref.north_offset_deg if ref else 0.0, inc.enu_frame))
     return {"incident_id": incident_id, "mission": inc.mission_mode, "enu_frame": inc.enu_frame,
             "responder": {"grounded": rpos is not None, "how": how, "accuracy_m": racc,
                           "heading_deg": heading, "heading_trusted": heading_ok},
@@ -78,7 +87,7 @@ def responder_targets(st: IncidentStore, incident_id: str, responder: dict[str, 
 
 
 def _target(v: ObservationView, rpos: Position | None, racc: float | None, heading: float | None,
-            now: datetime) -> dict[str, Any]:
+            now: datetime, north_offset: float = 0.0, map_frame: str | None = None) -> dict[str, Any]:
     o = v.observation
     age = max(0.0, (now - o.observed_at).total_seconds())
     out: dict[str, Any] = {"observation_id": o.id, "label": o.label, "category": o.category,
@@ -92,16 +101,25 @@ def _target(v: ObservationView, rpos: Position | None, racc: float | None, headi
         else:
             out["text"] = f"{_cap(o.label)}{side}: position unavailable. Refer to video. Last observed {round(age)} seconds ago."
         return out
+    if map_frame is not None and o.world_position.frame != map_frame:
+        out["text"] = f"{_cap(o.label)} is in an unaligned local frame. Refer to the scene viewer; no bearing or distance."
+        return out
+    out["map_position"] = {"frame": o.world_position.frame, "x": o.world_position.x, "y": o.world_position.y,
+                           "uncertainty_m": o.horizontal_uncertainty_m}
     if rpos is None or rpos.frame != o.world_position.frame:
         out["text"] = f"{_cap(o.label)} is on the map. Your position is not available, so no bearing or distance."
         return out
+    if v.stale or o.horizontal_uncertainty_m is None or racc is None or not math.isfinite(racc) or racc < 0:
+        out["text"] = f"{_cap(o.label)}: last sighting is on the map; current range and direction are unverified."
+        return out
     dx, dy = o.world_position.x - rpos.x, o.world_position.y - rpos.y
     rng = math.hypot(dx, dy)
-    brg = (math.degrees(math.atan2(dx, dy)) + 360) % 360
+    brg = (math.degrees(math.atan2(dx, dy)) + north_offset + 360) % 360
     unc = math.hypot(o.horizontal_uncertainty_m or 0.0, racc or 0.0)
     out.update(grounded=True, range_m=round(rng, 1), bearing_deg=round(brg), uncertainty_m=round(unc, 1),
                cardinal=cardinal(brg))
     if heading is not None:
+        # The incident map may be rotated relative to true north.
         out["clock"] = clock_of(brg - heading)
         where = f"{out['clock']} o'clock"
     else:

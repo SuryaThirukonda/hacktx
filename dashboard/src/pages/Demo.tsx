@@ -31,7 +31,7 @@ export function Demo() {
   const offline = !src || src.status === "OFFLINE" || src.status === "NOT_CONFIGURED";
 
   useEffect(() => {
-    document.documentElement.setAttribute("data-theme", "dark");
+    document.documentElement.setAttribute("data-theme", localStorage.getItem("overwatch.theme") === "light" ? "light" : "dark");
     document.title = "Overwatch · simulation demo";
     loadHome().catch((e) => showToast(String((e as Error).message), "error"));
     // the world's launchpad and the scenario's dispatch request, refreshed as scenarios change
@@ -637,7 +637,7 @@ function PhonePanel() {
       return null;
     }
   })();
-  const link = t?.url ? `${t.url}/drive${tok ? `?token=${encodeURIComponent(tok)}` : ""}` : null;
+  const link = t?.url ? `${t.url}/drive${tok ? `#token=${encodeURIComponent(tok)}` : ""}` : null;
   useEffect(() => {
     if (!link || !canvas.current) return;
     void QRCode.toCanvas(canvas.current, link, { width: 220, margin: 1, color: { dark: "#101114", light: "#f4f4f2" } });

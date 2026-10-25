@@ -1,0 +1,1003 @@
+/Users/gaurav/Documents/hacktx26_prog/backend/.venv/lib/python3.12/site-packages/fastapi/testclient.py:1: StarletteDeprecationWarning: Using `httpx` with `starlette.testclient` is deprecated; install `httpx2` instead.
+  from starlette.testclient import TestClient as TestClient  # noqa
+[
+  {
+    "scenario": "FR3",
+    "passed": true,
+    "checks": {
+      "measured_beacon": true,
+      "human_review_before_crew_movement": true,
+      "beacon_linked_to_incident_observation": true,
+      "crew_arrived": true,
+      "returned_to_base": true,
+      "crew_moved": true,
+      "no_unsafe_steps": true,
+      "delivery_ack": true,
+      "survey_published": true,
+      "no_physical_permission": true
+    },
+    "rescue": {
+      "phase": "COMPLETE",
+      "beacon": {
+        "xy": [
+          19.871317538461927,
+          13.876972063689642
+        ],
+        "label": "SIMULATED rescue beacon",
+        "created_ms": 11233.333333333305,
+        "track_id": "drone:8:e1",
+        "status": "confirmed",
+        "uncertainty_m": 2.421253906992876,
+        "lat": 30.267023984648155,
+        "lon": -97.77268604317527,
+        "observation_id": "OBS-2f0b2a1492",
+        "logical_subject_id": "INC-295a20feee.s-befbfe.object.obj-6",
+        "confirmed_by": "scripted simulation operator"
+      },
+      "ping": {
+        "xy": [
+          16.299999999999997,
+          9.899999999999997
+        ],
+        "heading": 0.0,
+        "t": 26.3333333333338,
+        "speed": 0.0
+      },
+      "callouts": [
+        {
+          "n": 1,
+          "t": 11.233333333333304,
+          "speech": "Simulation: possible person located. Review the beacon before dispatching the crew.",
+          "urgent": true
+        },
+        {
+          "n": 2,
+          "t": 11.866666666666635,
+          "speech": "Simulation: rescue beacon confirmed. Crew guidance approved.",
+          "urgent": true
+        },
+        {
+          "n": 3,
+          "t": 11.933333333333302,
+          "speech": "Simulation: person 16 meters east, your 1 o'clock. Follow the assessed approach route.",
+          "urgent": false
+        },
+        {
+          "n": 4,
+          "t": 16.333333333333304,
+          "speech": "Simulation: crew at the assessed approach, within beacon uncertainty. Drone holding for ten seconds.",
+          "urgent": true
+        }
+      ],
+      "crew_speed_mps": 3.0,
+      "crew_distance_m": 13.2,
+      "movement_checks": 132,
+      "max_water_depth_m": 0.0,
+      "no_safe_route": false,
+      "unsafe_steps": 0,
+      "arrived_s": 16.333333333333304
+    },
+    "evidence": {
+      "beacon_error_m": 0.6043078100821687,
+      "crew_stationary_before_approval": true,
+      "reviewed": true,
+      "observation_id": "OBS-2f0b2a1492",
+      "alert_id": "ALR-baec835d9e",
+      "guidance": {
+        "mode": "simulated_navigation",
+        "frame": "enu:INC-295a20feee",
+        "position_kind": "measured",
+        "route": {
+          "status": "access_route",
+          "points": [
+            [
+              5.0,
+              8.0
+            ],
+            [
+              6.0,
+              8.0
+            ],
+            [
+              7.0,
+              8.0
+            ],
+            [
+              8.0,
+              8.0
+            ],
+            [
+              9.0,
+              8.0
+            ],
+            [
+              10.0,
+              8.0
+            ],
+            [
+              11.0,
+              8.0
+            ],
+            [
+              12.0,
+              8.0
+            ],
+            [
+              13.0,
+              8.0
+            ],
+            [
+              14.0,
+              8.0
+            ],
+            [
+              15.0,
+              8.0
+            ],
+            [
+              15.0,
+              9.0
+            ],
+            [
+              16.0,
+              9.0
+            ],
+            [
+              16.0,
+              10.0
+            ],
+            [
+              17.0,
+              10.0
+            ],
+            [
+              17.0,
+              11.0
+            ],
+            [
+              18.0,
+              11.0
+            ],
+            [
+              18.0,
+              12.0
+            ],
+            [
+              18.0,
+              13.0
+            ],
+            [
+              19.0,
+              13.0
+            ],
+            [
+              20.0,
+              13.0
+            ],
+            [
+              20.571,
+              13.802
+            ]
+          ],
+          "length_m": 21.0,
+          "max_water_depth_m": 0.0,
+          "depth_limit_m": 0.15,
+          "navigation_source": "simulated hazard map and structure geometry",
+          "target_accessible": true,
+          "approach_distance_m": 0.0,
+          "reason": "assessed simulated access"
+        },
+        "responder_position": {
+          "frame": "enu:INC-295a20feee",
+          "x": 5.0,
+          "y": 8.0,
+          "z": 0
+        },
+        "target_position": {
+          "frame": "enu:INC-295a20feee",
+          "x": 19.89514812961469,
+          "y": 13.906667087420416,
+          "z": 0.0
+        },
+        "callout": "Simulation: assistance location confirmed. Approximately 16 metres east, plus or minus 1. Follow the marked access route assessed against the simulated hazard map. Location last observed 0 seconds ago.",
+        "target_memory": {
+          "incident_id": "INC-295a20feee",
+          "session_id": "s-befbfe",
+          "logical_subject_id": "INC-295a20feee.s-befbfe.object.obj-6",
+          "state": "VISIBLE",
+          "lock_state": "LOCKED",
+          "current_track_id": "drone:8:e1",
+          "last_track_id": "drone:8:e1",
+          "associated_track_ids": [
+            "drone:8:e1"
+          ],
+          "measured_position": {
+            "frame": "enu:INC-295a20feee",
+            "x": 19.89514812961469,
+            "y": 13.906667087420416,
+            "z": 0.0
+          },
+          "predicted_position": null,
+          "prediction_ts_ms": 11866.666666666635,
+          "last_verified_position": {
+            "frame": "enu:INC-295a20feee",
+            "x": 19.89514812961469,
+            "y": 13.906667087420416,
+            "z": 0.0
+          },
+          "last_verified_ts_ms": 11833.333333333301,
+          "last_seen_ts_ms": 11833.333333333301,
+          "last_seen_frame": {
+            "frame_id": 178,
+            "capture_ts_ms": 11833.333333333301,
+            "source_id": "drone"
+          },
+          "position_kind": "measured",
+          "uncertainty_m": 0.5517673279231934,
+          "confidence": 0.89,
+          "confidence_kind": "continuity heuristic, not identity probability",
+          "quality_reasons": [],
+          "binding_verified": true,
+          "appearance_signature": [
+            0.00084,
+            0.055204,
+            0.0,
+            0.0,
+            0.001654,
+            0.018024,
+            0.050527,
+            0.73996,
+            0.002327,
+            0.001445,
+            0.003827,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.001003,
+            0.012436,
+            0.015252,
+            0.0,
+            0.000513,
+            0.009883,
+            0.087105,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "motion_history": [
+            {
+              "ts_ms": 11366.666666666637,
+              "xy": [
+                20.40891158290903,
+                13.659092983604197
+              ],
+              "track_id": "drone:8:e1",
+              "position_kind": "measured",
+              "uncertainty_m": 2.4293192414476037
+            },
+            {
+              "ts_ms": 11633.333333333303,
+              "xy": [
+                19.949736399749437,
+                13.89376232322823
+              ],
+              "track_id": "drone:8:e1",
+              "position_kind": "measured",
+              "uncertainty_m": 0.4468931330132771
+            },
+            {
+              "ts_ms": 11833.333333333301,
+              "xy": [
+                19.89514812961469,
+                13.906667087420416
+              ],
+              "track_id": "drone:8:e1",
+              "position_kind": "measured",
+              "uncertainty_m": 0.4684339945898585
+            }
+          ],
+          "candidate_evidence": [],
+          "description": "yellow shirt",
+          "source_provenance": "SYNTHETIC"
+        },
+        "distance_m": 16.0,
+        "bearing_deg": 68,
+        "clock": 1,
+        "uncertainty_m": 0.7
+      }
+    },
+    "simulated_seconds": 26.3333333333338,
+    "wall_s": 11.707604082999751,
+    "detector": "sim-blob-v1"
+  },
+  {
+    "scenario": "FF3",
+    "passed": true,
+    "checks": {
+      "measured_beacon": true,
+      "human_review_before_crew_movement": true,
+      "beacon_linked_to_incident_observation": true,
+      "crew_arrived": true,
+      "returned_to_base": true,
+      "crew_moved": true,
+      "no_unsafe_steps": true,
+      "delivery_ack": true,
+      "survey_published": true,
+      "no_physical_permission": true
+    },
+    "rescue": {
+      "phase": "COMPLETE",
+      "beacon": {
+        "xy": [
+          19.836652202089365,
+          13.869113833213401
+        ],
+        "label": "SIMULATED rescue beacon",
+        "created_ms": 11233.333333333305,
+        "track_id": "drone:8:e1",
+        "status": "confirmed",
+        "uncertainty_m": 2.4212539069928756,
+        "lat": 30.267023898752846,
+        "lon": -97.77268594372336,
+        "observation_id": "OBS-c57c6e6ef7",
+        "logical_subject_id": "INC-cc6c836051.s-e9883d.object.obj-6",
+        "confirmed_by": "scripted simulation operator"
+      },
+      "ping": {
+        "xy": [
+          16.299999999999997,
+          9.899999999999997
+        ],
+        "heading": 0.0,
+        "t": 26.3333333333338,
+        "speed": 0.0
+      },
+      "callouts": [
+        {
+          "n": 1,
+          "t": 11.233333333333304,
+          "speech": "Simulation: possible person located. Review the beacon before dispatching the crew.",
+          "urgent": true
+        },
+        {
+          "n": 2,
+          "t": 11.866666666666635,
+          "speech": "Simulation: rescue beacon confirmed. Crew guidance approved.",
+          "urgent": true
+        },
+        {
+          "n": 3,
+          "t": 11.933333333333302,
+          "speech": "Simulation: person 16 meters east, your 1 o'clock. Follow the assessed approach route.",
+          "urgent": false
+        },
+        {
+          "n": 4,
+          "t": 16.333333333333304,
+          "speech": "Simulation: crew at the assessed approach, within beacon uncertainty. Drone holding for ten seconds.",
+          "urgent": true
+        }
+      ],
+      "crew_speed_mps": 3.0,
+      "crew_distance_m": 13.2,
+      "movement_checks": 132,
+      "max_water_depth_m": 0.0,
+      "no_safe_route": false,
+      "unsafe_steps": 0,
+      "arrived_s": 16.333333333333304
+    },
+    "evidence": {
+      "beacon_error_m": 0.6165039031412703,
+      "crew_stationary_before_approval": true,
+      "reviewed": true,
+      "observation_id": "OBS-c57c6e6ef7",
+      "alert_id": "ALR-bb18e1c338",
+      "guidance": {
+        "mode": "simulated_navigation",
+        "frame": "enu:INC-cc6c836051",
+        "position_kind": "measured",
+        "route": {
+          "status": "access_route",
+          "points": [
+            [
+              5.0,
+              8.0
+            ],
+            [
+              6.0,
+              8.0
+            ],
+            [
+              7.0,
+              8.0
+            ],
+            [
+              8.0,
+              8.0
+            ],
+            [
+              9.0,
+              8.0
+            ],
+            [
+              10.0,
+              8.0
+            ],
+            [
+              11.0,
+              8.0
+            ],
+            [
+              12.0,
+              8.0
+            ],
+            [
+              13.0,
+              8.0
+            ],
+            [
+              14.0,
+              8.0
+            ],
+            [
+              15.0,
+              8.0
+            ],
+            [
+              15.0,
+              9.0
+            ],
+            [
+              16.0,
+              9.0
+            ],
+            [
+              16.0,
+              10.0
+            ],
+            [
+              17.0,
+              10.0
+            ],
+            [
+              17.0,
+              11.0
+            ],
+            [
+              18.0,
+              11.0
+            ],
+            [
+              18.0,
+              12.0
+            ],
+            [
+              18.0,
+              13.0
+            ],
+            [
+              19.0,
+              13.0
+            ],
+            [
+              20.0,
+              13.0
+            ],
+            [
+              20.58,
+              13.792
+            ]
+          ],
+          "length_m": 21.0,
+          "max_water_depth_m": 0.0,
+          "depth_limit_m": 0.15,
+          "navigation_source": "simulated hazard map and structure geometry",
+          "target_accessible": true,
+          "approach_distance_m": 0.0,
+          "reason": "assessed simulated access"
+        },
+        "responder_position": {
+          "frame": "enu:INC-cc6c836051",
+          "x": 5.0,
+          "y": 8.0,
+          "z": 0
+        },
+        "target_position": {
+          "frame": "enu:INC-cc6c836051",
+          "x": 19.893131420291457,
+          "y": 13.898832971951524,
+          "z": 0.0
+        },
+        "callout": "Simulation: assistance location confirmed. Approximately 16 metres east, plus or minus 1. Follow the marked access route assessed against the simulated hazard map. Location last observed 0 seconds ago.",
+        "target_memory": {
+          "incident_id": "INC-cc6c836051",
+          "session_id": "s-e9883d",
+          "logical_subject_id": "INC-cc6c836051.s-e9883d.object.obj-6",
+          "state": "VISIBLE",
+          "lock_state": "LOCKED",
+          "current_track_id": "drone:8:e1",
+          "last_track_id": "drone:8:e1",
+          "associated_track_ids": [
+            "drone:8:e1"
+          ],
+          "measured_position": {
+            "frame": "enu:INC-cc6c836051",
+            "x": 19.893131420291457,
+            "y": 13.898832971951524,
+            "z": 0.0
+          },
+          "predicted_position": null,
+          "prediction_ts_ms": 11866.666666666635,
+          "last_verified_position": {
+            "frame": "enu:INC-cc6c836051",
+            "x": 19.893131420291457,
+            "y": 13.898832971951524,
+            "z": 0.0
+          },
+          "last_verified_ts_ms": 11833.333333333301,
+          "last_seen_ts_ms": 11833.333333333301,
+          "last_seen_frame": {
+            "frame_id": 178,
+            "capture_ts_ms": 11833.333333333301,
+            "source_id": "drone"
+          },
+          "position_kind": "measured",
+          "uncertainty_m": 0.5511112971270157,
+          "confidence": 0.89,
+          "confidence_kind": "continuity heuristic, not identity probability",
+          "quality_reasons": [],
+          "binding_verified": true,
+          "appearance_signature": [
+            0.003207,
+            0.054881,
+            0.0,
+            0.0,
+            0.000785,
+            0.021164,
+            0.046054,
+            0.748501,
+            0.002282,
+            0.000731,
+            0.002625,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.000156,
+            0.011577,
+            0.016279,
+            0.0,
+            0.001898,
+            0.008161,
+            0.0817,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "motion_history": [
+            {
+              "ts_ms": 11366.666666666637,
+              "xy": [
+                20.41871449884564,
+                13.649290067667588
+              ],
+              "track_id": "drone:8:e1",
+              "position_kind": "measured",
+              "uncertainty_m": 2.4293192414476033
+            },
+            {
+              "ts_ms": 11633.333333333303,
+              "xy": [
+                19.955168210377956,
+                13.879800387425675
+              ],
+              "track_id": "drone:8:e1",
+              "position_kind": "measured",
+              "uncertainty_m": 0.44628892611846116
+            },
+            {
+              "ts_ms": 11833.333333333301,
+              "xy": [
+                19.893131420291457,
+                13.898832971951524
+              ],
+              "track_id": "drone:8:e1",
+              "position_kind": "measured",
+              "uncertainty_m": 0.4677779637936808
+            }
+          ],
+          "candidate_evidence": [],
+          "description": "yellow shirt",
+          "source_provenance": "SYNTHETIC"
+        },
+        "distance_m": 16.0,
+        "bearing_deg": 68,
+        "clock": 1,
+        "uncertainty_m": 0.7
+      }
+    },
+    "simulated_seconds": 26.3333333333338,
+    "wall_s": 12.451838667038828,
+    "detector": "sim-blob-v1"
+  },
+  {
+    "scenario": "SR5",
+    "passed": true,
+    "checks": {
+      "measured_beacon": true,
+      "human_review_before_crew_movement": true,
+      "beacon_linked_to_incident_observation": true,
+      "crew_arrived": true,
+      "returned_to_base": true,
+      "crew_moved": true,
+      "no_unsafe_steps": true,
+      "delivery_ack": true,
+      "survey_published": true,
+      "no_physical_permission": true
+    },
+    "rescue": {
+      "phase": "COMPLETE",
+      "beacon": {
+        "xy": [
+          19.862560979475074,
+          13.871832316745992
+        ],
+        "label": "SIMULATED rescue beacon",
+        "created_ms": 11233.333333333305,
+        "track_id": "drone:8:e1",
+        "status": "confirmed",
+        "uncertainty_m": 2.4212539069928756,
+        "lat": 30.267023898752846,
+        "lon": -97.77268594372336,
+        "observation_id": "OBS-4e25bab82d",
+        "logical_subject_id": "INC-f5eeda6127.s-036b06.object.obj-6",
+        "confirmed_by": "scripted simulation operator"
+      },
+      "ping": {
+        "xy": [
+          16.299999999999997,
+          9.899999999999997
+        ],
+        "heading": 0.0,
+        "t": 26.3333333333338,
+        "speed": 0.0
+      },
+      "callouts": [
+        {
+          "n": 1,
+          "t": 11.233333333333304,
+          "speech": "Simulation: possible person located. Review the beacon before dispatching the crew.",
+          "urgent": true
+        },
+        {
+          "n": 2,
+          "t": 11.866666666666635,
+          "speech": "Simulation: rescue beacon confirmed. Crew guidance approved.",
+          "urgent": true
+        },
+        {
+          "n": 3,
+          "t": 11.933333333333302,
+          "speech": "Simulation: person 16 meters east, your 1 o'clock. Follow the assessed approach route.",
+          "urgent": false
+        },
+        {
+          "n": 4,
+          "t": 16.333333333333304,
+          "speech": "Simulation: crew at the assessed approach, within beacon uncertainty. Drone holding for ten seconds.",
+          "urgent": true
+        }
+      ],
+      "crew_speed_mps": 3.0,
+      "crew_distance_m": 13.2,
+      "movement_checks": 132,
+      "max_water_depth_m": 0.0,
+      "no_safe_route": false,
+      "unsafe_steps": 0,
+      "arrived_s": 16.333333333333304
+    },
+    "evidence": {
+      "beacon_error_m": 0.6165039031412703,
+      "crew_stationary_before_approval": true,
+      "reviewed": true,
+      "observation_id": "OBS-4e25bab82d",
+      "alert_id": "ALR-ddf2b8355e",
+      "guidance": {
+        "mode": "simulated_navigation",
+        "frame": "enu:INC-f5eeda6127",
+        "position_kind": "measured",
+        "route": {
+          "status": "access_route",
+          "points": [
+            [
+              5.0,
+              8.0
+            ],
+            [
+              6.0,
+              8.0
+            ],
+            [
+              7.0,
+              8.0
+            ],
+            [
+              8.0,
+              8.0
+            ],
+            [
+              9.0,
+              8.0
+            ],
+            [
+              10.0,
+              8.0
+            ],
+            [
+              11.0,
+              8.0
+            ],
+            [
+              12.0,
+              8.0
+            ],
+            [
+              13.0,
+              8.0
+            ],
+            [
+              14.0,
+              8.0
+            ],
+            [
+              15.0,
+              8.0
+            ],
+            [
+              15.0,
+              9.0
+            ],
+            [
+              16.0,
+              9.0
+            ],
+            [
+              16.0,
+              10.0
+            ],
+            [
+              17.0,
+              10.0
+            ],
+            [
+              17.0,
+              11.0
+            ],
+            [
+              18.0,
+              11.0
+            ],
+            [
+              18.0,
+              12.0
+            ],
+            [
+              18.0,
+              13.0
+            ],
+            [
+              19.0,
+              13.0
+            ],
+            [
+              20.0,
+              13.0
+            ],
+            [
+              20.58,
+              13.792
+            ]
+          ],
+          "length_m": 21.0,
+          "max_water_depth_m": 0.0,
+          "depth_limit_m": 0.15,
+          "navigation_source": "simulated hazard map and structure geometry",
+          "target_accessible": true,
+          "approach_distance_m": 0.0,
+          "reason": "assessed simulated access"
+        },
+        "responder_position": {
+          "frame": "enu:INC-f5eeda6127",
+          "x": 5.0,
+          "y": 8.0,
+          "z": 0
+        },
+        "target_position": {
+          "frame": "enu:INC-f5eeda6127",
+          "x": 19.892735328275062,
+          "y": 13.90336999759445,
+          "z": 0.0
+        },
+        "callout": "Simulation: assistance location confirmed. Approximately 16 metres east, plus or minus 1. Follow the marked access route assessed against the simulated hazard map. Location last observed 0 seconds ago.",
+        "target_memory": {
+          "incident_id": "INC-f5eeda6127",
+          "session_id": "s-036b06",
+          "logical_subject_id": "INC-f5eeda6127.s-036b06.object.obj-6",
+          "state": "VISIBLE",
+          "lock_state": "LOCKED",
+          "current_track_id": "drone:8:e1",
+          "last_track_id": "drone:8:e1",
+          "associated_track_ids": [
+            "drone:8:e1"
+          ],
+          "measured_position": {
+            "frame": "enu:INC-f5eeda6127",
+            "x": 19.892735328275062,
+            "y": 13.90336999759445,
+            "z": 0.0
+          },
+          "predicted_position": null,
+          "prediction_ts_ms": 11866.666666666635,
+          "last_verified_position": {
+            "frame": "enu:INC-f5eeda6127",
+            "x": 19.892735328275062,
+            "y": 13.90336999759445,
+            "z": 0.0
+          },
+          "last_verified_ts_ms": 11833.333333333301,
+          "last_seen_ts_ms": 11833.333333333301,
+          "last_seen_frame": {
+            "frame_id": 178,
+            "capture_ts_ms": 11833.333333333301,
+            "source_id": "drone"
+          },
+          "position_kind": "measured",
+          "uncertainty_m": 0.5499044091709018,
+          "confidence": 0.888,
+          "confidence_kind": "continuity heuristic, not identity probability",
+          "quality_reasons": [],
+          "binding_verified": true,
+          "appearance_signature": [
+            0.003176,
+            0.055601,
+            0.0,
+            0.0,
+            0.000785,
+            0.018941,
+            0.053156,
+            0.743658,
+            0.002157,
+            0.000731,
+            0.002615,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.000156,
+            0.013277,
+            0.014763,
+            0.0,
+            0.002583,
+            0.008036,
+            0.080364,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "motion_history": [
+            {
+              "ts_ms": 11366.666666666637,
+              "xy": [
+                20.41871449884564,
+                13.649290067667588
+              ],
+              "track_id": "drone:8:e1",
+              "position_kind": "measured",
+              "uncertainty_m": 2.4293192414476033
+            },
+            {
+              "ts_ms": 11633.333333333303,
+              "xy": [
+                19.955579454269717,
+                13.880062498619354
+              ],
+              "track_id": "drone:8:e1",
+              "position_kind": "measured",
+              "uncertainty_m": 0.44518824527200956
+            },
+            {
+              "ts_ms": 11833.333333333301,
+              "xy": [
+                19.892735328275062,
+                13.90336999759445
+              ],
+              "track_id": "drone:8:e1",
+              "position_kind": "measured",
+              "uncertainty_m": 0.4665710758375669
+            }
+          ],
+          "candidate_evidence": [],
+          "description": "yellow shirt",
+          "source_provenance": "SYNTHETIC"
+        },
+        "distance_m": 16.0,
+        "bearing_deg": 68,
+        "clock": 1,
+        "uncertainty_m": 0.7
+      }
+    },
+    "simulated_seconds": 26.3333333333338,
+    "wall_s": 10.12064312491566,
+    "detector": "sim-blob-v1"
+  }
+]

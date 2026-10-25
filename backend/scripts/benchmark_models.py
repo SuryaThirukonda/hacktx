@@ -163,6 +163,7 @@ def main() -> int:
     ap.add_argument("--frames", type=int, default=120)
     ap.add_argument("--iou", type=float, default=0.5)
     ap.add_argument("--stride", type=int, default=3, help="use every Nth simulator frame (covers longer scenarios)")
+    ap.add_argument("--output-dir", help="write reports here instead of inside the repository")
     a = ap.parse_args()
     if not (a.source or a.synthetic or a.composite):
         ap.error("pass --source, --synthetic or --composite")
@@ -180,7 +181,8 @@ def main() -> int:
         label = "composite (real person pixels, scaled; pseudo-labels)"
     else:
         label = "synthetic" if a.synthetic else ("replayed real (labelled)" if has_gt else "replayed real (unlabelled)")
-    out_dir = REPO_ROOT / "evaluation" / "reports" / f"models-{time.strftime('%Y%m%d-%H%M%S')}"
+    out_dir = (Path(a.output_dir) if a.output_dir else
+               REPO_ROOT / "evaluation" / "reports" / f"models-{time.strftime('%Y%m%d-%H%M%S')}")
     out_dir.mkdir(parents=True, exist_ok=True)
     env = {"python": platform.python_version(), "machine": platform.machine(), "processor": platform.processor(),
            "opencv": cv2.__version__}
@@ -256,8 +258,8 @@ def main() -> int:
                   f"P {r.get('precision', '-')}  R {r.get('recall', '-')}  det/frame {r['detections_per_frame']}")
     src_name = "composite" if a.composite else (a.source or f"sim:{a.synthetic}")
     (out_dir / "results.json").write_text(json.dumps({"label": label, "env": env, "source": src_name,
-                                                      "conf": a.conf, "results": results}, indent=2))
-    with (out_dir / "per_frame.csv").open("w", newline="") as f:
+                                                      "conf": a.conf, "results": results}, indent=2), encoding="utf-8")
+    with (out_dir / "per_frame.csv").open("w", newline="", encoding="utf-8") as f:
         w = csv.writer(f)
         w.writerow(["model", "frame", "ms", "detections", "tp", "fp", "fn"])
         w.writerows(rows)
@@ -286,7 +288,7 @@ def main() -> int:
     if label == "synthetic":
         lines += ["", "Synthetic frames validate the pipeline, not real-video detector accuracy. YOLO was trained on "
                   "photographs, so its numbers on cartoon renders say little about real footage either way."]
-    (out_dir / "summary.md").write_text("\n".join(lines) + "\n")
+    (out_dir / "summary.md").write_text("\n".join(lines) + "\n", encoding="utf-8")
     print("report:", out_dir)
     return 0
 

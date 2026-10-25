@@ -282,19 +282,24 @@ def create_app(cfg: Config | None = None) -> FastAPI:
             return {"ok": False, "track_id": None, "reason": "no track at that point"}
         try:
             if body.action == "lock_subject":
-                P().lock_track("subject", tid)
+                human_subject(tid)
             elif body.action == "lock_responder":
                 P().lock_track("responder", tid)
             else:
                 P().select_track(tid)
-        except PermissionError as e:
+        except (PermissionError, ValueError) as e:
             raise HTTPException(403, str(e)) from e
         return ok(track_id=tid, action=body.action)
+
+    @app.post("/api/locks/describe", dependencies=[Depends(auth)])
+    def describe(body: TextBody) -> dict[str, Any]:
+        sent = P().describe(body.text)
+        return {"ok": sent, "note": "proposal will appear for operator confirmation" if sent else "no candidates / rate limited"}
 
     @app.post("/api/locks/{role}", dependencies=[Depends(auth)])
     def lock(role: str, body: LockBody) -> dict[str, Any]:
         try:
-            msgs = P().lock_track(role, body.track_id)
+            msgs = human_subject(body.track_id) if role == "subject" else P().lock_track(role, body.track_id)
         except PermissionError as e:
             raise HTTPException(403, str(e)) from e
         except (KeyError, ValueError) as e:
@@ -311,9 +316,24 @@ def create_app(cfg: Config | None = None) -> FastAPI:
     @app.post("/api/locks/subject/confirm", dependencies=[Depends(auth)])
     def confirm(body: LockBody) -> dict[str, Any]:
         try:
-            P().confirm_candidate(body.track_id)
+            with P().lock:
+                if body.track_id != P().locks["subject"].track_id:
+                    raise ValueError("the current subject binding changed")
+                svc = rt.incidents
+                if svc.current_id and svc.current_id == P().incident.incident_id:
+                    svc.require_current_control(svc.current_id)
+                    svc.follow_update(svc.current_id)
+                    if svc.follow_tracker(svc.current_id).s.status == "unverified":
+                        svc.follow_confirm(svc.current_id)
+                    else:
+                        P().confirm_candidate(body.track_id)
+                        svc._confirm_follow_observation(svc.current_id, body.track_id, "operator")
+                else:
+                    P().confirm_candidate(body.track_id)
         except KeyError as e:
             raise HTTPException(404, "unknown track") from e
+        except (ValueError, PermissionError) as e:
+            raise HTTPException(409, str(e)) from e
         return ok()
 
     @app.post("/api/locks/subject/reject", dependencies=[Depends(auth)])
@@ -324,17 +344,16 @@ def create_app(cfg: Config | None = None) -> FastAPI:
         except ValueError as e:
             raise HTTPException(409, str(e)) from e
 
-    @app.post("/api/locks/describe", dependencies=[Depends(auth)])
-    def describe(body: TextBody) -> dict[str, Any]:
-        sent = P().describe(body.text)
-        return {"ok": sent, "note": "proposal will appear for operator confirmation" if sent else "no candidates / rate limited"}
 
     @app.post("/api/locks/describe/confirm", dependencies=[Depends(auth)])
     def describe_confirm(body: LockBody) -> dict[str, Any]:
         prop = P().describe_proposal or {}
         try:
-            P().lock_track("subject", body.track_id, "operator (confirmed text match)", prop.get("description"))
-        except (PermissionError, KeyError) as e:
+            if (prop.get("track_id") != body.track_id or prop.get("session_id") != P().session_id
+                    or prop.get("incident_id") != P().incident.incident_id):
+                raise PermissionError("description proposal changed; request a current match")
+            human_subject(body.track_id, "operator (confirmed text match)")
+        except (PermissionError, ValueError, KeyError) as e:
             raise HTTPException(403, str(e)) from e
         P().describe_proposal = None
         return ok()
@@ -439,6 +458,8 @@ def create_app(cfg: Config | None = None) -> FastAPI:
     async def bridge_setup(body: BridgeSetupBody) -> dict[str, Any]:
         with P().lock:
             bridge = P().autonomy.bridge
+            if bridge is not None:
+                bridge.setup_generation = getattr(bridge, "setup_generation", 0) + 1
             if body.action == "disable_control":
                 P().set_autonomy_mode("MANUAL", "website controls disabled")
                 cfg.autonomy.allow_real_flight = False
@@ -454,8 +475,6 @@ def create_app(cfg: Config | None = None) -> FastAPI:
                 raise HTTPException(409, "Land the aircraft and confirm propellers removed before starting DJI's simulator")
             if body.action == "operator_rearm" and not bridge.is_sim and not cfg.autonomy.allow_real_flight:
                 raise HTTPException(409, "Aircraft controls are off. Press Enable aircraft controls first.")
-            if hasattr(bridge, "setup_generation"):
-                bridge.setup_generation += 1
             setup_generation = getattr(bridge, "setup_generation", 0)
             connection = getattr(bridge, "out", None)
             control_token = getattr(bridge, "control_token", None)
@@ -657,7 +676,7 @@ def create_app(cfg: Config | None = None) -> FastAPI:
         except (ValueError, FileNotFoundError) as e:
             raise HTTPException(422, str(e)) from e
 
-    @app.get("/api/tts")
+    @app.get("/api/tts", dependencies=[Depends(auth)])
     async def tts(text: str = Query(..., max_length=400)) -> Response:
         if not rt.tts.available:
             raise HTTPException(404, "no ElevenLabs key: use on-device speech")
@@ -833,6 +852,8 @@ def create_app(cfg: Config | None = None) -> FastAPI:
     from .sim3d import register as register_sim3d
 
     register_sim3d(app, rt)
+    from .targets import register as register_targets
+    register_targets(app, rt, auth)
     from .incidents import register as register_incidents
 
     register_incidents(app, rt, auth)
@@ -1057,7 +1078,21 @@ def create_app(cfg: Config | None = None) -> FastAPI:
         await asyncio.get_running_loop().run_in_executor(rt.executor, P().process_drone_frame, pkt)
         return {"status": "ok", "control": "video_only"}
 
-    # ---------------------------------------------------------------------------------------------------------
+    @app.get("/api/rescue/voice/{n}.mp3", dependencies=[Depends(auth)])
+    async def rescue_voice(n: int):
+        rescue = rt.pipeline.rescue
+        if not rescue.active():
+            raise HTTPException(404, "no active simulated rescue")
+        text = next((c["speech"] for c in rescue.callouts if c["n"] == n), None)
+        if text is None:
+            raise HTTPException(404, "no such callout in this session")
+        if not rt.tts.available:
+            raise HTTPException(503, "use browser speech; ElevenLabs is not configured")
+        audio = await rt.tts.speak(text)
+        if not audio:
+            raise HTTPException(503, "voice service unavailable")
+        return Response(audio, media_type="audio/mpeg")
+
     dist = REPO_ROOT / "dashboard" / "dist"
     if dist.exists():
         app.mount("/assets", StaticFiles(directory=dist / "assets"), name="assets")
@@ -1066,9 +1101,18 @@ def create_app(cfg: Config | None = None) -> FastAPI:
         def spa(path: str) -> FileResponse:
             if path.startswith(("api/", "ws/")):
                 raise HTTPException(404, "unknown API path")
-            f = dist / path
+            f = (dist / path).resolve()
+            if not f.is_relative_to(dist.resolve()):
+                raise HTTPException(404, "unknown asset")
             if path and f.is_file():
                 return FileResponse(f)
             return FileResponse(dist / "index.html")
 
+    def human_subject(track_id: str, by: str = "operator") -> list[str]:
+        with P().lock:
+            svc = rt.incidents
+            if svc.current_id and svc.current_id == P().incident.incident_id:
+                svc.follow_designate(svc.current_id, track_id, by)
+                return ["Human-confirmed subject linked to incident evidence; Start Follow is separate"]
+            return P().lock_track("subject", track_id, by)
     return app

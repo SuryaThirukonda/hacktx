@@ -421,7 +421,7 @@ class DecisionService:
         return True
 
     def submit(self, job: DecisionJob) -> bool:
-        if self.loop is None or not self.gate(job):
+        if self.loop is None or self.loop.is_closed() or not self.gate(job):
             return False
         job.created_ms = self.now_ms()
         job.context["session"] = self.router.session

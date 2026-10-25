@@ -4,7 +4,14 @@ const TOKEN_KEY = "overwatch.token";
 
 function readToken(): string | null {
   try {
-    const fromUrl = new URLSearchParams(window.location.search).get("token");
+    const fragment = new URLSearchParams(window.location.hash.slice(1));
+    const sharedToken = fragment.get("token");
+    if (sharedToken) {
+      fragment.delete("token");
+      const rest = fragment.toString();
+      history.replaceState(null, "", window.location.pathname + window.location.search + (rest ? "#" + rest : ""));
+    }
+    const fromUrl = sharedToken ?? new URLSearchParams(window.location.search).get("token");
     if (fromUrl) localStorage.setItem(TOKEN_KEY, fromUrl);
     return fromUrl ?? localStorage.getItem(TOKEN_KEY);
   } catch {

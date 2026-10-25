@@ -1,2 +1,599 @@
-{ "label": "synthetic", "scenario": "PP5", "name": "Pursuit (autonomous): sprint into the covered walkway, straight on", "duration_s": 60.0, "wall_s": 73.16, "realtime_factor": 0.82, "detection": { "criterion": "track box IoU>0.2 with GT box, visibility>=0.5", "hits": 449, "total": 451, "recall": 0.996, "recall_by_size": { "lt8px": { "hits": 0, "total": 0, "recall": null }, "8-16px": { "hits": 0, "total": 0, "recall": null }, "16-32px": { "hits": 83, "total": 85, "recall": 0.976 }, "32-64px": { "hits": 366, "total": 366, "recall": 1.0 }, "ge64px": { "hits": 0, "total": 0, "recall": null } } }, "tracking": { "id_switches": { "responder": 0, "subject": 1 }, "total_id_switches": 1 }, "projection_error_m": { "telemetry": { "n": 449, "p50": 0.69, "p95": 1.797, "mean": 0.827 } }, "subject_lock": { "steps_subject_visible_and_locked": 409, "correct": 408, "wrong_target": 0, "not_locked_on_anything": 1, "correct_fraction": 0.998 }, "range_error_m": { "n": 389, "p50": 0.961, "p95": 3.317, "mean": 1.417, "valid_steps": 389, "total_steps": 601 }, "autonomy": { "follow_steps": 576, "subject_in_frame_fraction": 0.7 }, "phone_vision": { "landscape": { "criterion": "on-device box -> nearest GT actor whose torso projects inside it", "boxes": 178, "gt_matched": 177, "range_coverage": 0.0, "range_error_m": { "n": 0, "p50": null, "p95": null, "mean": null }, "bearing_error_deg": { "n": 177, "p50": 0.09, "p95": 0.322, "mean": 0.13 }, "edge_clipped_boxes": 0 } }, "cross_view": { "landscape": { "associated": 0, "correct": 0, "accuracy": null, "coverage": 0.0 } }, "expected_events": [ { "kind": "TRACK_LOST", "role": "subject", "window_s": [ 20.0, 45.0 ], "expect_present": true, "observed": 1, "first_ts_s": 29.13, "pass": true } ], "alerts": { "POSITION_CALLOUT": 6, "RESPONDER_LOST": 1, "LOCK_HOLD": 1, "TRACK_LOST": 1, "LOCK_UNCERTAIN": 1, "SAFETY": 1, "REACQUIRED": 1 }, "decisions": { "D5_priority:rules": { "n": 7, "acted": 7, "sim_latency_ms": { "n": 7, "p50": 0.1, "p95": 0.1, "mean": 0.1 } }, "D4_motion:rules": { "n": 27, "acted": 27, "sim_latency_ms": { "n": 27, "p50": 0.1, "p95": 0.1, "mean": 0.1 } }, "D12_pursuit_route:rules": { "n": 9, "acted": 9, "sim_latency_ms": { "n": 9, "p50": 0.1, "p95": 0.1, "mean": 0.1 } }, "D2_identity:rules": { "n": 1, "acted": 1, "sim_latency_ms": { "n": 1, "p50": 0.1, "p95": 0.1, "mean": 0.1 } } }, "registration": { "method": "none", "valid": false, "confidence": "none", "residual_m": null, "pairs": 18, "yaw_deg": null, "translation_m": null, "reason": "waiting for responder to move (0.0/2.0 m)" }, "operator_actions": [ { "t_ms": 1033.3333333333333, "action": "lock_responder", "track": "drone:2:e1", "actor": "responder" }, { "t_ms": 1500.0000000000014, "action": "lock_subject", "track": "drone:1:e1", "actor": "subject" }, { "t_ms": 47133.33333333322, "action": "confirm_rebind", "track": "drone:3:e1", "actor": "subject" } ], "events_timeline": [ [ 1.03, "LOCK_ENGAGED", "Responder locked on track #2 by scripted operator (demo)" ], [ 1.53, "LOCK_ENGAGED", "Subject locked on track #1 by scripted operator (demo)" ], [ 2.43, "POSITION_CALLOUT", "Subject 10 o'clock, 17 meters, stationary" ], [ 4.73, "RESPONDER_LOST", "Responder lost: not observed for 2.1 s" ], [ 10.53, "POSITION_CALLOUT", "Subject 11 o'clock, 29 meters, walking away" ], [ 18.53, "POSITION_CALLOUT", "Subject 11 o'clock, 44 meters, walking away" ], [ 22.73, "LOCK_HOLD", "Responder search timed out after 20 s; operator needed" ], [ 26.53, "POSITION_CALLOUT", "Subject 11 o'clock, 65 meters, running away" ], [ 29.13, "TRACK_LOST", "Subject lost: not observed for 0.7 s" ], [ 45.83, "LOCK_UNCERTAIN", "Subject identity uncertain: 1 candidate(s), best 0.51 (margin 0.51); confirmation needed" ], [ 45.93, "REACQUIRED", "Subject reacquired (UNVERIFIED): track #1 -> #3, appearance 0.61, 37.8 m from prediction" ], [ 45.93, "SAFETY", "Lock re-bound without confirmation: holding position until a person confirms or re-designates the subject" ], [ 46.83, "POSITION_CALLOUT", "Subject 10 o'clock, 106 meters, jogging away" ], [ 47.13, "REACQUIRED", "Subject reacquired on track #3, confirmed by operator" ], [ 54.93, "POSITION_CALLOUT", "Subject 10 o'clock, 137 meters, running away" ] ], "engine": { "requested": "rules", "used": "rules", "note": null }, "memory": { "criterion": "ids given to each simulated person while a track overlaps them (1 = perfect)", "tracker_id_count": 3, "memory_id_count": 3, "people": 2, "tracker_swaps": 0, "wrong_merges": 0, "per_person": { "responder": { "tracker_ids": 1, "memory_ids": 1 }, "subject": { "tracker_ids": 2, "memory_ids": 2 } } }, "world": { "belief": { "max_hypotheses": 1, "max_hypotheses_with_rebind": 2, "d12_decisions": 9, "first_pick": "P1", "first_pick_label": "street ahead (Oak Street between Main St and North Rd)", "first_pick_is_street_ahead": 1, "route_covers_both": 0, "covering_pick": null, "look_for_at_s": null, "pick_before_look_for": null, "pick_after_look_for": null, "look_for_changed_route": 0, "subject_weight_after_look_for": null, "picks": [ { "t_s": 30.4, "pick": "P1", "kind": "street", "label": "street ahead (Oak Street between Main St and North Rd)", "coverage": 0.249, "by_hypothesis": { "H1": 0.249 }, "share_of_each_hypothesis": { "H1": 0.249 }, "weights": { "H1": 1.0 }, "engine": "rules", "acted": true }, { "t_s": 32.1, "pick": "P1", "kind": "street", "label": "street ahead (Oak Street between Main St and North Rd)", "coverage": 0.327, "by_hypothesis": { "H1": 0.327 }, "share_of_each_hypothesis": { "H1": 0.327 }, "weights": { "H1": 1.0 }, "engine": "rules", "acted": true }, { "t_s": 33.9, "pick": "P1", "kind": "street", "label": "street ahead (Oak Street between Main St and North Rd)", "coverage": 0.318, "by_hypothesis": { "H1": 0.318 }, "share_of_each_hypothesis": { "H1": 0.318 }, "weights": { "H1": 1.0 }, "engine": "rules", "acted": true }, { "t_s": 35.7, "pick": "P1", "kind": "street", "label": "street ahead (Oak Street between Main St and North Rd)", "coverage": 0.364, "by_hypothesis": { "H1": 0.364 }, "share_of_each_hypothesis": { "H1": 0.364 }, "weights": { "H1": 1.0 }, "engine": "rules", "acted": true }, { "t_s": 37.5, "pick": "P1", "kind": "street", "label": "street ahead (Oak Street between Main St and North Rd)", "coverage": 0.458, "by_hypothesis": { "H1": 0.458 }, "share_of_each_hypothesis": { "H1": 0.458 }, "weights": { "H1": 1.0 }, "engine": "rules", "acted": true }, { "t_s": 39.3, "pick": "P1", "kind": "street", "label": "street ahead (Oak Street between Main St and North Rd)", "coverage": 0.511, "by_hypothesis": { "H1": 0.511 }, "share_of_each_hypothesis": { "H1": 0.511 }, "weights": { "H1": 1.0 }, "engine": "rules", "acted": true }, { "t_s": 41.1, "pick": "P1", "kind": "street", "label": "street ahead (Oak Street between Main St and North Rd)", "coverage": 0.454, "by_hypothesis": { "H1": 0.454 }, "share_of_each_hypothesis": { "H1": 0.454 }, "weights": { "H1": 1.0 }, "engine": "rules", "acted": true }, { "t_s": 42.9, "pick": "P1", "kind": "street", "label": "street ahead (Oak Street between Main St and North Rd)", "coverage": 0.446, "by_hypothesis": { "H1": 0.446 }, "share_of_each_hypothesis": { "H1": 0.446 }, "weights": { "H1": 1.0 }, "engine": "rules", "acted": true }, { "t_s": 44.7, "pick": "P1", "kind": "street", "label": "street ahead (Oak Street between Main St and North Rd)", "coverage": 0.431, "by_hypothesis": { "H1": 0.431 }, "share_of_each_hypothesis": { "H1": 0.431 }, "weights": { "H1": 1.0 }, "engine": "rules", "acted": true } ] }, "follow_steps": 576, "subject_in_frame_fraction": 0.693, "following_lookalike_steps": 0, "verify_hold_steps": 13, "lost_at_s": 28.1, "found_again": 1, "found_again_after_s": 19.1, "d12_decisions": 9, "d12_picks": [ [ 30.4, "rules", "P1", true, "P1" ], [ 32.1, "rules", "P1", true, "P1" ], [ 33.9, "rules", "P1", true, "P1" ], [ 35.7, "rules", "P1", true, "P1" ], [ 37.5, "rules", "P1", true, "P1" ], [ 39.3, "rules", "P1", true, "P1" ], [ 41.1, "rules", "P1", true, "P1" ], [ 42.9, "rules", "P1", true, "P1" ], [ 44.7, "rules", "P1", true, "P1" ] ], "operator_actions": [ { "t_ms": 47133.33333333322, "action": "confirm_rebind", "track": "drone:3:e1", "actor": "subject" } ] }, "expected_metrics": [ { "metric": "subject_lock.wrong_target", "value": 0, "min": null, "max": 0, "pass": true }, { "metric": "world.following_lookalike_steps", "value": 0, "min": null, "max": 0, "pass": true }, { "metric": "world.found_again", "value": 1, "min": 1, "max": null, "pass": true }, { "metric": "world.belief.max_hypotheses", "value": 1, "min": null, "max": 1, "pass": true }, { "metric": "world.belief.first_pick_is_street_ahead", "value": 1, "min": 1, "max": null, "pass": true } ], "expected_pass": true
+{
+  "label": "synthetic",
+  "scenario": "PP5",
+  "name": "Pursuit (autonomous): sprint into the covered walkway, straight on",
+  "duration_s": 60.0,
+  "wall_s": 42.3,
+  "realtime_factor": 1.42,
+  "detection": {
+    "criterion": "track box IoU>0.2 with GT box, visibility>=0.5",
+    "hits": 449,
+    "total": 451,
+    "recall": 0.996,
+    "recall_by_size": {
+      "lt8px": {
+        "hits": 0,
+        "total": 0,
+        "recall": null
+      },
+      "8-16px": {
+        "hits": 0,
+        "total": 0,
+        "recall": null
+      },
+      "16-32px": {
+        "hits": 83,
+        "total": 85,
+        "recall": 0.976
+      },
+      "32-64px": {
+        "hits": 366,
+        "total": 366,
+        "recall": 1.0
+      },
+      "ge64px": {
+        "hits": 0,
+        "total": 0,
+        "recall": null
+      }
+    }
+  },
+  "tracking": {
+    "id_switches": {
+      "responder": 0,
+      "subject": 1
+    },
+    "total_id_switches": 1
+  },
+  "projection_error_m": {
+    "telemetry": {
+      "n": 449,
+      "p50": 0.69,
+      "p95": 1.812,
+      "mean": 0.825
+    }
+  },
+  "subject_lock": {
+    "steps_subject_visible_and_locked": 409,
+    "correct": 408,
+    "wrong_target": 0,
+    "not_locked_on_anything": 1,
+    "correct_fraction": 0.998
+  },
+  "range_error_m": {
+    "n": 389,
+    "p50": 0.971,
+    "p95": 3.35,
+    "mean": 1.425,
+    "valid_steps": 389,
+    "total_steps": 601
+  },
+  "autonomy": {
+    "follow_steps": 576,
+    "subject_in_frame_fraction": 0.7
+  },
+  "phone_vision": {
+    "landscape": {
+      "criterion": "on-device box -> nearest GT actor whose torso projects inside it",
+      "boxes": 179,
+      "gt_matched": 178,
+      "range_coverage": 0.0,
+      "range_error_m": {
+        "n": 0,
+        "p50": null,
+        "p95": null,
+        "mean": null
+      },
+      "bearing_error_deg": {
+        "n": 178,
+        "p50": 0.1,
+        "p95": 0.311,
+        "mean": 0.13
+      },
+      "edge_clipped_boxes": 0
+    }
+  },
+  "cross_view": {
+    "landscape": {
+      "associated": 0,
+      "correct": 0,
+      "accuracy": null,
+      "coverage": 0.0
+    }
+  },
+  "expected_events": [
+    {
+      "kind": "TRACK_LOST",
+      "role": "subject",
+      "window_s": [
+        20.0,
+        45.0
+      ],
+      "expect_present": true,
+      "observed": 1,
+      "first_ts_s": 29.13,
+      "pass": true
+    }
+  ],
+  "alerts": {
+    "POSITION_CALLOUT": 6,
+    "RESPONDER_LOST": 1,
+    "LOCK_HOLD": 1,
+    "TRACK_LOST": 1,
+    "LOCK_UNCERTAIN": 1,
+    "SAFETY": 1,
+    "REACQUIRED": 1
+  },
+  "decisions": {
+    "D5_priority:rules": {
+      "n": 7,
+      "acted": 7,
+      "sim_latency_ms": {
+        "n": 7,
+        "p50": 0.1,
+        "p95": 0.1,
+        "mean": 0.1
+      }
+    },
+    "D4_motion:rules": {
+      "n": 27,
+      "acted": 27,
+      "sim_latency_ms": {
+        "n": 27,
+        "p50": 0.1,
+        "p95": 0.1,
+        "mean": 0.1
+      }
+    },
+    "D12_pursuit_route:rules": {
+      "n": 9,
+      "acted": 9,
+      "sim_latency_ms": {
+        "n": 9,
+        "p50": 0.1,
+        "p95": 0.1,
+        "mean": 0.1
+      }
+    },
+    "D2_identity:rules": {
+      "n": 1,
+      "acted": 1,
+      "sim_latency_ms": {
+        "n": 1,
+        "p50": 0.1,
+        "p95": 0.1,
+        "mean": 0.1
+      }
+    }
+  },
+  "registration": {
+    "method": "none",
+    "valid": false,
+    "confidence": "none",
+    "residual_m": null,
+    "pairs": 18,
+    "yaw_deg": null,
+    "translation_m": null,
+    "reason": "waiting for responder to move (0.0/2.0 m)"
+  },
+  "operator_actions": [
+    {
+      "t_ms": 1033.3333333333333,
+      "action": "lock_responder",
+      "track": "drone:2:e1",
+      "actor": "responder"
+    },
+    {
+      "t_ms": 1500.0000000000014,
+      "action": "lock_subject",
+      "track": "drone:1:e1",
+      "actor": "subject"
+    },
+    {
+      "t_ms": 47133.33333333322,
+      "action": "confirm_rebind",
+      "track": "drone:3:e1",
+      "actor": "subject"
+    }
+  ],
+  "events_timeline": [
+    [
+      1.03,
+      "LOCK_ENGAGED",
+      "Responder locked on track #2 by scripted operator (demo)"
+    ],
+    [
+      1.53,
+      "LOCK_ENGAGED",
+      "Subject locked on track #1 by scripted operator (demo)"
+    ],
+    [
+      2.43,
+      "POSITION_CALLOUT",
+      "Subject 10 o'clock, 17 meters, stationary"
+    ],
+    [
+      4.73,
+      "RESPONDER_LOST",
+      "Responder lost: not observed for 2.1 s"
+    ],
+    [
+      10.53,
+      "POSITION_CALLOUT",
+      "Subject 11 o'clock, 29 meters, walking away"
+    ],
+    [
+      18.53,
+      "POSITION_CALLOUT",
+      "Subject 11 o'clock, 44 meters, jogging away"
+    ],
+    [
+      22.73,
+      "LOCK_HOLD",
+      "Responder search timed out after 20 s; operator needed"
+    ],
+    [
+      26.53,
+      "POSITION_CALLOUT",
+      "Subject 11 o'clock, 66 meters, running away"
+    ],
+    [
+      29.13,
+      "TRACK_LOST",
+      "Subject lost: not observed for 0.7 s"
+    ],
+    [
+      45.83,
+      "LOCK_UNCERTAIN",
+      "Subject identity uncertain: 1 candidate(s), best 0.51 (margin 0.51); confirmation needed"
+    ],
+    [
+      45.93,
+      "REACQUIRED",
+      "Subject reacquired (UNVERIFIED): track #1 -> #3, appearance 0.59, 37.9 m from prediction"
+    ],
+    [
+      45.93,
+      "SAFETY",
+      "Lock re-bound without confirmation: holding position until a person confirms or re-designates the subject"
+    ],
+    [
+      46.83,
+      "POSITION_CALLOUT",
+      "Subject 10 o'clock, 106 meters, jogging away"
+    ],
+    [
+      47.13,
+      "REACQUIRED",
+      "Subject reacquired on track #3, confirmed by operator"
+    ],
+    [
+      54.93,
+      "POSITION_CALLOUT",
+      "Subject 10 o'clock, 137 meters, running away"
+    ]
+  ],
+  "engine": {
+    "requested": "rules",
+    "used": "rules",
+    "note": null
+  },
+  "memory": {
+    "criterion": "ids given to each simulated person while a track overlaps them (1 = perfect)",
+    "tracker_id_count": 3,
+    "memory_id_count": 3,
+    "people": 2,
+    "tracker_swaps": 0,
+    "wrong_merges": 0,
+    "per_person": {
+      "responder": {
+        "tracker_ids": 1,
+        "memory_ids": 1
+      },
+      "subject": {
+        "tracker_ids": 2,
+        "memory_ids": 2
+      }
+    }
+  },
+  "world": {
+    "belief": {
+      "max_hypotheses": 1,
+      "max_hypotheses_with_rebind": 2,
+      "d12_decisions": 9,
+      "first_pick": "P1",
+      "first_pick_label": "street ahead (Oak Street between Main St and North Rd)",
+      "first_pick_is_street_ahead": 1,
+      "route_covers_both": 0,
+      "covering_pick": null,
+      "look_for_at_s": null,
+      "pick_before_look_for": null,
+      "pick_after_look_for": null,
+      "look_for_changed_route": 0,
+      "subject_weight_after_look_for": null,
+      "picks": [
+        {
+          "t_s": 30.4,
+          "pick": "P1",
+          "kind": "street",
+          "label": "street ahead (Oak Street between Main St and North Rd)",
+          "coverage": 0.251,
+          "by_hypothesis": {
+            "H1": 0.251
+          },
+          "share_of_each_hypothesis": {
+            "H1": 0.251
+          },
+          "weights": {
+            "H1": 1.0
+          },
+          "engine": "rules",
+          "acted": true
+        },
+        {
+          "t_s": 32.1,
+          "pick": "P1",
+          "kind": "street",
+          "label": "street ahead (Oak Street between Main St and North Rd)",
+          "coverage": 0.33,
+          "by_hypothesis": {
+            "H1": 0.33
+          },
+          "share_of_each_hypothesis": {
+            "H1": 0.33
+          },
+          "weights": {
+            "H1": 1.0
+          },
+          "engine": "rules",
+          "acted": true
+        },
+        {
+          "t_s": 33.9,
+          "pick": "P1",
+          "kind": "street",
+          "label": "street ahead (Oak Street between Main St and North Rd)",
+          "coverage": 0.318,
+          "by_hypothesis": {
+            "H1": 0.318
+          },
+          "share_of_each_hypothesis": {
+            "H1": 0.318
+          },
+          "weights": {
+            "H1": 1.0
+          },
+          "engine": "rules",
+          "acted": true
+        },
+        {
+          "t_s": 35.7,
+          "pick": "P1",
+          "kind": "street",
+          "label": "street ahead (Oak Street between Main St and North Rd)",
+          "coverage": 0.374,
+          "by_hypothesis": {
+            "H1": 0.374
+          },
+          "share_of_each_hypothesis": {
+            "H1": 0.374
+          },
+          "weights": {
+            "H1": 1.0
+          },
+          "engine": "rules",
+          "acted": true
+        },
+        {
+          "t_s": 37.5,
+          "pick": "P1",
+          "kind": "street",
+          "label": "street ahead (Oak Street between Main St and North Rd)",
+          "coverage": 0.462,
+          "by_hypothesis": {
+            "H1": 0.462
+          },
+          "share_of_each_hypothesis": {
+            "H1": 0.462
+          },
+          "weights": {
+            "H1": 1.0
+          },
+          "engine": "rules",
+          "acted": true
+        },
+        {
+          "t_s": 39.3,
+          "pick": "P1",
+          "kind": "street",
+          "label": "street ahead (Oak Street between Main St and North Rd)",
+          "coverage": 0.511,
+          "by_hypothesis": {
+            "H1": 0.511
+          },
+          "share_of_each_hypothesis": {
+            "H1": 0.511
+          },
+          "weights": {
+            "H1": 1.0
+          },
+          "engine": "rules",
+          "acted": true
+        },
+        {
+          "t_s": 41.1,
+          "pick": "P1",
+          "kind": "street",
+          "label": "street ahead (Oak Street between Main St and North Rd)",
+          "coverage": 0.43,
+          "by_hypothesis": {
+            "H1": 0.43
+          },
+          "share_of_each_hypothesis": {
+            "H1": 0.43
+          },
+          "weights": {
+            "H1": 1.0
+          },
+          "engine": "rules",
+          "acted": true
+        },
+        {
+          "t_s": 42.9,
+          "pick": "P1",
+          "kind": "street",
+          "label": "street ahead (Oak Street between Main St and North Rd)",
+          "coverage": 0.438,
+          "by_hypothesis": {
+            "H1": 0.438
+          },
+          "share_of_each_hypothesis": {
+            "H1": 0.438
+          },
+          "weights": {
+            "H1": 1.0
+          },
+          "engine": "rules",
+          "acted": true
+        },
+        {
+          "t_s": 44.7,
+          "pick": "P1",
+          "kind": "street",
+          "label": "street ahead (Oak Street between Main St and North Rd)",
+          "coverage": 0.423,
+          "by_hypothesis": {
+            "H1": 0.423
+          },
+          "share_of_each_hypothesis": {
+            "H1": 0.423
+          },
+          "weights": {
+            "H1": 1.0
+          },
+          "engine": "rules",
+          "acted": true
+        }
+      ]
+    },
+    "follow_steps": 576,
+    "subject_in_frame_fraction": 0.693,
+    "following_lookalike_steps": 0,
+    "verify_hold_steps": 13,
+    "lost_at_s": 28.1,
+    "found_again": 1,
+    "found_again_after_s": 19.1,
+    "d12_decisions": 9,
+    "d12_picks": [
+      [
+        30.4,
+        "rules",
+        "P1",
+        true,
+        "P1"
+      ],
+      [
+        32.1,
+        "rules",
+        "P1",
+        true,
+        "P1"
+      ],
+      [
+        33.9,
+        "rules",
+        "P1",
+        true,
+        "P1"
+      ],
+      [
+        35.7,
+        "rules",
+        "P1",
+        true,
+        "P1"
+      ],
+      [
+        37.5,
+        "rules",
+        "P1",
+        true,
+        "P1"
+      ],
+      [
+        39.3,
+        "rules",
+        "P1",
+        true,
+        "P1"
+      ],
+      [
+        41.1,
+        "rules",
+        "P1",
+        true,
+        "P1"
+      ],
+      [
+        42.9,
+        "rules",
+        "P1",
+        true,
+        "P1"
+      ],
+      [
+        44.7,
+        "rules",
+        "P1",
+        true,
+        "P1"
+      ]
+    ],
+    "operator_actions": [
+      {
+        "t_ms": 47133.33333333322,
+        "action": "confirm_rebind",
+        "track": "drone:3:e1",
+        "actor": "subject"
+      }
+    ]
+  },
+  "expected_metrics": [
+    {
+      "metric": "subject_lock.wrong_target",
+      "value": 0,
+      "min": null,
+      "max": 0,
+      "pass": true
+    },
+    {
+      "metric": "world.following_lookalike_steps",
+      "value": 0,
+      "min": null,
+      "max": 0,
+      "pass": true
+    },
+    {
+      "metric": "world.found_again",
+      "value": 1,
+      "min": 1,
+      "max": null,
+      "pass": true
+    },
+    {
+      "metric": "world.belief.max_hypotheses",
+      "value": 1,
+      "min": null,
+      "max": 1,
+      "pass": true
+    },
+    {
+      "metric": "world.belief.first_pick_is_street_ahead",
+      "value": 1,
+      "min": 1,
+      "max": null,
+      "pass": true
+    }
+  ],
+  "expected_pass": true
 }

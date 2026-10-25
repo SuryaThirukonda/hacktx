@@ -1,0 +1,149 @@
+{
+  "properties": {
+    "id": {
+      "title": "Id",
+      "type": "string"
+    },
+    "kind": {
+      "enum": [
+        "street",
+        "intersection"
+      ],
+      "title": "Kind",
+      "type": "string"
+    },
+    "label": {
+      "title": "Label",
+      "type": "string"
+    },
+    "target_xy": {
+      "maxItems": 2,
+      "minItems": 2,
+      "prefixItems": [
+        {
+          "type": "number"
+        },
+        {
+          "type": "number"
+        }
+      ],
+      "title": "Target Xy",
+      "type": "array"
+    },
+    "coverage": {
+      "title": "Coverage",
+      "type": "number"
+    },
+    "by_hypothesis": {
+      "additionalProperties": {
+        "type": "number"
+      },
+      "default": {},
+      "title": "By Hypothesis",
+      "type": "object"
+    },
+    "length_m": {
+      "title": "Length M",
+      "type": "number"
+    },
+    "eta_s": {
+      "title": "Eta S",
+      "type": "number"
+    },
+    "penalty": {
+      "default": 0.0,
+      "title": "Penalty",
+      "type": "number"
+    },
+    "score": {
+      "anyOf": [
+        {
+          "type": "number"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Score"
+    },
+    "unsafe": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Unsafe"
+    },
+    "why": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Why"
+    },
+    "waypoints": {
+      "default": [],
+      "items": {
+        "maxItems": 2,
+        "minItems": 2,
+        "prefixItems": [
+          {
+            "type": "number"
+          },
+          {
+            "type": "number"
+          }
+        ],
+        "type": "array"
+      },
+      "title": "Waypoints",
+      "type": "array"
+    },
+    "footprint": {
+      "anyOf": [
+        {
+          "items": {
+            "maxItems": 2,
+            "minItems": 2,
+            "prefixItems": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "number"
+              }
+            ],
+            "type": "array"
+          },
+          "type": "array"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Footprint"
+    }
+  },
+  "required": [
+    "id",
+    "kind",
+    "label",
+    "target_xy",
+    "coverage",
+    "length_m",
+    "eta_s"
+  ],
+  "title": "PursuitCandidate",
+  "type": "object"
+}

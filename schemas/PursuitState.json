@@ -1,0 +1,537 @@
+{
+  "$defs": {
+    "PursuitCandidate": {
+      "properties": {
+        "id": {
+          "title": "Id",
+          "type": "string"
+        },
+        "kind": {
+          "enum": [
+            "street",
+            "intersection"
+          ],
+          "title": "Kind",
+          "type": "string"
+        },
+        "label": {
+          "title": "Label",
+          "type": "string"
+        },
+        "target_xy": {
+          "maxItems": 2,
+          "minItems": 2,
+          "prefixItems": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "number"
+            }
+          ],
+          "title": "Target Xy",
+          "type": "array"
+        },
+        "coverage": {
+          "title": "Coverage",
+          "type": "number"
+        },
+        "by_hypothesis": {
+          "additionalProperties": {
+            "type": "number"
+          },
+          "default": {},
+          "title": "By Hypothesis",
+          "type": "object"
+        },
+        "length_m": {
+          "title": "Length M",
+          "type": "number"
+        },
+        "eta_s": {
+          "title": "Eta S",
+          "type": "number"
+        },
+        "penalty": {
+          "default": 0.0,
+          "title": "Penalty",
+          "type": "number"
+        },
+        "score": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Score"
+        },
+        "unsafe": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Unsafe"
+        },
+        "why": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Why"
+        },
+        "waypoints": {
+          "default": [],
+          "items": {
+            "maxItems": 2,
+            "minItems": 2,
+            "prefixItems": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "number"
+              }
+            ],
+            "type": "array"
+          },
+          "title": "Waypoints",
+          "type": "array"
+        },
+        "footprint": {
+          "anyOf": [
+            {
+              "items": {
+                "maxItems": 2,
+                "minItems": 2,
+                "prefixItems": [
+                  {
+                    "type": "number"
+                  },
+                  {
+                    "type": "number"
+                  }
+                ],
+                "type": "array"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Footprint"
+        }
+      },
+      "required": [
+        "id",
+        "kind",
+        "label",
+        "target_xy",
+        "coverage",
+        "length_m",
+        "eta_s"
+      ],
+      "title": "PursuitCandidate",
+      "type": "object"
+    },
+    "PursuitHypothesis": {
+      "description": "One identity hypothesis of the street-graph belief (autonomy/belief.py).",
+      "properties": {
+        "id": {
+          "title": "Id",
+          "type": "string"
+        },
+        "label": {
+          "title": "Label",
+          "type": "string"
+        },
+        "object_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Object Id"
+        },
+        "track_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Track Id"
+        },
+        "weight": {
+          "title": "Weight",
+          "type": "number"
+        },
+        "visible": {
+          "default": false,
+          "title": "Visible",
+          "type": "boolean"
+        },
+        "colors": {
+          "anyOf": [
+            {
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Colors"
+        },
+        "particles": {
+          "default": 0,
+          "title": "Particles",
+          "type": "integer"
+        },
+        "evidence": {
+          "default": [],
+          "items": {
+            "additionalProperties": true,
+            "type": "object"
+          },
+          "title": "Evidence",
+          "type": "array"
+        }
+      },
+      "required": [
+        "id",
+        "label",
+        "weight"
+      ],
+      "title": "PursuitHypothesis",
+      "type": "object"
+    },
+    "PursuitRoute": {
+      "properties": {
+        "candidate_id": {
+          "title": "Candidate Id",
+          "type": "string"
+        },
+        "label": {
+          "title": "Label",
+          "type": "string"
+        },
+        "waypoints": {
+          "default": [],
+          "items": {
+            "maxItems": 2,
+            "minItems": 2,
+            "prefixItems": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "number"
+              }
+            ],
+            "type": "array"
+          },
+          "title": "Waypoints",
+          "type": "array"
+        },
+        "source": {
+          "title": "Source",
+          "type": "string"
+        },
+        "engine": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Engine"
+        },
+        "model_pick": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Model Pick"
+        },
+        "baseline_pick": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Baseline Pick"
+        },
+        "confidence": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Confidence"
+        },
+        "acted": {
+          "default": false,
+          "title": "Acted",
+          "type": "boolean"
+        },
+        "reason": {
+          "default": "",
+          "title": "Reason",
+          "type": "string"
+        },
+        "decision_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Decision Id"
+        },
+        "ts_ms": {
+          "title": "Ts Ms",
+          "type": "number"
+        },
+        "provenance": {
+          "default": "simulated",
+          "enum": [
+            "live",
+            "replay",
+            "simulated",
+            "manual"
+          ],
+          "title": "Provenance",
+          "type": "string"
+        }
+      },
+      "required": [
+        "candidate_id",
+        "label",
+        "source",
+        "ts_ms"
+      ],
+      "title": "PursuitRoute",
+      "type": "object"
+    }
+  },
+  "description": "Where the lost subject could be, and why the drone flies where it does: the belief (particles per identity\nhypothesis on the street map), the candidate viewpoints with their coverage, and the route chosen.",
+  "properties": {
+    "active": {
+      "title": "Active",
+      "type": "boolean"
+    },
+    "provenance": {
+      "default": "simulated",
+      "enum": [
+        "live",
+        "replay",
+        "simulated",
+        "manual"
+      ],
+      "title": "Provenance",
+      "type": "string"
+    },
+    "map_source": {
+      "default": "map data",
+      "title": "Map Source",
+      "type": "string"
+    },
+    "started_ms": {
+      "anyOf": [
+        {
+          "type": "number"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Started Ms"
+    },
+    "lost_ms": {
+      "anyOf": [
+        {
+          "type": "number"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Lost Ms"
+    },
+    "lost_s": {
+      "anyOf": [
+        {
+          "type": "number"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Lost S"
+    },
+    "particles_per_hypothesis": {
+      "default": 0,
+      "title": "Particles Per Hypothesis",
+      "type": "integer"
+    },
+    "hypotheses": {
+      "default": [],
+      "items": {
+        "$ref": "#/$defs/PursuitHypothesis"
+      },
+      "title": "Hypotheses",
+      "type": "array"
+    },
+    "particles": {
+      "default": [],
+      "items": {
+        "maxItems": 3,
+        "minItems": 3,
+        "prefixItems": [
+          {
+            "type": "number"
+          },
+          {
+            "type": "number"
+          },
+          {
+            "type": "integer"
+          }
+        ],
+        "type": "array"
+      },
+      "title": "Particles",
+      "type": "array"
+    },
+    "candidates": {
+      "default": [],
+      "items": {
+        "$ref": "#/$defs/PursuitCandidate"
+      },
+      "title": "Candidates",
+      "type": "array"
+    },
+    "candidates_ts_ms": {
+      "anyOf": [
+        {
+          "type": "number"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Candidates Ts Ms"
+    },
+    "route": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/PursuitRoute"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    },
+    "description": {
+      "anyOf": [
+        {
+          "additionalProperties": true,
+          "type": "object"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Description"
+    },
+    "dropped": {
+      "default": [],
+      "items": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "title": "Dropped",
+      "type": "array"
+    },
+    "holding": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Holding"
+    },
+    "ended": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Ended"
+    }
+  },
+  "required": [
+    "active"
+  ],
+  "title": "PursuitState",
+  "type": "object"
+}

@@ -1,0 +1,109 @@
+INFO:     Started server process [15120]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://127.0.0.1:8024 (Press CTRL+C to quit)
+INFO:     127.0.0.1:59797 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59801 - "GET /command HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59801 - "GET /assets/index-IDc8Enze.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59802 - "GET /assets/index-CgpKv3du.css HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59804 - "WebSocket /ws/state" [accepted]
+INFO:     connection open
+INFO:     127.0.0.1:59802 - "GET /api/incidents HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59801 - "GET /api/usecases HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59805 - "WebSocket /ws/events" [accepted]
+INFO:     connection open
+INFO:     127.0.0.1:59801 - "GET /icon-192.png HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59806 - "WebSocket /ws/incidents/INC-a860f295e5" [accepted]
+INFO:     connection open
+INFO:     127.0.0.1:59807 - "WebSocket /ws/video/drone" [accepted]
+INFO:     connection open
+INFO:     127.0.0.1:59801 - "GET /api/world/meta HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59801 - "GET /api/world/hazards HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59802 - "GET /api/world/ortho.jpg?w=assistance-training HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59802 - "GET /api/incidents/INC-a860f295e5 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59809 - "GET /api/incidents/INC-a860f295e5/sources HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59808 - "GET /api/incidents/INC-a860f295e5/alerts HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59801 - "GET /api/incidents/INC-a860f295e5/observations HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59810 - "GET /api/incidents/INC-a860f295e5/scene HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59808 - "GET /api/incidents/INC-a860f295e5/follow HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59809 - "GET /api/incidents/INC-a860f295e5/actions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59810 - "GET /api/incidents/INC-a860f295e5/person-mark HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59811 - "GET /api/incidents/INC-a860f295e5/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59801 - "GET /api/incidents/INC-a860f295e5/target HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59802 - "GET /api/incidents/INC-a860f295e5/structure HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59808 - "GET /api/incidents/INC-a860f295e5/sar HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59802 - "GET /api/evidence/OBS-a164237c23.jpg HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59808 - "GET /api/evidence/OBS-05b1954928.jpg HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59801 - "GET /api/evidence/OBS-0aecfd2f1f.jpg HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59801 - "GET /api/incidents/INC-a860f295e5/target HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59802 - "GET /api/incidents/INC-a860f295e5/sar HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59802 - "GET /api/incidents/INC-a860f295e5/person-mark HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59801 - "GET /api/incidents/INC-a860f295e5/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59802 - "GET /api/incidents/INC-a860f295e5/observations HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59808 - "GET /api/incidents/INC-a860f295e5/structure HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59811 - "GET /api/incidents/INC-a860f295e5/actions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59811 - "GET /api/evidence/OBS-e76e97123a.jpg HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59811 - "GET /api/incidents/INC-a860f295e5/target HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59808 - "GET /api/incidents/INC-a860f295e5/sar HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59808 - "POST /api/incidents/INC-a860f295e5/target/search HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59808 - "GET /api/incidents/INC-a860f295e5/target HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59811 - "GET /api/incidents/INC-a860f295e5/sar HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59811 - "GET /api/world/meta HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59811 - "GET /api/world/hazards HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59811 - "GET /api/incidents/INC-a860f295e5/person-mark HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59811 - "GET /api/incidents/INC-a860f295e5/person-mark/preview?request_id=c4cc17315e804b84ae9afac52d6ed07c HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59811 - "GET /api/incidents/INC-a860f295e5/follow HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59811 - "GET /api/incidents/INC-a860f295e5/target HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59808 - "GET /api/incidents/INC-a860f295e5/sar HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59808 - "POST /api/incidents/INC-a860f295e5/sar/OBS-e76e97123a/review HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59808 - "GET /api/incidents/INC-a860f295e5/target HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59811 - "GET /api/incidents/INC-a860f295e5/sar HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59814 - "GET /api/incidents HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59815 - "GET /api/incidents/INC-a860f295e5/sar HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59801 - "GET /api/incidents/INC-a860f295e5/actions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59810 - "GET /api/incidents/INC-a860f295e5/alerts HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59811 - "GET /api/incidents/INC-a860f295e5/observations HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59802 - "GET /api/incidents/INC-a860f295e5/structure HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59808 - "GET /api/incidents/INC-a860f295e5/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59808 - "GET /api/incidents/INC-a860f295e5/person-mark HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59802 - "GET /api/incidents/INC-a860f295e5/target HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59811 - "GET /api/incidents/INC-a860f295e5/sar HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59816 - "GET /responder HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59816 - "GET /assets/index-IDc8Enze.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59817 - "GET /assets/index-CgpKv3du.css HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59817 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59816 - "GET /api/incidents HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59818 - "GET /icon-192.png HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59818 - "GET /sw.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59821 - "WebSocket /ws/incidents/INC-a860f295e5" [accepted]
+INFO:     connection open
+INFO:     127.0.0.1:59817 - "GET /api/incidents/INC-a860f295e5 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59816 - "GET /api/incidents/INC-a860f295e5/person-mark HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59819 - "GET /api/incidents/INC-a860f295e5/alerts HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59820 - "GET /api/incidents/INC-a860f295e5/responder-brief HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59819 - "GET /responder HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59816 - "GET /icon-192.png HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59820 - "GET /manifest.webmanifest HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59817 - "GET /api/incidents/INC-a860f295e5/person-mark/preview?request_id=c4cc17315e804b84ae9afac52d6ed07c HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59819 - "GET /icon-512.png HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59808 - "GET /api/incidents/INC-a860f295e5/actions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59811 - "GET /api/incidents/INC-a860f295e5/alerts HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59802 - "GET /api/incidents/INC-a860f295e5/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59822 - "GET /api/incidents/INC-a860f295e5/alerts HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59819 - "POST /api/alerts/s-683afe.a-3/acknowledge HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59824 - "GET /api/incidents/INC-a860f295e5/alerts HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59802 - "GET /api/incidents/INC-a860f295e5/alerts HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59811 - "GET /api/incidents/INC-a860f295e5/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59819 - "POST /api/alerts/ALR-403792662a/acknowledge HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59811 - "GET /api/incidents/INC-a860f295e5/alerts HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59825 - "GET /api/incidents/INC-a860f295e5/alerts HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59802 - "GET /api/incidents/INC-a860f295e5/metrics HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59802 - "GET /api/incidents/INC-a860f295e5/target HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59811 - "GET /api/incidents/INC-a860f295e5/sar HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59811 - "GET /api/world/meta HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59811 - "GET /api/world/hazards HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59826 - "GET /api/autonomy/readiness HTTP/1.1" 200 OK
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [15120]

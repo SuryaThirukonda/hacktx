@@ -140,6 +140,8 @@ class PersonMarkRef(BaseModel):
 
 
 class FollowBody(BaseModel):
+    session_id: str | None = None
+    designation: int | None = None
     track_id: str | None = None
     by: str = "operator"
 
@@ -368,7 +370,7 @@ def register(app: FastAPI, rt, auth: Callable[[Request], None]) -> None:
     @app.get("/api/incidents/{iid}/follow")
     def follow_view(iid: str) -> dict[str, Any]:
         incident_or_404(iid)
-        return svc.follow_tracker(iid).view(rt.clock.now_ms())
+        return svc.follow_view(iid)
 
     @app.post("/api/incidents/{iid}/follow/designate", dependencies=[Depends(auth)])
     def follow_designate(iid: str, body: FollowBody) -> dict[str, Any]:
@@ -376,11 +378,13 @@ def register(app: FastAPI, rt, auth: Callable[[Request], None]) -> None:
         if not body.track_id:
             raise ApiError(422, "validation_error", "track_id is required")
         try:
-            return svc.follow_designate(iid, body.track_id, body.by)
+            return svc.follow_designate(iid, body.track_id, body.by, body.session_id, body.designation)
         except KeyError as e:
             raise ApiError(404, "not_found", f"no such track {body.track_id}") from e
         except PermissionError as e:
             raise ApiError(403, "forbidden", str(e)) from e
+        except ValueError as e:
+            raise ApiError(409, "target_unavailable", str(e)) from e
 
     @app.post("/api/incidents/{iid}/follow/describe", dependencies=[Depends(auth)])
     def follow_describe(iid: str, body: TextIn) -> dict[str, Any]:
@@ -389,7 +393,9 @@ def register(app: FastAPI, rt, auth: Callable[[Request], None]) -> None:
         incident_or_404(iid)
         if not body.text.strip():
             raise ApiError(422, "validation_error", "describe who to follow (clothing words)")
-        sent = rt.pipeline.describe(body.text.strip())
+        with rt.pipeline.lock:
+            guard(lambda: svc.require_current_control(iid))
+            sent = rt.pipeline.describe(body.text.strip(), {"incident_id": iid, "session_id": rt.pipeline.session_id})
         st.append_event(iid, "follow_describe", {"text": body.text.strip(), "sent": bool(sent)})
         return {"ok": bool(sent), "note": "the proposal appears for confirmation" if sent else
                 "no people in view to match, or a request is already in flight"}
@@ -454,14 +460,17 @@ def register(app: FastAPI, rt, auth: Callable[[Request], None]) -> None:
     @app.post("/api/incidents/{iid}/follow/describe/confirm", dependencies=[Depends(auth)])
     def follow_describe_confirm(iid: str, body: FollowBody | None = None) -> dict[str, Any]:
         incident_or_404(iid)
+        guard(lambda: svc.require_current_control(iid))
         prop = rt.pipeline.describe_proposal or {}
+        if prop.get("incident_id", iid) != iid or prop.get("session_id", rt.pipeline.session_id) != rt.pipeline.session_id:
+            raise ApiError(409, "stale_proposal", "request a current description match")
         tid = prop.get("track_id")
         if not tid:
             raise ApiError(409, "no_proposal", "no description match to confirm")
         try:
             view = svc.follow_designate(iid, tid, (body or FollowBody()).by + " (confirmed description match)")
-        except KeyError as e:
-            raise ApiError(404, "not_found", f"the proposed track {tid} is gone") from e
+        except (ValueError, PermissionError, KeyError) as e:
+            raise ApiError(409, "stale_proposal", str(e)) from e
         rt.pipeline.describe_proposal = None
         return view
 
@@ -470,25 +479,29 @@ def register(app: FastAPI, rt, auth: Callable[[Request], None]) -> None:
         """What to look for (clothing words): weighs pursuit routing towards matching remembered sightings.
         Empty text clears it."""
         incident_or_404(iid)
-        req = rt.pipeline.set_look_for(body.text or None)
-        st.append_event(iid, "look_for", {"text": req["text"] if req else None, "parsed": req["parsed"] if req else None,
-                                          "provenance": "manual"})
+        with rt.pipeline.lock:
+            guard(lambda: svc.require_current_control(iid))
+            req = rt.pipeline.set_look_for(body.text or None)
+        st.append_event(iid, "look_for", {"text": req["text"] if req else None})
         return {"look_for": req}
 
     @app.post("/api/incidents/{iid}/follow/confirm", dependencies=[Depends(auth)])
     def follow_confirm(iid: str, body: FollowBody | None = None) -> dict[str, Any]:
         incident_or_404(iid)
-        return guard(lambda: svc.follow_confirm(iid, (body or FollowBody()).by))
+        body = body or FollowBody()
+        return guard(lambda: svc.follow_confirm(iid, body.by, body.session_id, body.designation))
 
     @app.post("/api/incidents/{iid}/follow/reject", dependencies=[Depends(auth)])
     def follow_reject(iid: str, body: FollowBody | None = None) -> dict[str, Any]:
         incident_or_404(iid)
-        return guard(lambda: svc.follow_reject(iid, (body or FollowBody()).by))
+        body = body or FollowBody()
+        return guard(lambda: svc.follow_reject(iid, body.by, body.session_id, body.designation))
 
     @app.post("/api/incidents/{iid}/follow/release", dependencies=[Depends(auth)])
     def follow_release(iid: str, body: FollowBody | None = None) -> dict[str, Any]:
         incident_or_404(iid)
-        return guard(lambda: svc.follow_release(iid, (body or FollowBody()).by))
+        body = body or FollowBody()
+        return guard(lambda: svc.follow_release(iid, body.by, body.session_id, body.designation))
 
     # -- recommendations (MissionActions) ---------------------------------------------------------------------
     @app.get("/api/incidents/{iid}/actions")
@@ -537,9 +550,7 @@ def register(app: FastAPI, rt, auth: Callable[[Request], None]) -> None:
     @app.get("/api/incidents/{iid}/responder-brief")
     def responder_brief(iid: str) -> dict[str, Any]:
         incident_or_404(iid)
-        from ..incident.briefing import responder_targets
-
-        return responder_targets(st, iid, svc.responder.get(iid))
+        return svc.responder_brief(iid)
 
     @app.get("/api/incidents/{iid}/responder-position")
     def get_responder_position(iid: str) -> dict[str, Any]:

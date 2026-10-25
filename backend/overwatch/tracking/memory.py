@@ -19,6 +19,10 @@ pursuit routing. People only: no identity beyond "the object this track continue
 
 from __future__ import annotations
 
+import copy
+import uuid
+from types import SimpleNamespace
+
 import math
 from collections import deque
 from dataclasses import dataclass, field
@@ -295,3 +299,116 @@ class ObjectMemory:
                     d["ghost_box"] = [round(uv[0] - w / 2, 1), round(uv[1] - h, 1), round(uv[0] + w / 2, 1), round(uv[1], 1)]
             out.append(d)
         return out
+
+def logical_object_id(incident_id: str, session_id: str, object_id: str) -> str:
+    """An operational continuity key, never a biometric or real-world identity."""
+    return f"{incident_id}.{session_id}.object.{object_id}"
+
+class SubjectMemory:
+    """Persistable read model of the existing Lock, not another tracker or flight controller.
+
+    Public states adapt Lock states. A missing/stale measurement is never published as a
+    measured position. The coordinator owns incident/session changes and persistence.
+    """
+
+    def __init__(self, incident_id: str, session_id: str, frame: str, lock=None, object_id: str | None = None):
+        self.incident_id, self.session_id, self.frame = incident_id, session_id, frame
+        self.designation_ms = lock.since_ms if lock else None
+        self.logical_id = (logical_object_id(incident_id, session_id, object_id) if object_id else
+                           f"{incident_id}.{session_id}.subject.{uuid.uuid4().hex[:12]}")
+        self.track_ids: list[str] = []
+        self.history: deque[dict] = deque(maxlen=200)
+        self.last_seen_ms: float | None = None
+        self.last_position: tuple[float, float] | None = None
+        self.last_position_ms: float | None = None
+        self.last_velocity = (0.0, 0.0)
+        self.last_error: float | None = None
+        self.last_score = 0.0
+        self.last_frame: dict | None = None
+        self.appearance: list[float] = []
+        self.view: dict[str, Any] = {}
+
+    def update(self, lock, info, now_ms: float, frame_id: int, capture_ms: float | None,
+               fresh: bool, quality: tuple[str, ...], appearance: np.ndarray | None) -> dict:
+        tid = lock.track_id
+        if tid and tid not in self.track_ids:
+            self.track_ids.append(tid)
+        measured = bool(fresh and info is not None and info.matched_now and info.state == "CONFIRMED"
+                        and lock.state == "LOCKED" and lock.verified and not quality)
+        new_frame = self.last_frame is None or self.last_frame["frame_id"] != frame_id
+        if measured and new_frame:
+            stamp = capture_ms if capture_ms is not None else now_ms
+            self.last_seen_ms = stamp
+            self.last_score = float(info.conf)
+            self.last_frame = {"frame_id": frame_id, "capture_ts_ms": stamp, "source_id": "drone"}
+            if info.world_xy is not None and info.world_err is not None:
+                self.last_position = tuple(info.world_xy)
+                self.last_position_ms = stamp
+                self.last_error = float(info.world_err)
+                self.last_velocity = tuple(info.velocity or (0.0, 0.0))
+                self.history.append({"ts_ms": stamp, "xy": list(info.world_xy), "track_id": tid,
+                                     "position_kind": "measured", "uncertainty_m": info.world_err})
+            if appearance is not None:
+                self.appearance = [round(float(v), 6) for v in appearance.ravel()[:256]]
+        lost_ms = max(0.0, now_ms - self.last_seen_ms) if self.last_seen_ms is not None else 0.0
+        if not lock.active or lost_ms >= lock.cfg.hold_after_s * 1000:
+            state = "LOST"
+        elif measured:
+            state = "VISIBLE"
+        elif not lock.verified or lock.state == "UNCERTAIN" or (fresh and quality and info and info.matched_now):
+            state = "UNCERTAIN"
+        elif lost_ms < lock.cfg.reacquire_after_ms:
+            state = "TEMPORARILY_LOST"
+        else:
+            state = "REACQUIRING"
+        age_s = lost_ms / 1000
+        position = None
+        if measured and info.world_xy is not None and info.world_err is not None:
+            position = {"frame": self.frame, "x": info.world_xy[0], "y": info.world_xy[1], "z": 0.0}
+        predicted = None
+        prediction_age_s = max(0.0, now_ms - self.last_position_ms) / 1000 if self.last_position_ms is not None else 0.0
+        if position is None and self.last_position is not None:
+            # Bound extrapolation; uncertainty continues growing after motion prediction stops.
+            dt = min(2.5, prediction_age_s)
+            predicted = {"frame": self.frame, "x": self.last_position[0] + self.last_velocity[0] * dt,
+                         "y": self.last_position[1] + self.last_velocity[1] * dt, "z": 0.0}
+        last_verified = ({"frame": self.frame, "x": self.last_position[0], "y": self.last_position[1], "z": 0.0}
+                         if self.last_position is not None else None)
+        problems = list(quality)
+        if not fresh:
+            problems.append("drone source stale or disconnected")
+        self.view = {
+            "incident_id": self.incident_id, "session_id": self.session_id, "logical_subject_id": self.logical_id,
+            "state": state, "lock_state": lock.state, "current_track_id": tid if measured else None,
+            "last_track_id": tid, "associated_track_ids": self.track_ids[-40:],
+            "measured_position": position, "predicted_position": predicted, "prediction_ts_ms": now_ms,
+            "last_verified_position": last_verified, "last_verified_ts_ms": self.last_position_ms,
+            "last_seen_ts_ms": self.last_seen_ms, "last_seen_frame": self.last_frame,
+            "position_kind": "measured" if position else "predicted" if predicted else "unknown",
+            "uncertainty_m": (self.last_error + lock.cfg.search_growth_mps * prediction_age_s
+                              if self.last_error is not None else None),
+            "confidence": round(self.last_score * math.exp(-age_s / 8), 3),
+            "confidence_kind": "continuity heuristic, not identity probability", "quality_reasons": problems,
+            "binding_verified": bool(lock.verified), "appearance_signature": self.appearance,
+            "motion_history": list(self.history), "candidate_evidence": [c.model_dump() for c in lock.candidates],
+            "description": lock.description,
+        }
+        return self.snapshot()
+
+    def snapshot(self) -> dict:
+        return copy.deepcopy(self.view)
+
+    def update_object(self, obj, info, cfg, now_ms, frame_id, capture_ms, fresh, quality, appearance) -> dict:
+        """Reuse the same read model for a SAR object without changing the single subject lock.
+
+        These are aliases of ObjectMemory's states, not a competing association or
+        state-transition algorithm. Possible links remain explicitly unverified.
+        """
+        adapter = SimpleNamespace(
+            track_id=obj.track_id if obj else self.view.get("last_track_id"), active=True, cfg=cfg,
+            state={VISIBLE: "LOCKED", OCCLUDED: "COAST", OUT_OF_VIEW: "REACQUIRE", LOST: "UNCERTAIN"}.get(
+                obj.state if obj else LOST, "UNCERTAIN"),
+            verified=bool(obj and obj.link != "possible"), candidates=[], description="possible assistance candidate")
+        view = self.update(adapter, info, now_ms, frame_id, capture_ms, fresh, quality, appearance)
+        self.view["role"] = view["role"] = "assistance_candidate"
+        return view

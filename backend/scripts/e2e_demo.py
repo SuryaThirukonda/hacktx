@@ -10,7 +10,7 @@ nothing leaves the machine), serves the built dashboard, and walks the demo as a
   4. Switch to Structure, set side A, and see the openings organised by side.
   5. Open the 3D world and replay the timeline.
 
-Outcomes (not timings) are compared between the two runs. Writes evaluation/e2e/<timestamp>/ with screenshots.
+Outcomes (not timings) are compared between the two runs. Writes evaluation/current/browser-demo/ with screenshots.
 
     python scripts/e2e_demo.py            # needs dashboard/dist (npm run build) and Chrome
 """
@@ -25,16 +25,15 @@ import sys
 import tempfile
 import time
 import urllib.request
-from datetime import datetime, timezone
 from pathlib import Path
 
 from playwright.sync_api import sync_playwright
 
 BACKEND = Path(__file__).resolve().parents[1]
 REPO = BACKEND.parent
-CHROME = os.environ.get("E2E_CHROME", "/usr/bin/google-chrome")
-KEYS_OFF = ["OPENAI_API_KEY", "TYPESAFE_API_KEY", "STRANDS_URL", "GEMINI_API_KEY", "GOOGLE_API_KEY", "OVERWATCH_TOKEN",
-            *(f"ELEVENLABS_API_KEY{n}" for n in ("", "2", "3", "4"))]
+CHROME = os.environ.get("E2E_CHROME", "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome" if sys.platform == "darwin" else "/usr/bin/google-chrome")
+KEYS_OFF = ["OPENAI_API_KEY", "TYPESAFE_API_KEY", "STRANDS_URL", "GEMINI_API_KEY", "GOOGLE_API_KEY", "OVERWATCH_TOKEN", "TIGER_DATABASE_URL", "CONNECTION_STRING",
+            *(f"ELEVENLABS_API_KEY{n}" for n in ("", "2", "3", "4", "5"))]
 
 
 def get(base: str, path: str):
@@ -66,7 +65,7 @@ def run_once(port: int, out: Path, tag: str) -> dict:
         with sync_playwright() as p:
             b = p.chromium.launch(executable_path=CHROME, headless=True)
             op = b.new_page(viewport={"width": 1440, "height": 900})
-            op.goto(base + "/dashboard")
+            op.goto(base + "/command")
             op.get_by_role("button", name=re.compile("Start demo incident")).click()
             confirm = op.locator('button[title="Confirm"]').first
             confirm.wait_for(timeout=90_000)
@@ -142,8 +141,7 @@ def run_once(port: int, out: Path, tag: str) -> dict:
 
 
 def main() -> int:
-    stamp = datetime.now(timezone.utc).strftime("%Y%m%d-%H%M%S")
-    out = REPO / "evaluation" / "e2e" / stamp
+    out = Path(os.environ.get("OVERWATCH_E2E_OUTPUT", str(REPO / "evaluation/current/browser-demo")))
     out.mkdir(parents=True, exist_ok=True)
     if not (REPO / "dashboard" / "dist" / "index.html").exists():
         print("build the dashboard first: cd dashboard && npm run build")

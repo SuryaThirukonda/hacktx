@@ -11,6 +11,7 @@ import { ago, briefingFor, evidenceUrl, locationText, ProvBadge, ReviewChip, Sec
 import { EvidenceModal } from "./EvidenceModal";
 import { KeyboardCamera } from "./KeyboardCamera";
 import { PersonMark } from "../PersonMark";
+import { TargetSARPanel, useTargetSAR, targetPaths, targetPins } from "../TargetSARPanel";
 import { BridgeSetup } from "./BridgeSetup";
 
 const SEV: Record<string, string> = { info: "var(--ink-2)", attention: "var(--warning)", warning: "var(--serious)", critical: "var(--critical)" };
@@ -32,7 +33,8 @@ export function RightRail() {
   const live = useStore((s) => s.state?.mode === "LIVE");
   const mission = incident?.mission_mode ?? "search";
   const follow = useIncident((s) => s.follow);
-  const paths = useMemo(() => followPaths(follow), [follow]);
+  const targetSAR = useTargetSAR(incident?.id);
+  const paths = [...followPaths(follow), ...targetPaths(targetSAR)];
 
   const run = async (f: () => Promise<unknown>, ok?: string) => {
     try {
@@ -43,10 +45,6 @@ export function RightRail() {
     }
   };
 
-  if (live) return <div className="flex min-h-0 flex-col gap-3">
-    <BridgeSetup />
-    {incident?.id && <PersonMark incidentId={incident.id} />}
-  </div>;
 
   const pins: MapPin[] = obs
     .filter((v) => v.observation.world_position)
@@ -59,6 +57,8 @@ export function RightRail() {
       uncertainty: v.observation.horizontal_uncertainty_m,
       selected: v.observation.id === selected,
     }));
+
+  pins.push(...targetPins(targetSAR));
 
   const groupCount: Record<string, number> = {};
   for (const v of obs) {
@@ -74,6 +74,8 @@ export function RightRail() {
 
   return (
     <div className="flex min-h-0 flex-col gap-2">
+      {live && <BridgeSetup />}
+      {incident?.id && <TargetSARPanel iid={incident.id} data={targetSAR} />}
       <Section
         title={<span className="flex items-center gap-1.5"><MapPinIcon size={12} /> Incident map</span>}
         className="h-[300px] shrink-0 xl:h-[38%]"

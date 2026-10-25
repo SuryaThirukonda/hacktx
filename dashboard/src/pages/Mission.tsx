@@ -20,7 +20,7 @@ export function Mission() {
   const showToast = useStore((s) => s.showToast);
 
   useEffect(() => {
-    document.documentElement.setAttribute("data-theme", "dark");
+    document.documentElement.setAttribute("data-theme", localStorage.getItem("overwatch.theme") === "light" ? "light" : "dark");
     document.title = "Overwatch · incident command";
     loadHome().catch((e) => showToast(String((e as Error).message), "error"));
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -76,17 +76,17 @@ export function Mission() {
         </div>
       </header>
       <Disconnected />
-      <main className={`grid min-h-0 flex-1 grid-cols-1 gap-3 overflow-y-auto p-3 xl:overflow-hidden ${live ? "xl:grid-cols-[minmax(0,1fr)_400px]" : "xl:grid-cols-[264px_minmax(0,1fr)_392px] xl:grid-rows-[minmax(0,1fr)_200px]"}`}>
+      <main className={`grid min-h-0 flex-1 grid-cols-1 gap-3 overflow-y-auto p-3 xl:overflow-hidden ${live ? "xl:grid-cols-[minmax(0,1fr)_400px] xl:grid-rows-[minmax(0,1fr)_220px]" : "xl:grid-cols-[264px_minmax(0,1fr)_392px] xl:grid-rows-[minmax(0,1fr)_200px]"}`}>
         {!live && <div className="order-2 xl:order-1 xl:row-span-2 xl:min-h-0 xl:overflow-y-auto">
           <LeftRail />
         </div>}
         <div className="order-1 h-[62vw] max-h-[620px] min-h-[300px] xl:order-2 xl:h-auto xl:max-h-none xl:min-h-0">
           <CenterView />
         </div>
-        <div className={`order-3 xl:min-h-0 xl:overflow-y-auto ${live ? "" : "xl:row-span-2"}`}>
+        <div className={`order-3 xl:min-h-0 xl:overflow-y-auto xl:row-span-2`}>
           <RightRail />
         </div>
-        {!live && <div className="order-4 h-[220px] xl:h-auto xl:min-h-0">
+        {<div className="order-4 h-[220px] xl:h-auto xl:min-h-0">
           <BottomPanel />
         </div>}
       </main>

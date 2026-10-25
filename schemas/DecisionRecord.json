@@ -110,7 +110,8 @@
         "D9_route",
         "D10_dispatch",
         "D11_opening",
-        "D12_pursuit_route"
+        "D12_pursuit_route",
+        "D13_intent"
       ],
       "title": "Task",
       "type": "string"

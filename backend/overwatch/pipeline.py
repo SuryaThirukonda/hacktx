@@ -142,6 +142,8 @@ class Pipeline:
         from .missions.crew_routing import CrewRoutingService
         self.voice = VoiceCommands(self)  # operator commands (spoken or typed) to mission primitives
         self.crew = CrewRoutingService(self)  # ground crews routed live through flood water and fire
+        from .missions.rescue import RescueMission
+        self.rescue = RescueMission(self)
         self.decisions: Any = None  # DecisionService, attached by the runtime
         self.map_provider: Any = None  # callable -> street graph (map data) or None, attached by the runtime
         self.recorder: Any = None  # replay.recorder.Recorder while recording
@@ -247,6 +249,7 @@ class Pipeline:
             self.autonomy.audit.clear()
             self.voice.reset()
             self.crew.reset()
+            self.rescue.reset()
             if self.decisions is not None and hasattr(self.decisions, "reset"):
                 self.decisions.reset()  # rate limits are in session time, which restarts at zero
             self._reset_state()
@@ -798,7 +801,10 @@ class Pipeline:
             for a in delivered:
                 self._emit_alert(a, now)
             self._belief_tick(now)
-            self.crew.tick(now)
+            if self.rescue.active():
+                self.rescue.tick(now)
+            else:
+                self.crew.tick(now)
             self._decision_jobs(now, kin)
             self._dispatch_report(now)
             if now - self._last_summary_ms >= self.cfg.voice.summary_interval_s * 1000.0:
@@ -888,6 +894,7 @@ class Pipeline:
                      "obstacle_top_m": sc.get("obstacle_top_m"), "free_ahead_above_m": sc["free_ahead_above_m"],
                      "sector_range_m": sc["sector_range_m"], "scene_source": sc["source"]}
             job = d6_obstacle(facts)
+            job.context["control_epoch"] = a.control_epoch
             if self.router.engines.get("typesafe") is not None and self.router.engines["typesafe"].available()[0]:
                 job.context["engine"] = "typesafe"
             self.decisions.submit(job)
@@ -1307,9 +1314,7 @@ class Pipeline:
     def _physical_video_problem(self) -> str | None:
         if self.autonomy.target_is_sim:
             return None
-        if self.counters["drone"].provenance not in ("LIVE", None, ""):
-            return "physical control requires current LIVE video from the DJI bridge, not file/replay or another camera"
-        if self.last_drone_source_id not in (None, "dji-bridge"):
+        if self.counters["drone"].provenance != "LIVE" or self.last_drone_source_id != "dji-bridge":
             return "physical control requires current LIVE video from the DJI bridge, not file/replay or another camera"
         return None
 
@@ -1340,8 +1345,9 @@ class Pipeline:
     def apply_decision(self, job: DecisionJob, records: list[DecisionRecord]) -> None:
         with self.lock:
             now = self.clock.now_ms()
-            obsolete_control = job.task in ("D1_reacquire", "D12_pursuit_route") and (
-                self.autonomy.mode != "FOLLOW" or job.context.get("control_epoch") != self.autonomy.control_epoch)
+            obsolete_control = (job.task in ("D1_reacquire", "D12_pursuit_route", "D6_obstacle") and (
+                self.autonomy.mode not in (("FOLLOW", "DISPATCH") if job.task == "D6_obstacle" else ("FOLLOW",))
+                or job.context.get("control_epoch") != self.autonomy.control_epoch))
             if obsolete_control:
                 for record in records:
                     record.acted = False
@@ -1413,11 +1419,16 @@ class Pipeline:
                         evs = subj.confirm_candidate(info, now, f"decision {rec.engine}", self._conf(rec))
                         self.pending_lock_events.extend(evs)
             elif job.task == "D3_describe" and not job.context.get("person_mark_request"):
+                if (job.context.get("session_id") != self.session_id or
+                        job.context.get("incident_id") != self.incident.incident_id or not self.incident.active):
+                    return
                 tid = job.context.get("labels", {}).get(rec.selected or "")
                 self.describe_proposal = {"decision_id": rec.decision_id, "description": job.facts.get("description"),
                                           "track_id": tid, "label": rec.selected, "confidence": self._conf(rec),
                                           "engine": rec.engine, "acted": rec.acted, "reason": rec.reason,
-                                          "needs_operator_confirmation": True}
+                                          "needs_operator_confirmation": True,
+                                          "incident_id": job.context.get("incident_id"),
+                                          "session_id": job.context.get("session_id")}
                 self.outbox.append({"type": "describe_proposal", **self.describe_proposal})
             elif job.task == "D4_motion" and rec.status in ("success", "fallback"):
                 self.motion_label = {"label": rec.selected, "confidence": self._conf(rec), "engine": rec.engine,
@@ -1541,6 +1552,8 @@ class Pipeline:
             info = self._track_info(track_id)
             if info is None:
                 raise KeyError(track_id)
+            if self.mode == "LIVE" and self.autonomy.mode in ("FOLLOW", "HOLD"):
+                self.autonomy.set_mode("MANUAL", self.clock.now_ms(), "human rebind requires separate Start Follow")
             self.pending_lock_events.extend(self.locks["subject"].confirm_candidate(info, self.clock.now_ms(), "operator"))
             self.flight_confirmed_track_id = track_id
             self._log_operator("confirm_candidate", track_id=track_id)
@@ -1558,7 +1571,8 @@ class Pipeline:
                  "moving": bool(self.world_kf.get(t.track_id) and self.world_kf[t.track_id].speed > 0.4)}
                 for lab, t in zip(labels, cands)]}
             job = d3_describe(facts, labels)
-            job.context = {"labels": dict(zip(labels, [t.track_id for t in cands])), **(context or {})}
+            job.context = {"labels": dict(zip(labels, [t.track_id for t in cands])),
+                           "incident_id": self.incident.incident_id, "session_id": self.session_id, **(context or {})}
             if self.cfg.decisions.allow_images and self.last_frame is not None:
                 tile, _ = crop_tile(self.last_frame, None, [t.measured_box or t.box for t in cands])
                 ok, buf = cv2.imencode(".jpg", tile, [cv2.IMWRITE_JPEG_QUALITY, 85])
@@ -1810,6 +1824,8 @@ class Pipeline:
         with self.lock:
             if not consent:
                 raise PermissionError("participant consent must be confirmed to start tracking")
+            if self.incident.active and self.incident.incident_id != incident_id:
+                self.stop_incident()
             self.incident = IncidentState(incident_id=incident_id or f"INC-{int(time.time()) % 100000:05d}", active=True,
                                           started_ts_ms=self.clock.now_ms(), consent_confirmed=True,
                                           recording=self.incident.recording)
@@ -1817,6 +1833,13 @@ class Pipeline:
 
     def stop_incident(self) -> IncidentState:
         with self.lock:
+            if self.dispatch_state is not None:
+                self.cancel_dispatch("incident closed")
+            self.autonomy.set_mode("MANUAL", self.clock.now_ms(), "incident closed")
+            self.flight_confirmed_track_id = None
+            self.describe_proposal = None
+            self.look_for = None
+            self.rescue.reset()
             for lk in self.locks.values():
                 self.pending_lock_events.extend(lk.release(self.clock.now_ms(), "incident closed"))
                 lk.gallery.clear()
@@ -1913,7 +1936,7 @@ class Pipeline:
                 notices.append("Crowd scene: subject locks disabled (not supported)")
             if not self.incident.active:
                 notices.append("No active incident: start one (with consent) to enable locks")
-            if self.detector is not None and getattr(self.detector, "valid_on", "any") == "synthetic" and self._detector_prov != "SYNTHETIC":
+            if self.detector is not None and getattr(self.detector, "valid_on", "any") == "synthetic" and self._detector_prov not in ("SYNTHETIC", ("SYNTHETIC", self.detector_override or self.cfg.perception.detector)):
                 notices.append("Synthetic-only detector running on non-synthetic video")
             snap = self.metrics.snapshot(now)
             metrics_small = {"counters": {k: v for k, v in snap["counters"].items()},
@@ -1929,7 +1952,7 @@ class Pipeline:
                 obstacles=[(o.xy_m[0], o.xy_m[1], round(now - o.ts_ms)) for o in self.obstacles if now - o.ts_ms < 8000][-220:],
                 zones=self.zones,
                 geofence=list(self.cfg.autonomy.geofence), autonomy=self.autonomy.state(), dispatch=self.dispatch_state,
-                pursuit=self._pursuit_view(now), voice=self.voice.view(), crew_routing=self.crew.view(), decisions=dstat,
+                pursuit=self._pursuit_view(now), voice=self.voice.view(), crew_routing=self.crew.view(), rescue=self.rescue.view(), decisions=dstat,
                 alerts_active=self.arbiter.active_alerts()[:8], metrics=metrics_small,  # type: ignore[arg-type]
                 incident=self.incident, guardrails=self.guardrails(), notices=notices, narration=self.narration)
             if self.sim_status is not None:

@@ -1,0 +1,29 @@
+{
+  "run1": {
+    "1_candidate_flagged": true,
+    "2_notify_recommended": true,
+    "2_brief_sent_after_approval": true,
+    "3_responder_acknowledged": true,
+    "4_side_a_set": true,
+    "4_openings_by_side": true,
+    "5_3d_view_rendered": true,
+    "5_replay_started": true,
+    "log_has_core_events": true
+  },
+  "run1_wall_s": 10.9,
+  "run2": {
+    "1_candidate_flagged": true,
+    "2_notify_recommended": true,
+    "2_brief_sent_after_approval": true,
+    "3_responder_acknowledged": true,
+    "4_side_a_set": true,
+    "4_openings_by_side": true,
+    "5_3d_view_rendered": true,
+    "5_replay_started": true,
+    "log_has_core_events": true
+  },
+  "run2_wall_s": 9.9,
+  "identical_outcomes": true,
+  "pass": true
+}
+report: /Users/gaurav/Documents/hacktx26_prog/evaluation/current/browser-demo

@@ -1,0 +1,13 @@
+{
+  "Drone controls": true,
+  "Incident map": true,
+  "Review queue": true,
+  "Recommendations": true,
+  "Alerts": true,
+  "Timeline": true,
+  "Chat with Overwatch": true,
+  "startup_disarmed": true,
+  "routes_rendered": true,
+  "no_browser_errors": true,
+  "pass": true
+}

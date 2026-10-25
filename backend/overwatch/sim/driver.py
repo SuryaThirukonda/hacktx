@@ -122,6 +122,10 @@ class SimulationDriver:
         else:
             world, renderer = self._base_world, self._base_renderer
         self.world, self.renderer = world, renderer
+        from .survey import CameraSurvey
+        self.survey = CameraSurvey(world)
+        if getattr(self, "rescue", None) is not None:
+            self.rescue.reset()
         self.scenario = sc
         self.actors = [Actor(spec, self.seed) for spec in sc.actors]
         d = sc.drone
@@ -176,6 +180,8 @@ class SimulationDriver:
 
         for a in self.actors:
             a.update(dt)
+        if getattr(self, "rescue", None) is not None:
+            self.rescue.step_sim(dt)
         # gimbal pan fault: an unexpected slow gimbal movement the pipeline must notice
         if f.get("gimbal_pan"):
             if self._gimbal_base is None:
@@ -296,6 +302,7 @@ class SimulationDriver:
         # an ideal camera on a real airframe: a little residual gimbal wobble, otherwise a clean feed (no sensor noise,
         # no vignette, no compression) unless a scenario's fault window degrades it on purpose
         cam = self.drone_camera(1.6 if f.get("wobble") else 0.22)
+        self.survey.update(self.t_s, cam)
         fx = RenderEffects(
             blur_px=9.0 if f.get("blur") else 0.0,
             brightness=0.38 if f.get("low_light") else 1.0,

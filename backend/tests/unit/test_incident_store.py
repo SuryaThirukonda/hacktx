@@ -152,3 +152,18 @@ def test_listener_failure_does_not_block_persistence():
     st.subscribe(lambda ev: (_ for _ in ()).throw(RuntimeError("boom")))
     inc = st.create_incident(Incident(title="t"))
     assert st.get_incident(inc.id).title == "t"
+
+
+def test_concurrent_acknowledgments_append_one_event():
+    from concurrent.futures import ThreadPoolExecutor
+    from overwatch.incident.models import Alert, Incident
+    from overwatch.incident.store import IncidentStore
+
+    st = IncidentStore()
+    inc = st.create_incident(Incident(title="Concurrent acknowledgments"))
+    alert = st.create_alert(Alert(incident_id=inc.id, message="Confirmed sighting", severity="attention", provenance="simulated"))
+    with ThreadPoolExecutor(max_workers=8) as pool:
+        results = list(pool.map(lambda _: st.acknowledge_alert(alert.id), range(20)))
+    assert len({a.acknowledged_at for a in results}) == 1
+    assert len([e for e in st.events(inc.id) if e.kind == "alert_acknowledged"]) == 1
+    st.close()

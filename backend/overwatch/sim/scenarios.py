@@ -121,6 +121,7 @@ class Scenario:
     autonomy: dict | None = None  # autonomy config overrides for this scenario (altitude, standoff, speed caps)
     locks: dict | None = None  # lock config overrides (e.g. a longer search before the operator hand-off)
     crew_problem: Any = None  # callable() -> missions.crew_routing.CrewProblem: ground crews routed live
+    rescue: dict | None = None  # simulator-only beacon/review/crew handoff
     dispatch: dict | None = None  # the dispatch request the demo page prefills: {description, last_seen_xy, radius_m}
 
 
@@ -468,6 +469,12 @@ def all_scenarios() -> dict[str, Scenario]:
         out[s.id] = s
     for s in _world_scenarios():
         out[s.id] = s
+    from .worlds.assistance import scenario as assistance_scenario
+    scenario = assistance_scenario()
+    out[scenario.id] = scenario
+    from .worlds.rescue import scenarios as rescue_scenarios
+    for rescue in rescue_scenarios():
+        out[rescue.id] = rescue
     return out
 
 

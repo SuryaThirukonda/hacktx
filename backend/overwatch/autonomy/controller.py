@@ -175,6 +175,7 @@ class AutonomyController:
         self.visual_frame_id = None
         self.control_epoch += 1
         self.clear_plan()
+        self.rescue_target = None
         self.mode = mode
         self.seq += 1
         if mode in ("FOLLOW", "HOLD", "DISPATCH", "GOTO"):
@@ -411,6 +412,14 @@ class AutonomyController:
         st = inp.subject_state
         if self.mode == "HOLD":
             self.fsm = "HOLD"
+            beacon = getattr(self, "rescue_target", None)
+            if self.target_is_sim and beacon is not None and inp.drone.xy is not None:
+                dx, dy = beacon[0] - inp.drone.xy[0], beacon[1] - inp.drone.xy[1]
+                desired = math.degrees(math.atan2(dx, dy))
+                yaw = self.pid_yaw.step(wrap_deg(desired - (inp.drone.heading_deg or 0)), dt)
+                self.gimbal_cmd = float(np.clip(-math.degrees(math.atan2(
+                    max(.1, (inp.drone.alt_m or self.cfg.altitude_m) - 1.1), max(.1, math.hypot(dx, dy)))), -90, -20))
+                up = self._alt_hold(inp, dt)
         elif self.mode == "DISPATCH":
             reacq = True  # the dispatch speed cap is the reacquire cap
             fwd, right, up, yaw = self._dispatch_tick(inp, dt)

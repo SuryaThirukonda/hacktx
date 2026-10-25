@@ -61,7 +61,7 @@ REPORT_EVERY_S = 2.0
 PING_EVERY_S = 1.0
 ON_SCENE_M = 40.0  # the police car this close to the suspect is on scene
 PHASE_LABEL = {"REPORTED": "Crime reported", "TAKEOFF": "Taking off", "SEARCH": "Searching", "FOLLOW": "Following",
-               "SCAN": "Lost from view: 360° scan",
+               "SCAN": "Lost from view: 360° scan", "ORBIT": "Inspecting cover around last sighting",
                "STOPPED": "Stopped", "TIME_LIMIT": "Time limit reached"}
 COMPASS = "N NE E SE S SW W NW".split()
 COMPASS_WORDS = {"N": "north", "NE": "north-east", "E": "east", "SE": "south-east", "S": "south", "SW": "south-west",
@@ -295,7 +295,7 @@ class Run:
             self.pick = self.planner.update(t, self.nav_xy(), self.belief, self.st.place_label)
         if self.phase == "FOLLOW" and t >= self.next_report:
             self._report(t)
-        elif self.phase == "SCAN" and t >= self.next_report and self.last_seen is not None:
+        elif self.phase in ("SCAN", "ORBIT", "SEARCH") and t >= self.next_report and self.last_seen is not None:
             self._report_lost(t)
         if self.frame_no % DETECT_FRAMES == 0:  # scoring only: how close the drone stays, how close the police get
             if self.phase == "FOLLOW":
@@ -332,6 +332,11 @@ class Run:
             yaw = float(np.clip(2.2 * ((heading_from_vector(*(self.crime_xy - self.nav_xy())) - nav.heading + 540) % 360
                                        - 180), -90, 90))
             return Stick(0.0, 0.0, 4.0, yaw), (SEARCH_PITCH if nav.alt > 6.0 else -90.0)
+        self._advance_loss_strategy(t)
+        if self.phase == "ORBIT" and self.scan is not None:
+            angle = self.scan["orbit_angle"] + (t - self.scan["orbit_t0"]) * .25 * self.scan["turn"]
+            point = self.scan["centre"] + 20 * np.array([math.sin(angle), math.cos(angle)])
+            return goto_command(nav, PAD, point, self.scan["centre"], pitch=SEARCH_PITCH)
         if self.phase == "SCAN" and self.scan is not None:
             hits = self.confirm.hits
             face = hits[-1][1] if hits and t - hits[-1][0] < 1.5 else None
@@ -406,12 +411,12 @@ class Run:
         if self.m["first_true_red_t"] is None and any(math.dist(p.xy, truth_xy) < 4.0 for p in reds):
             self.m["first_true_red_t"] = tc
         seen, recent = self.survey.update(tc, cam)
-        if self.phase in ("TAKEOFF", "SEARCH", "SCAN"):
+        if self.phase in ("TAKEOFF", "SEARCH", "SCAN", "ORBIT"):
             self.m["survey_seen"] += seen
             self.m["survey_recent"] += recent
         if self.phase != "FOLLOW":
             self.belief.observe(cam, [p.xy for p in reds], tc)
-        if self.phase in ("TAKEOFF", "SEARCH", "SCAN"):
+        if self.phase in ("TAKEOFF", "SEARCH", "SCAN", "ORBIT"):
             for p in sorted(reds, key=lambda q: -q.conf):
                 got = self.confirm.add(tc, p.xy)
                 if got is not None:
@@ -456,12 +461,26 @@ class Run:
             gone = tc - self.lost_seen_t if self.lost_seen_t is not None else 0.0
             self.m["refind"].append(round(gone, 1))
             self.event("match", f"Back in view near {self.st.place_label(pos)} after {gone:.0f} s out of sight (found "
-                                f"by the 360° scan): following again.")
+                                f"during scan, cover inspection or road search): following again.")
             self._refound = True
         self.confirm.reset()
         self.scan = None
         self.phase = "FOLLOW"
         self.next_report = self.t
+
+    def _advance_loss_strategy(self, t):
+        """Bound the camera scan, inspect cover, then resume the same road belief search."""
+        if self.phase == "SCAN" and self.scan is not None and (self.scan["turned"] >= 360 or t - self.scan["t0"] >= 15):
+            self.phase = "ORBIT"
+            self.scan["orbit_t0"] = t
+            delta = self.nav_xy() - self.scan["centre"]
+            self.scan["orbit_angle"] = math.atan2(delta[0], delta[1])
+            self.event("orbit", "One camera scan complete; inspecting cover on a 20 m orbit for ten seconds.")
+        elif self.phase == "ORBIT" and t - self.scan["orbit_t0"] >= 10:
+            self.phase = "SEARCH"
+            self.planner.pick = self.pick = None
+            self._plan_t = -10.
+            self.event("search", "Cover inspection complete; resuming road search from the retained last sighting and belief.")
 
     def _lose(self, tc: float) -> None:
         """Out of sight for LOST_AFTER_S: hover over where they were last seen and turn full circles (the way they
@@ -734,7 +753,7 @@ class Run:
             "pick": {"target": [round(float(v), 1) for v in self.pick.target], "viewpoint": [round(float(v), 1) for v in self.pick.viewpoint],
                      "label": self.pick.label} if self.pick is not None and self.phase == "SEARCH" else None,
             "target": target,
-            "last_seen": self.last_seen if self.phase == "SCAN" else None,
+            "last_seen": self.last_seen if self.phase in ("SCAN", "ORBIT", "SEARCH") else None,
             "scan": {"centre": [round(float(v), 1) for v in self.scan["centre"]], "turned": round(self.scan["turned"] % 360.0),
                      "circle": int(self.scan["turned"] // 360.0) + 1, "facing": self.scan["facing"]}
             if self.scan is not None else None,
@@ -750,7 +769,7 @@ class Run:
             "callouts": [{k: v for k, v in c.items() if k != "text"} for c in self.callouts[-12:]],
             "spawn_picked": self.spawn_picked,
             "time_limit_s": None if math.isinf(self.time_limit) else self.time_limit,
-            "belief": self.belief.view() if self.phase in ("REPORTED", "TAKEOFF", "SEARCH", "SCAN") else [],
+            "belief": self.belief.view() if self.phase in ("REPORTED", "TAKEOFF", "SEARCH", "SCAN", "ORBIT") else [],
             "survey": self.survey.encode(self.t),
             "truth": {"suspect": [round(float(sus.xy[0]), 1), round(float(sus.xy[1]), 1)], "suspect_state": sus.state,
                       "suspect_visible": round(self.truth_visible, 2),
@@ -793,7 +812,7 @@ class Run:
             "police_distance_m": round(pol.distance_m),
             "losses": m["losses"], "reacquired": m["reacquired"],
             "refind_median_s": q(m["refind"], 50), "refind_max_s": q(m["refind"], 100),
-            "lost_at_end": getattr(self, "end_phase", self.phase) == "SCAN",
+            "lost_at_end": getattr(self, "end_phase", self.phase) in ("SCAN", "ORBIT", "SEARCH") and self.last_seen is not None,
             "suspect_hides": self.suspect.hides,
             "drone_distance_m": round(self.drone.distance_m, 0),
             "dead_reckoning_error_m": round(float(np.linalg.norm(self.nav_xy() - self.drone.pos[:2])), 3),

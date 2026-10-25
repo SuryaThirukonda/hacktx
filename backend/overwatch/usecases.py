@@ -22,15 +22,15 @@ USECASES: list[dict[str, Any]] = [
     {"id": "sar", "name": "Search and rescue", "mission": "search", "status": "ready",
      "summary": "Find a lost person in woods: sectors with a probability-of-area prior, a lawnmower sweep, decoys, "
                 "and a person under canopy that the camera cannot see.",
-     "scenarios": ["SR1", "SR2", "SR3", "SR4", "VC2"], "not_built": "SR5 to SR8 (terrain relief, second looks, ground-team guidance)"},
+     "scenarios": ["SR1", "SR2", "SR3", "SR4", "SR5", "VC2"], "not_built": "SR6 to SR8 (terrain relief, second looks, ground-team guidance)"},
     {"id": "flood", "name": "Flood rescue", "mission": "search", "status": "ready",
      "summary": "Spot people stranded by rising water (screening model); route crews around roads closed above "
                 "0.3 m of water.",
-     "scenarios": ["FR1", "FR2"], "not_built": "FR3 to FR8 (radio reports, debris drift, boats)"},
+     "scenarios": ["FR1", "FR2", "FR3", "SAR1"], "not_built": "FR4 to FR8 (radio reports, debris drift, boats)"},
     {"id": "fire", "name": "Firefighter routing", "mission": "structure", "status": "ready",
      "summary": "A grass fire spreads towards a house (screening model): keep-out areas, smoke over the openings, a "
                 "crew route that avoids the keep-out cells, an occupant outside.",
-     "scenarios": ["FF1", "FF2"], "not_built": "FF3 to FF8 (interior, roof hatch access, multiple crews)"},
+     "scenarios": ["FF1", "FF2", "FF3"], "not_built": "FF4 to FF8 (interior, roof hatch access, multiple crews)"},
 ]
 
 
@@ -42,5 +42,9 @@ def usecases_with_scenarios() -> list[dict[str, Any]]:
     for u in USECASES:
         items = [{"id": s, "name": sc[s].name, "description": sc[s].description, "duration_s": sc[s].duration_s}
                  for s in u["scenarios"] if s in sc]
+        if u["id"] == "city":
+            items.insert(0, {"id": "T12", "name": "City chase · isolated engine",
+                            "description": "Base launch, camera search, cover loss and recovery, police pings and shared 3D.",
+                            "duration_s": 240})
         out.append({**u, "scenarios": items})
     return out

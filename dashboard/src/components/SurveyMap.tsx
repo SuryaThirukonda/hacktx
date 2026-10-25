@@ -1,10 +1,12 @@
 import { useEffect, useRef, useState } from "react";
 import { LocateFixed, Minus, Plus } from "lucide-react";
+import type { MapPath, MapPin } from "./FusedMap";
 import { withToken } from "../lib/api";
 import type { World3D } from "../lib/sim3d";
 import type { CityState, MapFrame } from "../lib/useSimulationFeed";
 import type { WorldState, XY } from "../types/contracts"; /** The same survey/tracking vocabulary for every simulation; truth is a separate, opt-in layer. */
-export function SurveyMap({ world, frame, city, state, spawn, onSpawn, }: {
+export function SurveyMap({ world, frame, city, state, spawn, onSpawn, paths = [], pins = [], }: {
+    paths?: MapPath[]; pins?: MapPin[];
     world: World3D | null;
     frame: MapFrame | null;
     city: CityState | null;
@@ -109,6 +111,7 @@ export function SurveyMap({ world, frame, city, state, spawn, onSpawn, }: {
             for (const tr of state?.tracks ?? [])
                 line(tr.trail.map((p) => [p[0], p[1]]), tr.role === "subject" ? "#ed956388" : "#b2bdc255", 1);
         }
+        for (const path of paths) line(path.points, path.color ?? "#79c6f2", 2, path.dashed ? [4, 4] : []);
         const reports = city?.reports ?? [];
         if (trails)
             for (const r of reports) {
@@ -130,6 +133,7 @@ export function SurveyMap({ world, frame, city, state, spawn, onSpawn, }: {
             g.fillStyle = color;
             g.fillText(text, X(xy[0]) + 10, Y(xy[1]) - 9);
         } };
+        for (const pin of pins) dot([pin.x, pin.y], "#79c6f2", pin.label);
         for (const tr of state?.tracks ?? [])
             if (tr.ground_xy_m && tr.state !== "EXPIRED")
                 dot(tr.ground_xy_m, tr.role === "subject" ? "#ffad70" : "#bdc8c7", tr.role ?? undefined, tr.visibility !== "visible");
@@ -164,6 +168,6 @@ export function SurveyMap({ world, frame, city, state, spawn, onSpawn, }: {
         g.lineTo(20 + step * scale, H - 25);
         g.stroke();
         g.fillText(`${step} m`, 20, H - 32);
-    }, [world, frame, city, state, size, revision, surveyed, trails, belief, truth, zoom, spawn,]);
+    }, [world, frame, city, state, size, revision, surveyed, trails, belief, truth, zoom, spawn, paths, pins,]);
     return (<div className="survey-map"> <div className="map-options"> <label> <input type="checkbox" checked={surveyed} onChange={(e) => setSurveyed(e.target.checked)}/> Surveyed </label> <label> <input type="checkbox" checked={trails} onChange={(e) => setTrails(e.target.checked)}/> History </label> <label> <input type="checkbox" checked={belief} onChange={(e) => setBelief(e.target.checked)}/> Search belief </label> <label> <input type="checkbox" checked={truth} onChange={(e) => setTruth(e.target.checked)}/> Truth (sim) </label> </div> <div className="map-canvas-wrap"> <canvas ref={canvas} aria-label="Survey map with camera coverage, estimated tracks, report history and crew pings" onClick={onSpawn ? (e) => { const r = e.currentTarget.getBoundingClientRect(), t = transform.current; onSpawn([t.x0 + (e.clientX - r.left - t.ox) / t.scale, t.y0 + (t.h - t.oy - (e.clientY - r.top)) / t.scale,]); } : undefined}/> {!world && <p className="map-wait">Connecting to map…</p>} <div className="map-zoom"> <button aria-label="Zoom in" onClick={() => setZoom((v) => Math.min(4, v * 1.3))}> <Plus size={15}/> </button> <button aria-label="Zoom out" onClick={() => setZoom((v) => Math.max(1, v / 1.3))}> <Minus size={15}/> </button> <button aria-label="Fit map" onClick={() => setZoom(1)}> <LocateFixed size={15}/> </button> </div> </div> <div className="map-legend"> <span> <i style={{ background: "#6ce9d2" }}/> Drone / view </span> <span> <i style={{ background: "#4f9bed" }}/> Seen ground · fades with time </span> <span> <i style={{ background: "#ffad70" }}/> Subject estimate </span> <span> <i style={{ background: "#82a9ff" }}/> Crew ping </span> <span> <i style={{ background: "#ffe196" }}/> Beacon </span> {city && (<span> <i style={{ background: "#e779d5" }}/> Reports </span>)} </div> <p className="map-note"> {onSpawn ? (spawn ? (<> <button onClick={() => onSpawn(null)}>Clear chosen start</button>{" "} · Restart to apply </>) : ("Click the map to choose the subject’s next start.")) : ("Camera coverage from map visibility. Hidden ground stays unsurveyed.")} </p> </div>);
 }

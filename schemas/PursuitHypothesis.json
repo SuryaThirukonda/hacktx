@@ -1,0 +1,82 @@
+{
+  "description": "One identity hypothesis of the street-graph belief (autonomy/belief.py).",
+  "properties": {
+    "id": {
+      "title": "Id",
+      "type": "string"
+    },
+    "label": {
+      "title": "Label",
+      "type": "string"
+    },
+    "object_id": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Object Id"
+    },
+    "track_id": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Track Id"
+    },
+    "weight": {
+      "title": "Weight",
+      "type": "number"
+    },
+    "visible": {
+      "default": false,
+      "title": "Visible",
+      "type": "boolean"
+    },
+    "colors": {
+      "anyOf": [
+        {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Colors"
+    },
+    "particles": {
+      "default": 0,
+      "title": "Particles",
+      "type": "integer"
+    },
+    "evidence": {
+      "default": [],
+      "items": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "title": "Evidence",
+      "type": "array"
+    }
+  },
+  "required": [
+    "id",
+    "label",
+    "weight"
+  ],
+  "title": "PursuitHypothesis",
+  "type": "object"
+}

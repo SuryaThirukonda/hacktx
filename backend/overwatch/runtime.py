@@ -89,6 +89,8 @@ class Runtime:
             from .voice.grounding import world_entities
             self.pipeline.voice.entities_provider = lambda: world_entities(self.sim.world, self.sim.map_data())
             self.pipeline.crew.problem_provider = lambda: self.sim.crew_problem()
+            self.pipeline.rescue.sim_provider = lambda: self.sim
+            self.sim.rescue = self.pipeline.rescue
         self.state_hub = Hub(maxsize=8)
         self.event_hub = Hub(maxsize=256)
         self.alert_hub = Hub(maxsize=64)
@@ -156,6 +158,11 @@ class Runtime:
 
     async def stop(self) -> None:
         self.running = False
+        self.decisions.loop = None
+        if getattr(self, "external_simulator_stop", None):
+            await asyncio.to_thread(self.external_simulator_stop)
+        for future in list(self.decisions.in_flight.values()):
+            future.cancel()
         self.tiger.stop()
         for t in self.tasks:
             t.cancel()
@@ -163,7 +170,8 @@ class Runtime:
             await self.live.stop()
         if self.recorder is not None:
             self.stop_recording()
-        self.executor.shutdown(wait=False, cancel_futures=True)
+        await asyncio.gather(*self.tasks, return_exceptions=True)
+        await asyncio.to_thread(self.executor.shutdown, wait=True, cancel_futures=True)
 
     # ---------------------------------------------------------------------------------------------------------
     def _mark_decision(self, job, rec) -> None:
@@ -327,6 +335,7 @@ class Runtime:
             t0 = time.monotonic()
             try:
                 now = self.clock.now_ms()
+                self.incidents.targets.update()
                 if self.state_hub.subs or self.recorder is not None:
                     st = await loop.run_in_executor(self.executor, self._state_bytes, now)
                     self.state_hub.publish(st)
@@ -425,6 +434,8 @@ class Runtime:
         return {"recording": False, "path": str(rec.dir), "manifest": man}
 
     def control(self, action: str, value: Any = None) -> dict[str, Any]:
+        if action in ("restart", "load") and getattr(self, "external_simulator_stop", None):
+            self.external_simulator_stop()
         player = getattr(self.live, "replay", None) if self.live is not None else None
         if player is not None and action in ("pause", "resume", "speed", "seek", "restart", "load"):
             return player.control(action, value)

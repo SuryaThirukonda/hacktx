@@ -1,0 +1,1 @@
+wrote 51 schemas to /Users/gaurav/Documents/hacktx26_prog/schemas and dashboard/src/types/incident.ts

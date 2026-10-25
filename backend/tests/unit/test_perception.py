@@ -1,7 +1,7 @@
 import sys
 
 from overwatch.config import TrackerCfg, load_config
-from overwatch.vision.detectors import Detection, NullDetector, SimBlobDetector, build_detector
+from overwatch.vision.detectors import Detection, NullDetector, SimBlobDetector, UltralyticsDetector, build_detector
 from overwatch.vision.tracker import ByteTracker
 
 
@@ -34,3 +34,16 @@ def test_auto_uses_sim_detector_only_on_synthetic_frames(monkeypatch):
     assert isinstance(getattr(d, "base", d), SimBlobDetector) or d.model_id.startswith("sim-blob")
     monkeypatch.setitem(sys.modules, "ultralytics", None)
     assert build_detector("auto", "LIVE", cfg).model_id.startswith("none (ultralytics")
+
+def test_ultralytics_model_id_uses_checkpoint_basename(monkeypatch, tmp_path):
+    from types import SimpleNamespace
+
+    class FakeModel:
+        def __init__(self):
+            self.names = {0: "person"}
+
+    monkeypatch.setitem(sys.modules, "ultralytics", SimpleNamespace(YOLO=lambda _: FakeModel()))
+    weights = tmp_path / "custom-person.pt"
+    weights.touch()
+    detector = UltralyticsDetector(str(weights), imgsz=640, device="cpu")
+    assert detector.model_id == "ultralytics:custom-person.pt@640:cpu"
