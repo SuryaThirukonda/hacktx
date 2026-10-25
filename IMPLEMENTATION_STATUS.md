@@ -862,8 +862,9 @@ Earlier claims about Overwatch and FlyBy results are treated as claims; the numb
   0.75 m (no rise), with three raised mounds that stay dry; three people stand on them at fixed positions (the same
   every run). The rescue mission launches the drone, sweeps a 70 m radius round the reported spot (the survey map
   fills in), matches the yellow shirt, puts a beacon on the person and routes the crew along dry roads.
-- **WF1, wildfire (static).** A new 440 m forest world (900 trees, charred in the burn, four clearings, a fire camp
-  with the pad): three burning patches and a ring of fire round a clearing with the person inside, fixed positions.
+- **WF1, wildfire (static).** On the 1.5 km search-and-rescue woodland (its trail, creek, clearings and 15,900
+  trees, charred and shrunk inside the burn), launching from the trailhead pad: three burning patches in the core
+  and a ring of fire round the clearing at (10, -55) with the person inside, fixed positions; YOLO26 as the detector.
   The fire model has fuel only inside those patches and lights them all at once, so the burning area is the patches
   from the first second and never grows; smoke drifts from them and the keep-out is the patches. The drone sweeps an
   80 m radius at 45 m, beacons the person, the crew is routed round the fire.
