@@ -1,0 +1,44 @@
+{
+  "scenario": "PP5",
+  "title": "Lost in the covered walkway: straight on",
+  "problem_line": "The subject sprints into a covered walkway and vanishes from above. Where should the drone look?",
+  "beats": [
+    {
+      "t": 0,
+      "caption": "The operator designates the volunteer in the red shirt; the drone follows on its own.",
+      "highlight_entity": "actor:subject",
+      "camera_preset": "chase"
+    },
+    {
+      "t": 26,
+      "caption": "Sprint north up Oak Street, into the covered walkway.",
+      "highlight_entity": "box:walkway",
+      "camera_preset": "chase"
+    },
+    {
+      "t": 29,
+      "caption": "Lost from above. Particles spread along the streets from where they vanished: one hypothesis, flowing straight ahead.",
+      "highlight_entity": "hypothesis:H1",
+      "camera_preset": "overview"
+    },
+    {
+      "t": 31,
+      "caption": "D12 picks P1, the street ahead: it covers the most of the belief the camera could see on arrival.",
+      "highlight_entity": "route",
+      "camera_preset": "overview"
+    },
+    {
+      "t": 40,
+      "caption": "Where the camera looks and sees nobody, particles lose weight; under the roof they keep it. The drone watches the walkway's north end.",
+      "highlight_entity": "hypothesis:H1",
+      "camera_preset": "top"
+    },
+    {
+      "t": 47,
+      "caption": "The subject comes out of the north end, into the camera's view. A person confirms the re-binding.",
+      "highlight_entity": "actor:subject",
+      "camera_preset": "chase"
+    }
+  ],
+  "success_line": "One hypothesis, straight ahead, found again: the route came from the belief, for a stated reason."
+}

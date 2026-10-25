@@ -1,0 +1,50 @@
+{
+  "scenario": "PP7",
+  "title": "The operator's words move the belief",
+  "problem_line": "Same chase and look-alike as PP6. The operator says what to look for: does the route change?",
+  "beats": [
+    {
+      "t": 0,
+      "caption": "Designated subject in a red shirt and jeans; the drone follows on its own.",
+      "highlight_entity": "actor:subject",
+      "camera_preset": "chase"
+    },
+    {
+      "t": 29,
+      "caption": "Subject lost in the covered walkway. The belief flows north along Oak Street.",
+      "highlight_entity": "hypothesis:H1",
+      "camera_preset": "overview"
+    },
+    {
+      "t": 40,
+      "caption": "A second red shirt jogs out of the far end: two hypotheses, and the route covers both.",
+      "highlight_entity": "actor:decoy",
+      "camera_preset": "overview"
+    },
+    {
+      "t": 44,
+      "caption": "Operator: \"look for red shirt, jeans\". Parsed into clothing words, never sent to a model.",
+      "highlight_entity": "hypothesis:H2",
+      "camera_preset": "top"
+    },
+    {
+      "t": 45,
+      "caption": "The look-alike wears dark trousers: the belief shifts to the subject's cloud.",
+      "highlight_entity": "hypothesis:H1",
+      "camera_preset": "top"
+    },
+    {
+      "t": 47,
+      "caption": "Where PP6 turns east after the look-alike, this route stays on the walkway the subject is in.",
+      "highlight_entity": "route",
+      "camera_preset": "overview"
+    },
+    {
+      "t": 51,
+      "caption": "The subject comes out where the drone is looking; a person confirms.",
+      "highlight_entity": "actor:subject",
+      "camera_preset": "chase"
+    }
+  ],
+  "success_line": "The description reached routing only as evidence on the hypotheses, and it changed the route."
+}

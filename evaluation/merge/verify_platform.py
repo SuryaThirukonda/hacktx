@@ -1,0 +1,6 @@
+"""Paid-service-free headless regression of the combined merge (not pytest).""" import os os.environ.setdefault("OPENBLAS_NUM_THREADS", "1")
+os.environ.setdefault("OMP_NUM_THREADS", "1")
+from concurrent.futures import ProcessPoolExecutor, as_completed
+from pathlib import Path
+import sys, json ROOT = Path(__file__).resolve().parents[2]
+sys.path.insert(0, str(ROOT / "backend")) def run(sid): import cv2, yaml cv2.setNumThreads(1) from overwatch.config import Config from overwatch.evaluation.scenario_runner import HeadlessRunner from overwatch.evaluation.gt_eval import evaluate cfg = Config.model_validate( yaml.safe_load((ROOT / "config/default.yaml").read_text()) ) cfg.decisions.primary = "rules" cfg.decisions.shadow = [] r = HeadlessRunner(cfg, sid, engine="rules") result = r.run() report = evaluate(result, r.sim.scenario) out = ROOT / "evaluation/merge/platform" out.mkdir(exist_ok=True) (out / f"{sid}.json").write_text(json.dumps(report, indent=2)) return { k: report[k] for k in ["scenario", "expected_pass", "wall_s", "subject_lock", "autonomy"] } if __name__ == "__main__": with ProcessPoolExecutor(max_workers=2) as ex: futures = [ ex.submit(run, k) for k in (sys.argv[1:] or ["PP0", "PP8", "PP5", "PP6", "PP7", "SR4"]) ] for f in as_completed(futures): print(json.dumps(f.result()), flush=True)

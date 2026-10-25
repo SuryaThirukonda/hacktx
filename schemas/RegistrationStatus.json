@@ -1,0 +1,89 @@
+{
+  "properties": {
+    "method": {
+      "default": "none",
+      "enum": [
+        "auto_trajectory",
+        "compass_point",
+        "manual_two_point",
+        "none"
+      ],
+      "title": "Method",
+      "type": "string"
+    },
+    "valid": {
+      "default": false,
+      "title": "Valid",
+      "type": "boolean"
+    },
+    "confidence": {
+      "default": "none",
+      "enum": [
+        "high",
+        "medium",
+        "low",
+        "none"
+      ],
+      "title": "Confidence",
+      "type": "string"
+    },
+    "residual_m": {
+      "anyOf": [
+        {
+          "type": "number"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Residual M"
+    },
+    "pairs": {
+      "default": 0,
+      "title": "Pairs",
+      "type": "integer"
+    },
+    "yaw_deg": {
+      "anyOf": [
+        {
+          "type": "number"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Yaw Deg"
+    },
+    "translation_m": {
+      "anyOf": [
+        {
+          "maxItems": 2,
+          "minItems": 2,
+          "prefixItems": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "number"
+            }
+          ],
+          "type": "array"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Translation M"
+    },
+    "reason": {
+      "default": "phone frame not registered to the local map",
+      "title": "Reason",
+      "type": "string"
+    }
+  },
+  "title": "RegistrationStatus",
+  "type": "object"
+}

@@ -1,0 +1,198 @@
+# Overwatch default configuration. Every value can be overridden by a YAML file passed with
+# OVERWATCH_CONFIG=/path/to/override.yaml, and a few common keys by environment variables (see .env.example).
+# Thresholds marked "tune" are engineering starting points, NOT measured performance.
+
+session:
+  mode: SIMULATED            # SIMULATED | LIVE | REPLAY
+  scenario: demo             # simulator scenario id (see backend/overwatch/sim/scenarios.py)
+  mission_profile: responder_safety   # responder_safety | search_rescue (changes wording + enabled rules)
+  recording_enabled: false   # retention off by default (privacy)
+  consenting_participants_only: true
+  replay_path: null          # REPLAY: path to a recorded session directory
+
+server:
+  host: 0.0.0.0
+  port: 8000
+  state_hz: 10               # /ws/state publish rate
+  video_jpeg_quality: 72
+  video_max_fps: 15
+  cors_origins: ["*"]
+
+world:
+  # Local ENU demo frame: x = east (m), y = north (m), z = up. Origin = marker A by convention.
+  geo_reference: { lat: 30.26690, lon: -97.77290, alt_m: 150.0 }   # Zilker Great Lawn (sim); null to disable lat/lon
+  north_offset_deg: 0.0      # angle of local +y from true north (clockwise); compass headings are corrected by it
+
+sources:
+  drone:
+    adapter: auto            # auto | synthetic | bridge | url | replay | none
+    url: null                # e.g. rtsp://127.0.0.1:8554/drone, http://phone:8080/video, 0 (webcam), file.mp4
+    target_fps: 15
+    max_age_ms: 500          # older frames cannot drive "current" claims (tune)
+    width: 960
+    height: 540
+    hfov_deg: 71.6           # Mini 2 live view 1280x720 derived HFOV (calibrate with a checkerboard!)
+  phone:
+    adapter: auto            # auto | synthetic | ws | replay | none
+    target_hz: 10
+    max_age_ms: 350          # (tune)
+    video_width: 640
+    video_height: 480
+    hfov_deg: 64.0
+  telemetry:
+    max_age_ms: 1000
+
+perception:
+  detector: auto             # auto | sim_blob | ultralytics | rfdetr | none
+  yolo_weights: yolo26n.pt   # falls back to yolo11n.pt / yolov8n.pt if unavailable
+  yolo_imgsz: 960
+  confidence_min: 0.25
+  classes: [person, bicycle, car, motorcycle, bus, truck]
+  device: auto               # auto | cpu | mps | cuda
+  tiling:                    # SAHI-style sliced inference for small / high-altitude targets (costs ~tiles x latency)
+    enabled: false
+    tile_px: 640
+    overlap: 0.2
+    full_frame: true         # also run once on the whole frame so large/close people are not cut by tile seams
+  tracker:
+    high_thresh: 0.5
+    low_thresh: 0.15
+    match_iou: 0.25
+    n_init: 3                # hits before a track is confirmed
+    lost_after_ms: 300       # missed this long -> LOST (still predicted)
+    expire_after_ms: 4000    # LOST this long -> EXPIRED
+    trail_seconds: 30
+  cmc:
+    enabled: true
+    max_corners: 400
+    min_inliers: 20
+
+calibration:
+  markers:
+    dictionary: DICT_4X4_50
+    size_m: 1.0
+    # id: [x_m, y_m] marker centers in the local frame (surveyed / taped). Markers flagged holdout are never
+    # used for fitting; they measure true ground reprojection error.
+    layout:
+      0: [0.0, 0.0]
+      1: [20.0, 0.0]
+      2: [20.0, 12.0]
+      3: [0.0, 12.0]
+      4: [10.0, 0.0]
+      5: [10.0, 12.0]
+    holdout_ids: [4, 5]
+    detect_every_n_frames: 3
+  min_markers: 3
+  max_holdout_rmse_m: 0.5    # (tune) demo target 0.2-0.5 m on held-out points
+  max_age_s: 10
+  chained_max_age_s: 6       # chained (CMC) homography validity after markers leave view
+  telemetry_projection: true # fall back to pose-based ray projection when telemetry is fresh
+  telemetry_error_m_per_m_alt: 0.06   # error-bound growth with altitude for telemetry projection (tune)
+
+phone:
+  corridor_half_width_m: 0.9
+  max_range_m: 5.0
+  min_obstacle_height_m: 0.15
+  max_obstacle_height_m: 2.0
+  min_points: 25
+  persistence_frames: 2
+  proximity_alert_m: 1.2     # local LiDAR proximity rule (independent of cloud) (tune)
+  registration:
+    min_pairs: 12
+    min_travel_m: 2.0
+    max_residual_m: 0.6
+    window_s: 30
+
+fusion:
+  occupancy_cell_m: 0.25
+  occupancy_size_m: [60.0, 40.0]
+  occupancy_origin_m: [-20.0, -14.0]
+  track_ttl_ms: 750
+  ground_contact_sigma_m: 0.35
+
+locks:
+  gallery_size: 30
+  rebind_similarity: 0.58   # same-person p5 = 0.59, different-person p95 = 0.53 on synthetic crops (tune on real footage)
+  rebind_margin: 0.10
+  search_radius_m: 3.0
+  search_growth_mps: 2.5
+  coast_after_ms: 700
+  reacquire_after_ms: 2000
+  hold_after_s: 20
+
+kinematics:
+  closing_window_s: 0.8
+  min_samples: 5
+
+alerts:
+  closing_fast_mps: 2.5
+  closing_alignment_cos: 0.8
+  closing_sustain_s: 0.4
+  ttc_critical_s: 3.0
+  warning_range_m: 8.0
+  warning_closing_mps: 1.0
+  callout_interval_s: 8.0
+  callout_bearing_change_deg: 30
+  track_lost_ms: 700
+  cooldown_s: 4.0
+  max_speech_per_minute: 12
+  alert_ttl_s: 6.0
+  local_proximity_independent_of_ai: true
+  allow_identity_claims: false
+
+decisions:
+  primary: openai            # openai | typesafe | strands | mock | rules
+  shadow: []                 # OpenAI Decisions only; other adapters require explicit selection
+  fallback_chain: [strands, rules]
+  allow_mock: true           # use the clearly-labelled MOCK engine when the primary has no key (SIMULATED only)
+  openai_model: gpt-6-luna
+  openai_base_url: https://api.openai.com/v1
+  typesafe_model: jev-latest
+  typesafe_url: https://api.typesafe.ai/v1/systemone
+  strands_url: http://127.0.0.1:8099/v1/systemone
+  deadline_ms: 800           # (tune after measuring p95)
+  pursuit_engine: rules      # rules | model: who answers the follow-mode tasks D1, D4 and D12 (rules: no API calls)
+  voice_engine: rules        # rules | model: who answers D13_intent for operator commands (rules: keyword grammar)
+  min_confidence: 0.70       # below -> not acted on
+  identity_min_confidence: 0.75
+  min_confidence_by_task:    # overrides; D1 options are all bounded manoeuvres under the safety supervisor
+    D1_reacquire: 0.5
+  stale_after_s: 1.5
+  max_hz_per_task: 3.0
+  allow_images: false        # send crop tiles to cloud engines (consenting participants only)
+  log_path: null             # JSONL decision log (defaults into the session directory when recording)
+
+autonomy:
+  enabled: true
+  motion_profile: full       # simulator default; live launcher defaults to camera_only (zero translation)
+  camera_yaw_max_dps: 15
+  camera_gimbal_rate_dps: 10
+  allow_real_flight: false   # virtual-stick commands only go to a SIMULATED drone unless explicitly enabled
+  standoff_m: 12.0
+  altitude_m: 18.0
+  min_altitude_m: 12.0
+  max_altitude_m: 60.0
+  follow_max_speed_mps: 4.0
+  reacquire_max_speed_mps: 6.0
+  max_yaw_rate_dps: 45.0
+  max_vertical_mps: 1.5
+  command_hz: 20
+  command_ttl_ms: 300
+  link_timeout_s: 2.0
+  battery_warn_pct: 30
+  battery_rtl_pct: 20
+  people_over_radius_m: 3.0
+  geofence: [[-18.0, -12.0], [38.0, -12.0], [38.0, 24.0], [-18.0, 24.0]]
+
+voice:
+  narrator: template         # template | gemini
+  gemini_model: gemini-3.8-flash
+  summary_interval_s: 10
+  tts: client                # client (browser/iOS speech) | elevenlabs
+  elevenlabs_model: eleven_flash_v2_5
+
+privacy:
+  incident_required_for_lock: true
+  crowd_threshold: 12        # more people than this -> "crowd scenes not supported" notice, locks disabled
+  retain_video: false
+  send_images_to_cloud: false

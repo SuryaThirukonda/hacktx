@@ -1,0 +1,2 @@
+{ "/api/tts?text=hello unauthorized": true, "/api/test12/state unauthorized": true, "/api/test12/voice unauthorized": true, "test12 authorized": true, "describe route reachable": true, "describe before dynamic lock": true, "test12 socket unauthorized": true, "city launcher T12": true
+}

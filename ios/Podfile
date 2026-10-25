@@ -1,0 +1,23 @@
+# CocoaPods for the DJI bridge only (OverwatchResponder has no third-party dependencies).
+#   cd ios && xcodegen generate && pod install && open Overwatch.xcworkspace
+# Re-run `pod install` after every `xcodegen generate`.
+platform :ios, '17.0'
+project 'Overwatch.xcodeproj'
+workspace 'Overwatch.xcworkspace'
+
+target 'OverwatchDroneBridge' do
+  # Dynamic frameworks so Swift can `import DJISDK` and `import DJIWidget` directly (as DJI's iOS-FPVDemo-Swift does).
+  use_frameworks!
+  pod 'DJI-SDK-iOS', '~> 4.16.2'
+  pod 'DJIWidget', '~> 1.6.3'   # resolves to the newest 1.6.x (1.6.8 at the time of writing; has H264EncoderType_DJIMini2)
+end
+
+post_install do |installer|
+  installer.pods_project.targets.each do |target|
+    target.build_configurations.each do |config|
+      # The DJI pods declare iOS 9; Xcode 15+ cannot link such targets (libarclite is gone).
+      config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '17.0'
+      config.build_settings['ENABLE_BITCODE'] = 'NO'
+    end
+  end
+end

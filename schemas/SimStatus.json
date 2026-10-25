@@ -1,0 +1,56 @@
+{
+  "properties": {
+    "scenario": {
+      "title": "Scenario",
+      "type": "string"
+    },
+    "scenario_name": {
+      "title": "Scenario Name",
+      "type": "string"
+    },
+    "t_s": {
+      "title": "T S",
+      "type": "number"
+    },
+    "duration_s": {
+      "anyOf": [
+        {
+          "type": "number"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Duration S"
+    },
+    "speed": {
+      "default": 1.0,
+      "title": "Speed",
+      "type": "number"
+    },
+    "paused": {
+      "default": false,
+      "title": "Paused",
+      "type": "boolean"
+    },
+    "faults": {
+      "additionalProperties": true,
+      "default": {},
+      "title": "Faults",
+      "type": "object"
+    },
+    "gt_available": {
+      "default": true,
+      "title": "Gt Available",
+      "type": "boolean"
+    }
+  },
+  "required": [
+    "scenario",
+    "scenario_name",
+    "t_s"
+  ],
+  "title": "SimStatus",
+  "type": "object"
+}

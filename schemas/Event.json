@@ -1,0 +1,105 @@
+{
+  "properties": {
+    "schema_version": {
+      "default": "1.0",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "type": {
+      "const": "event",
+      "default": "event",
+      "title": "Type",
+      "type": "string"
+    },
+    "event_id": {
+      "title": "Event Id",
+      "type": "string"
+    },
+    "kind": {
+      "title": "Kind",
+      "type": "string"
+    },
+    "severity": {
+      "enum": [
+        "info",
+        "attention",
+        "warning",
+        "critical",
+        "sensor_fault",
+        "local_proximity"
+      ],
+      "title": "Severity",
+      "type": "string"
+    },
+    "ts_ms": {
+      "title": "Ts Ms",
+      "type": "number"
+    },
+    "text": {
+      "title": "Text",
+      "type": "string"
+    },
+    "track_id": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Track Id"
+    },
+    "role": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Role"
+    },
+    "data": {
+      "additionalProperties": true,
+      "default": {},
+      "title": "Data",
+      "type": "object"
+    },
+    "evidence_refs": {
+      "default": [],
+      "items": {
+        "type": "string"
+      },
+      "title": "Evidence Refs",
+      "type": "array"
+    },
+    "geometry_valid": {
+      "default": false,
+      "title": "Geometry Valid",
+      "type": "boolean"
+    },
+    "ttl_ms": {
+      "default": 1500.0,
+      "title": "Ttl Ms",
+      "type": "number"
+    },
+    "source": {
+      "default": "rules",
+      "title": "Source",
+      "type": "string"
+    }
+  },
+  "required": [
+    "event_id",
+    "kind",
+    "severity",
+    "ts_ms",
+    "text"
+  ],
+  "title": "Event",
+  "type": "object"
+}

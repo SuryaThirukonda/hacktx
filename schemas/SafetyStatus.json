@@ -1,0 +1,57 @@
+{
+  "properties": {
+    "geofence_ok": {
+      "default": true,
+      "title": "Geofence Ok",
+      "type": "boolean"
+    },
+    "geofence_margin_m": {
+      "anyOf": [
+        {
+          "type": "number"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Geofence Margin M"
+    },
+    "altitude_ok": {
+      "default": true,
+      "title": "Altitude Ok",
+      "type": "boolean"
+    },
+    "battery_state": {
+      "default": "unknown",
+      "enum": [
+        "ok",
+        "warn",
+        "rtl",
+        "unknown"
+      ],
+      "title": "Battery State",
+      "type": "string"
+    },
+    "link_ok": {
+      "default": true,
+      "title": "Link Ok",
+      "type": "boolean"
+    },
+    "people_over": {
+      "default": false,
+      "title": "People Over",
+      "type": "boolean"
+    },
+    "clamps": {
+      "default": [],
+      "items": {
+        "type": "string"
+      },
+      "title": "Clamps",
+      "type": "array"
+    }
+  },
+  "title": "SafetyStatus",
+  "type": "object"
+}

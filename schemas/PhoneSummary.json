@@ -1,0 +1,212 @@
+{
+  "$defs": {
+    "DepthSector": {
+      "properties": {
+        "sector": {
+          "enum": [
+            "left",
+            "front_left",
+            "front",
+            "front_right",
+            "right"
+          ],
+          "title": "Sector",
+          "type": "string"
+        },
+        "nearest_m": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Nearest M"
+        },
+        "confidence": {
+          "default": "unknown",
+          "enum": [
+            "high",
+            "medium",
+            "low",
+            "unknown"
+          ],
+          "title": "Confidence",
+          "type": "string"
+        },
+        "num_valid_points": {
+          "default": 0,
+          "title": "Num Valid Points",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "sector"
+      ],
+      "title": "DepthSector",
+      "type": "object"
+    }
+  },
+  "properties": {
+    "connected": {
+      "default": false,
+      "title": "Connected",
+      "type": "boolean"
+    },
+    "provenance": {
+      "anyOf": [
+        {
+          "enum": [
+            "LIVE",
+            "RECORDED",
+            "SYNTHETIC"
+          ],
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Provenance"
+    },
+    "tracking_state": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Tracking State"
+    },
+    "lidar_supported": {
+      "anyOf": [
+        {
+          "type": "boolean"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Lidar Supported"
+    },
+    "depth_valid_fraction": {
+      "anyOf": [
+        {
+          "type": "number"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Depth Valid Fraction"
+    },
+    "sectors": {
+      "default": [],
+      "items": {
+        "$ref": "#/$defs/DepthSector"
+      },
+      "title": "Sectors",
+      "type": "array"
+    },
+    "nearest_m": {
+      "anyOf": [
+        {
+          "type": "number"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Nearest M"
+    },
+    "nearest_sector": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Nearest Sector"
+    },
+    "local_alert_active": {
+      "default": false,
+      "title": "Local Alert Active",
+      "type": "boolean"
+    },
+    "heading_deg": {
+      "anyOf": [
+        {
+          "type": "number"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Heading Deg"
+    },
+    "heading_accuracy_deg": {
+      "anyOf": [
+        {
+          "type": "number"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Heading Accuracy Deg"
+    },
+    "age_ms": {
+      "anyOf": [
+        {
+          "type": "number"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Age Ms"
+    },
+    "frustum_xy_m": {
+      "anyOf": [
+        {
+          "items": {
+            "maxItems": 2,
+            "minItems": 2,
+            "prefixItems": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "number"
+              }
+            ],
+            "type": "array"
+          },
+          "type": "array"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Frustum Xy M"
+    }
+  },
+  "title": "PhoneSummary",
+  "type": "object"
+}

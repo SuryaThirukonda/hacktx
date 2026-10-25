@@ -1,0 +1,48 @@
+{
+  "properties": {
+    "sector": {
+      "enum": [
+        "left",
+        "front_left",
+        "front",
+        "front_right",
+        "right"
+      ],
+      "title": "Sector",
+      "type": "string"
+    },
+    "nearest_m": {
+      "anyOf": [
+        {
+          "type": "number"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Nearest M"
+    },
+    "confidence": {
+      "default": "unknown",
+      "enum": [
+        "high",
+        "medium",
+        "low",
+        "unknown"
+      ],
+      "title": "Confidence",
+      "type": "string"
+    },
+    "num_valid_points": {
+      "default": 0,
+      "title": "Num Valid Points",
+      "type": "integer"
+    }
+  },
+  "required": [
+    "sector"
+  ],
+  "title": "DepthSector",
+  "type": "object"
+}

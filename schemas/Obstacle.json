@@ -1,0 +1,42 @@
+{
+  "properties": {
+    "xy_m": {
+      "maxItems": 2,
+      "minItems": 2,
+      "prefixItems": [
+        {
+          "type": "number"
+        },
+        {
+          "type": "number"
+        }
+      ],
+      "title": "Xy M",
+      "type": "array"
+    },
+    "source": {
+      "default": "lidar",
+      "enum": [
+        "lidar",
+        "drone"
+      ],
+      "title": "Source",
+      "type": "string"
+    },
+    "confidence": {
+      "default": 0.5,
+      "title": "Confidence",
+      "type": "number"
+    },
+    "ts_ms": {
+      "title": "Ts Ms",
+      "type": "number"
+    }
+  },
+  "required": [
+    "xy_m",
+    "ts_ms"
+  ],
+  "title": "Obstacle",
+  "type": "object"
+}

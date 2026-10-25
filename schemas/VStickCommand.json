@@ -1,0 +1,47 @@
+{
+  "properties": {
+    "type": {
+      "const": "vstick",
+      "default": "vstick",
+      "title": "Type",
+      "type": "string"
+    },
+    "seq": {
+      "default": 0,
+      "title": "Seq",
+      "type": "integer"
+    },
+    "ts_ms": {
+      "default": 0.0,
+      "title": "Ts Ms",
+      "type": "number"
+    },
+    "forward_mps": {
+      "default": 0.0,
+      "title": "Forward Mps",
+      "type": "number"
+    },
+    "right_mps": {
+      "default": 0.0,
+      "title": "Right Mps",
+      "type": "number"
+    },
+    "up_mps": {
+      "default": 0.0,
+      "title": "Up Mps",
+      "type": "number"
+    },
+    "yaw_rate_dps": {
+      "default": 0.0,
+      "title": "Yaw Rate Dps",
+      "type": "number"
+    },
+    "ttl_ms": {
+      "default": 300.0,
+      "title": "Ttl Ms",
+      "type": "number"
+    }
+  },
+  "title": "VStickCommand",
+  "type": "object"
+}

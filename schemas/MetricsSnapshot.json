@@ -1,0 +1,40 @@
+{
+  "properties": {
+    "counters": {
+      "additionalProperties": {
+        "type": "number"
+      },
+      "default": {},
+      "title": "Counters",
+      "type": "object"
+    },
+    "latencies": {
+      "additionalProperties": {
+        "additionalProperties": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "type": "object"
+      },
+      "default": {},
+      "title": "Latencies",
+      "type": "object"
+    },
+    "rates": {
+      "additionalProperties": {
+        "type": "number"
+      },
+      "default": {},
+      "title": "Rates",
+      "type": "object"
+    }
+  },
+  "title": "MetricsSnapshot",
+  "type": "object"
+}

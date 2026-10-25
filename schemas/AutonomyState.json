@@ -1,0 +1,263 @@
+{
+  "$defs": {
+    "SafetyStatus": {
+      "properties": {
+        "geofence_ok": {
+          "default": true,
+          "title": "Geofence Ok",
+          "type": "boolean"
+        },
+        "geofence_margin_m": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Geofence Margin M"
+        },
+        "altitude_ok": {
+          "default": true,
+          "title": "Altitude Ok",
+          "type": "boolean"
+        },
+        "battery_state": {
+          "default": "unknown",
+          "enum": [
+            "ok",
+            "warn",
+            "rtl",
+            "unknown"
+          ],
+          "title": "Battery State",
+          "type": "string"
+        },
+        "link_ok": {
+          "default": true,
+          "title": "Link Ok",
+          "type": "boolean"
+        },
+        "people_over": {
+          "default": false,
+          "title": "People Over",
+          "type": "boolean"
+        },
+        "clamps": {
+          "default": [],
+          "items": {
+            "type": "string"
+          },
+          "title": "Clamps",
+          "type": "array"
+        }
+      },
+      "title": "SafetyStatus",
+      "type": "object"
+    },
+    "VStickCommand": {
+      "properties": {
+        "type": {
+          "const": "vstick",
+          "default": "vstick",
+          "title": "Type",
+          "type": "string"
+        },
+        "seq": {
+          "default": 0,
+          "title": "Seq",
+          "type": "integer"
+        },
+        "ts_ms": {
+          "default": 0.0,
+          "title": "Ts Ms",
+          "type": "number"
+        },
+        "forward_mps": {
+          "default": 0.0,
+          "title": "Forward Mps",
+          "type": "number"
+        },
+        "right_mps": {
+          "default": 0.0,
+          "title": "Right Mps",
+          "type": "number"
+        },
+        "up_mps": {
+          "default": 0.0,
+          "title": "Up Mps",
+          "type": "number"
+        },
+        "yaw_rate_dps": {
+          "default": 0.0,
+          "title": "Yaw Rate Dps",
+          "type": "number"
+        },
+        "ttl_ms": {
+          "default": 300.0,
+          "title": "Ttl Ms",
+          "type": "number"
+        }
+      },
+      "title": "VStickCommand",
+      "type": "object"
+    }
+  },
+  "properties": {
+    "mode": {
+      "default": "MANUAL",
+      "enum": [
+        "MANUAL",
+        "FOLLOW",
+        "HOLD",
+        "RTL",
+        "ESTOP"
+      ],
+      "title": "Mode",
+      "type": "string"
+    },
+    "fsm": {
+      "default": "IDLE",
+      "enum": [
+        "IDLE",
+        "TRACKING",
+        "VERIFY",
+        "COAST",
+        "REACQUIRE",
+        "HOLD"
+      ],
+      "title": "Fsm",
+      "type": "string"
+    },
+    "target_is_sim": {
+      "default": true,
+      "title": "Target Is Sim",
+      "type": "boolean"
+    },
+    "link": {
+      "default": "sim",
+      "enum": [
+        "sim",
+        "real",
+        "none"
+      ],
+      "title": "Link",
+      "type": "string"
+    },
+    "real_flight_allowed": {
+      "default": false,
+      "title": "Real Flight Allowed",
+      "type": "boolean"
+    },
+    "commands_enabled": {
+      "default": false,
+      "title": "Commands Enabled",
+      "type": "boolean"
+    },
+    "primitive": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Primitive"
+    },
+    "primitive_source": {
+      "default": "none",
+      "title": "Primitive Source",
+      "type": "string"
+    },
+    "last_command": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/VStickCommand"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    },
+    "gimbal_cmd_deg": {
+      "anyOf": [
+        {
+          "type": "number"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Gimbal Cmd Deg"
+    },
+    "safety": {
+      "$ref": "#/$defs/SafetyStatus",
+      "default": {
+        "geofence_ok": true,
+        "geofence_margin_m": null,
+        "altitude_ok": true,
+        "battery_state": "unknown",
+        "link_ok": true,
+        "people_over": false,
+        "clamps": []
+      }
+    },
+    "note": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Note"
+    },
+    "route": {
+      "anyOf": [
+        {
+          "items": {
+            "maxItems": 2,
+            "minItems": 2,
+            "prefixItems": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "number"
+              }
+            ],
+            "type": "array"
+          },
+          "type": "array"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Route"
+    },
+    "route_label": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Route Label"
+    }
+  },
+  "title": "AutonomyState",
+  "type": "object"
+}

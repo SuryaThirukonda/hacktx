@@ -1,0 +1,74 @@
+{
+  "description": "A rigid or similarity transform from ``source_frame`` to ``target_frame`` (4x4 homogeneous matrix).",
+  "properties": {
+    "id": {
+      "title": "Id",
+      "type": "string"
+    },
+    "source_frame": {
+      "title": "Source Frame",
+      "type": "string"
+    },
+    "target_frame": {
+      "title": "Target Frame",
+      "type": "string"
+    },
+    "matrix": {
+      "items": {
+        "items": {
+          "type": "number"
+        },
+        "type": "array"
+      },
+      "title": "Matrix",
+      "type": "array"
+    },
+    "method": {
+      "title": "Method",
+      "type": "string"
+    },
+    "residual_m": {
+      "anyOf": [
+        {
+          "type": "number"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Residual M"
+    },
+    "created_at": {
+      "format": "date-time",
+      "title": "Created At",
+      "type": "string"
+    },
+    "valid_until": {
+      "anyOf": [
+        {
+          "format": "date-time",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Valid Until"
+    },
+    "manually_verified": {
+      "default": false,
+      "title": "Manually Verified",
+      "type": "boolean"
+    }
+  },
+  "required": [
+    "source_frame",
+    "target_frame",
+    "matrix",
+    "method"
+  ],
+  "title": "Transform",
+  "type": "object"
+}

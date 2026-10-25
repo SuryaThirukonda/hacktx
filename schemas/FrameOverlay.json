@@ -1,0 +1,349 @@
+{
+  "$defs": {
+    "FrameOverlayTrack": {
+      "properties": {
+        "track_id": {
+          "title": "Track Id",
+          "type": "string"
+        },
+        "box": {
+          "maxItems": 4,
+          "minItems": 4,
+          "prefixItems": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "number"
+            },
+            {
+              "type": "number"
+            },
+            {
+              "type": "number"
+            }
+          ],
+          "title": "Box",
+          "type": "array"
+        },
+        "class_name": {
+          "title": "Class Name",
+          "type": "string"
+        },
+        "confidence": {
+          "title": "Confidence",
+          "type": "number"
+        },
+        "state": {
+          "title": "State",
+          "type": "string"
+        },
+        "role": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Role"
+        },
+        "label": {
+          "default": "",
+          "title": "Label",
+          "type": "string"
+        },
+        "velocity_px": {
+          "anyOf": [
+            {
+              "maxItems": 2,
+              "minItems": 2,
+              "prefixItems": [
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "number"
+                }
+              ],
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Velocity Px"
+        },
+        "ground_xy_m": {
+          "anyOf": [
+            {
+              "maxItems": 2,
+              "minItems": 2,
+              "prefixItems": [
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "number"
+                }
+              ],
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Ground Xy M"
+        }
+      },
+      "required": [
+        "track_id",
+        "box",
+        "class_name",
+        "confidence",
+        "state"
+      ],
+      "title": "FrameOverlayTrack",
+      "type": "object"
+    },
+    "MarkerObservation": {
+      "properties": {
+        "id": {
+          "title": "Id",
+          "type": "integer"
+        },
+        "center_px": {
+          "maxItems": 2,
+          "minItems": 2,
+          "prefixItems": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "number"
+            }
+          ],
+          "title": "Center Px",
+          "type": "array"
+        },
+        "corners_px": {
+          "default": [],
+          "items": {
+            "maxItems": 2,
+            "minItems": 2,
+            "prefixItems": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "number"
+              }
+            ],
+            "type": "array"
+          },
+          "title": "Corners Px",
+          "type": "array"
+        },
+        "world_xy": {
+          "anyOf": [
+            {
+              "maxItems": 2,
+              "minItems": 2,
+              "prefixItems": [
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "number"
+                }
+              ],
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "World Xy"
+        },
+        "used_for_fit": {
+          "default": false,
+          "title": "Used For Fit",
+          "type": "boolean"
+        },
+        "holdout": {
+          "default": false,
+          "title": "Holdout",
+          "type": "boolean"
+        },
+        "error_m": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Error M"
+        }
+      },
+      "required": [
+        "id",
+        "center_px"
+      ],
+      "title": "MarkerObservation",
+      "type": "object"
+    }
+  },
+  "description": "JSON header sent with each video frame on /ws/video/{source}: overlays belong to *this* frame.",
+  "properties": {
+    "type": {
+      "const": "frame",
+      "default": "frame",
+      "title": "Type",
+      "type": "string"
+    },
+    "source_id": {
+      "title": "Source Id",
+      "type": "string"
+    },
+    "frame_id": {
+      "title": "Frame Id",
+      "type": "integer"
+    },
+    "capture_ts_ms": {
+      "title": "Capture Ts Ms",
+      "type": "number"
+    },
+    "server_ts_ms": {
+      "title": "Server Ts Ms",
+      "type": "number"
+    },
+    "width": {
+      "title": "Width",
+      "type": "integer"
+    },
+    "height": {
+      "title": "Height",
+      "type": "integer"
+    },
+    "provenance": {
+      "enum": [
+        "LIVE",
+        "RECORDED",
+        "SYNTHETIC"
+      ],
+      "title": "Provenance",
+      "type": "string"
+    },
+    "tracks": {
+      "default": [],
+      "items": {
+        "$ref": "#/$defs/FrameOverlayTrack"
+      },
+      "title": "Tracks",
+      "type": "array"
+    },
+    "detections": {
+      "default": 0,
+      "title": "Detections",
+      "type": "integer"
+    },
+    "markers": {
+      "default": [],
+      "items": {
+        "$ref": "#/$defs/MarkerObservation"
+      },
+      "title": "Markers",
+      "type": "array"
+    },
+    "zones_px": {
+      "default": [],
+      "items": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "title": "Zones Px",
+      "type": "array"
+    },
+    "horizon": {
+      "anyOf": [
+        {
+          "additionalProperties": {
+            "type": "number"
+          },
+          "type": "object"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Horizon"
+    },
+    "cmc": {
+      "anyOf": [
+        {
+          "additionalProperties": true,
+          "type": "object"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Cmc"
+    },
+    "detector_ms": {
+      "anyOf": [
+        {
+          "type": "number"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Detector Ms"
+    },
+    "model_id": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Model Id"
+    },
+    "calibration_valid": {
+      "default": false,
+      "title": "Calibration Valid",
+      "type": "boolean"
+    },
+    "extra": {
+      "additionalProperties": true,
+      "title": "Extra",
+      "type": "object"
+    }
+  },
+  "required": [
+    "source_id",
+    "frame_id",
+    "capture_ts_ms",
+    "server_ts_ms",
+    "width",
+    "height",
+    "provenance"
+  ],
+  "title": "FrameOverlay",
+  "type": "object"
+}

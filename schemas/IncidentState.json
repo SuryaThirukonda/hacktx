@@ -1,0 +1,45 @@
+{
+  "properties": {
+    "incident_id": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Incident Id"
+    },
+    "active": {
+      "default": false,
+      "title": "Active",
+      "type": "boolean"
+    },
+    "recording": {
+      "default": false,
+      "title": "Recording",
+      "type": "boolean"
+    },
+    "started_ts_ms": {
+      "anyOf": [
+        {
+          "type": "number"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Started Ts Ms"
+    },
+    "consent_confirmed": {
+      "default": false,
+      "title": "Consent Confirmed",
+      "type": "boolean"
+    }
+  },
+  "title": "IncidentState",
+  "type": "object"
+}

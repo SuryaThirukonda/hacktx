@@ -1,0 +1,75 @@
+{
+  "properties": {
+    "id": {
+      "title": "Id",
+      "type": "string"
+    },
+    "kind": {
+      "enum": [
+        "drone_rgb",
+        "ground_rgb",
+        "near_ir",
+        "lidar",
+        "replay",
+        "simulation"
+      ],
+      "title": "Kind",
+      "type": "string"
+    },
+    "name": {
+      "title": "Name",
+      "type": "string"
+    },
+    "connection_status": {
+      "default": "disconnected",
+      "enum": [
+        "connected",
+        "disconnected",
+        "error",
+        "not_configured"
+      ],
+      "title": "Connection Status",
+      "type": "string"
+    },
+    "source_mode": {
+      "enum": [
+        "live",
+        "replay",
+        "simulated"
+      ],
+      "title": "Source Mode",
+      "type": "string"
+    },
+    "last_seen_at": {
+      "anyOf": [
+        {
+          "format": "date-time",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Last Seen At"
+    },
+    "calibration": {
+      "additionalProperties": true,
+      "title": "Calibration",
+      "type": "object"
+    },
+    "detail": {
+      "default": "",
+      "title": "Detail",
+      "type": "string"
+    }
+  },
+  "required": [
+    "id",
+    "kind",
+    "name",
+    "source_mode"
+  ],
+  "title": "SensorSource",
+  "type": "object"
+}

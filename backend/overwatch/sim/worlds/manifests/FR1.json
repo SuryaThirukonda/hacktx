@@ -1,0 +1,20 @@
+{
+  "scenario": "FR1",
+  "title": "Flood: people in rising water",
+  "problem_line": "Water rises over the southern yards. Who is stranded, and where?",
+  "beats": [
+    {
+      "t": 0,
+      "caption": "The water rises (a screening model, time compressed). The pilot flies the creek road.",
+      "highlight_entity": "hazard:water",
+      "camera_preset": "overview"
+    },
+    {
+      "t": 12,
+      "caption": "People waiting in the water are detected and flagged for review.",
+      "highlight_entity": "actor:stranded-1",
+      "camera_preset": "chase"
+    }
+  ],
+  "success_line": "The stranded people are found; water is labelled a screening model, not a forecast."
+}

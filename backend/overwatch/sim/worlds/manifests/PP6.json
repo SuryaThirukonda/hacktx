@@ -1,0 +1,50 @@
+{
+  "scenario": "PP6",
+  "title": "A look-alike: two clouds",
+  "problem_line": "The subject vanishes in the walkway; then someone in the same red shirt steps out of its far end. Is that them?",
+  "beats": [
+    {
+      "t": 0,
+      "caption": "Designated subject in a red shirt and jeans; the drone follows on its own.",
+      "highlight_entity": "actor:subject",
+      "camera_preset": "chase"
+    },
+    {
+      "t": 29,
+      "caption": "Lost in the covered walkway. One particle cloud flows north along Oak Street.",
+      "highlight_entity": "hypothesis:H1",
+      "camera_preset": "overview"
+    },
+    {
+      "t": 40,
+      "caption": "A second red shirt steps out of the north end. A second hypothesis: maybe that is the subject.",
+      "highlight_entity": "actor:decoy",
+      "camera_preset": "overview"
+    },
+    {
+      "t": 41,
+      "caption": "Two clouds, two colours. D12 picks the viewpoint that keeps both in view.",
+      "highlight_entity": "route",
+      "camera_preset": "top"
+    },
+    {
+      "t": 46,
+      "caption": "The look-alike jogs off east. Their cloud is in the open, so the drone checks it first.",
+      "highlight_entity": "hypothesis:H2",
+      "camera_preset": "top"
+    },
+    {
+      "t": 55,
+      "caption": "Nobody there: the belief moves back to the subject's cloud on Oak Street.",
+      "highlight_entity": "hypothesis:H1",
+      "camera_preset": "overview"
+    },
+    {
+      "t": 59,
+      "caption": "The subject is found. The drone never followed the look-alike; a person confirms who is who.",
+      "highlight_entity": "actor:subject",
+      "camera_preset": "chase"
+    }
+  ],
+  "success_line": "Two hypotheses instead of one merged identity; the route covered both; a person confirmed the right one."
+}

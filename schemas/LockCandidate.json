@@ -1,0 +1,30 @@
+{
+  "properties": {
+    "track_id": {
+      "title": "Track Id",
+      "type": "string"
+    },
+    "similarity": {
+      "title": "Similarity",
+      "type": "number"
+    },
+    "distance_m": {
+      "anyOf": [
+        {
+          "type": "number"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Distance M"
+    }
+  },
+  "required": [
+    "track_id",
+    "similarity"
+  ],
+  "title": "LockCandidate",
+  "type": "object"
+}

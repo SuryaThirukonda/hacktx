@@ -1,0 +1,113 @@
+{
+  "properties": {
+    "source_id": {
+      "title": "Source Id",
+      "type": "string"
+    },
+    "kind": {
+      "enum": [
+        "drone",
+        "phone",
+        "telemetry",
+        "detector",
+        "calibration",
+        "decisions",
+        "bridge"
+      ],
+      "title": "Kind",
+      "type": "string"
+    },
+    "status": {
+      "enum": [
+        "OK",
+        "STALE",
+        "OFFLINE",
+        "DEGRADED",
+        "NOT_CONFIGURED",
+        "PAUSED"
+      ],
+      "title": "Status",
+      "type": "string"
+    },
+    "provenance": {
+      "anyOf": [
+        {
+          "enum": [
+            "LIVE",
+            "RECORDED",
+            "SYNTHETIC"
+          ],
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Provenance"
+    },
+    "last_age_ms": {
+      "anyOf": [
+        {
+          "type": "number"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Last Age Ms"
+    },
+    "fps": {
+      "anyOf": [
+        {
+          "type": "number"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Fps"
+    },
+    "received": {
+      "default": 0,
+      "title": "Received",
+      "type": "integer"
+    },
+    "processed": {
+      "default": 0,
+      "title": "Processed",
+      "type": "integer"
+    },
+    "dropped": {
+      "default": 0,
+      "title": "Dropped",
+      "type": "integer"
+    },
+    "reconnects": {
+      "default": 0,
+      "title": "Reconnects",
+      "type": "integer"
+    },
+    "detail": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Detail"
+    }
+  },
+  "required": [
+    "source_id",
+    "kind",
+    "status"
+  ],
+  "title": "SourceHealth",
+  "type": "object"
+}

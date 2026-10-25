@@ -1,0 +1,32 @@
+{
+  "scenario": "PP8",
+  "title": "Dispatch: search by description",
+  "problem_line": "Find a person in a red shirt and jeans somewhere in a block, among other people, without a face.",
+  "beats": [
+    {
+      "t": 0,
+      "caption": "On the pad. The request: red shirt, jeans, last seen on South Road.",
+      "highlight_entity": "box:station-pad",
+      "camera_preset": "overview"
+    },
+    {
+      "t": 15,
+      "caption": "Search legs over the area. Everyone the detector sees is compared by clothing words.",
+      "highlight_entity": "route",
+      "camera_preset": "top"
+    },
+    {
+      "t": 60,
+      "caption": "People who do not match are noted and passed over.",
+      "highlight_entity": "actor:ped-b",
+      "camera_preset": "chase"
+    },
+    {
+      "t": 100,
+      "caption": "A clear match: tracked, and reported from the pad by distance and bearing.",
+      "highlight_entity": "actor:subject",
+      "camera_preset": "chase"
+    }
+  ],
+  "success_line": "Matched the described person, never anyone else, and reported where they are from the pad."
+}

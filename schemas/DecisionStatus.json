@@ -1,0 +1,174 @@
+{
+  "$defs": {
+    "EngineStatus": {
+      "properties": {
+        "name": {
+          "title": "Name",
+          "type": "string"
+        },
+        "available": {
+          "title": "Available",
+          "type": "boolean"
+        },
+        "mock": {
+          "default": false,
+          "title": "Mock",
+          "type": "boolean"
+        },
+        "detail": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Detail"
+        },
+        "p50_ms": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "P50 Ms"
+        },
+        "p95_ms": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "P95 Ms"
+        },
+        "calls": {
+          "default": 0,
+          "title": "Calls",
+          "type": "integer"
+        },
+        "errors": {
+          "default": 0,
+          "title": "Errors",
+          "type": "integer"
+        },
+        "timeouts": {
+          "default": 0,
+          "title": "Timeouts",
+          "type": "integer"
+        },
+        "refusals": {
+          "default": 0,
+          "title": "Refusals",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "name",
+        "available"
+      ],
+      "title": "EngineStatus",
+      "type": "object"
+    }
+  },
+  "properties": {
+    "primary": {
+      "title": "Primary",
+      "type": "string"
+    },
+    "active": {
+      "title": "Active",
+      "type": "string"
+    },
+    "ai_paused": {
+      "default": false,
+      "title": "Ai Paused",
+      "type": "boolean"
+    },
+    "pause_reason": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Pause Reason"
+    },
+    "engines": {
+      "default": [],
+      "items": {
+        "$ref": "#/$defs/EngineStatus"
+      },
+      "title": "Engines",
+      "type": "array"
+    },
+    "calls_total": {
+      "default": 0,
+      "title": "Calls Total",
+      "type": "integer"
+    },
+    "acted_total": {
+      "default": 0,
+      "title": "Acted Total",
+      "type": "integer"
+    },
+    "disagreements": {
+      "default": 0,
+      "title": "Disagreements",
+      "type": "integer"
+    },
+    "mode_label": {
+      "default": "",
+      "title": "Mode Label",
+      "type": "string"
+    },
+    "session": {
+      "default": 0,
+      "title": "Session",
+      "type": "integer"
+    },
+    "session_model_calls": {
+      "default": 0,
+      "title": "Session Model Calls",
+      "type": "integer"
+    },
+    "session_tokens": {
+      "default": 0,
+      "title": "Session Tokens",
+      "type": "integer"
+    },
+    "budget_exhausted": {
+      "default": false,
+      "title": "Budget Exhausted",
+      "type": "boolean"
+    },
+    "dropped_stale": {
+      "default": 0,
+      "title": "Dropped Stale",
+      "type": "integer"
+    },
+    "rejected_invalid": {
+      "default": 0,
+      "title": "Rejected Invalid",
+      "type": "integer"
+    }
+  },
+  "required": [
+    "primary",
+    "active"
+  ],
+  "title": "DecisionStatus",
+  "type": "object"
+}

@@ -1,0 +1,32 @@
+{
+  "scenario": "DEMO-1",
+  "provenance": "simulated",
+  "steps": [
+    "operator starts the demo incident (Search)",
+    "a possible person is flagged from the simulated drone video (pending review)",
+    "operator confirms it; a map marker appears only if its location is verified or manually anchored",
+    "operator switches to Structure: openings appear by side (A front door, B window, C rear door, D garage)",
+    "operator marks the side D garage door as blocked (MANUAL)",
+    "operator briefs the responder; the phone announces it; the responder acknowledges",
+    "the dashboard records the acknowledgment; the timeline replays the incident"
+  ],
+  "openings_by_side": {
+    "A": [
+      "door-a1"
+    ],
+    "B": [
+      "window-b1"
+    ],
+    "C": [
+      "door-c1"
+    ],
+    "D": [
+      "garage-d1"
+    ]
+  },
+  "blocked_entrances": [
+    "garage-d1"
+  ],
+  "supply": "supply-1",
+  "missing_person": "volunteer"
+}

@@ -1,0 +1,20 @@
+{
+  "scenario": "SR1",
+  "title": "Search: a lost person in a clearing",
+  "problem_line": "A sector of woodland, a person somewhere in it, and a sweep that must not call anything clear.",
+  "beats": [
+    {
+      "t": 0,
+      "caption": "Sectors carry a probability of area. The pilot sweeps the first one at 30 m, camera straight down.",
+      "highlight_entity": "zone:S5",
+      "camera_preset": "top"
+    },
+    {
+      "t": 20,
+      "caption": "A person in a clearing: flagged once for review, never auto-confirmed.",
+      "highlight_entity": "actor:lost",
+      "camera_preset": "top"
+    }
+  ],
+  "success_line": "Found and queued for a person to confirm; the swept sector keeps a probability."
+}

@@ -1,0 +1,131 @@
+{
+  "$defs": {
+    "Position": {
+      "properties": {
+        "frame": {
+          "title": "Frame",
+          "type": "string"
+        },
+        "x": {
+          "title": "X",
+          "type": "number"
+        },
+        "y": {
+          "title": "Y",
+          "type": "number"
+        },
+        "z": {
+          "default": 0.0,
+          "title": "Z",
+          "type": "number"
+        }
+      },
+      "required": [
+        "frame",
+        "x",
+        "y"
+      ],
+      "title": "Position",
+      "type": "object"
+    }
+  },
+  "properties": {
+    "id": {
+      "title": "Id",
+      "type": "string"
+    },
+    "incident_id": {
+      "title": "Incident Id",
+      "type": "string"
+    },
+    "name": {
+      "title": "Name",
+      "type": "string"
+    },
+    "type": {
+      "enum": [
+        "entrance",
+        "door",
+        "window",
+        "stairs",
+        "garage",
+        "opening",
+        "hazard",
+        "supply",
+        "room",
+        "landmark",
+        "person",
+        "other"
+      ],
+      "title": "Type",
+      "type": "string"
+    },
+    "coordinate_frame": {
+      "title": "Coordinate Frame",
+      "type": "string"
+    },
+    "position": {
+      "$ref": "#/$defs/Position"
+    },
+    "transform_id": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Transform Id"
+    },
+    "uncertainty_m": {
+      "anyOf": [
+        {
+          "type": "number"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Uncertainty M"
+    },
+    "manually_verified": {
+      "default": false,
+      "title": "Manually Verified",
+      "type": "boolean"
+    },
+    "observation_id": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Observation Id"
+    },
+    "attributes": {
+      "additionalProperties": true,
+      "title": "Attributes",
+      "type": "object"
+    },
+    "created_at": {
+      "format": "date-time",
+      "title": "Created At",
+      "type": "string"
+    }
+  },
+  "required": [
+    "incident_id",
+    "name",
+    "type",
+    "coordinate_frame",
+    "position"
+  ],
+  "title": "SceneAnchor",
+  "type": "object"
+}

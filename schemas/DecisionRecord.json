@@ -1,0 +1,256 @@
+{
+  "$defs": {
+    "DecisionAnswer": {
+      "properties": {
+        "name": {
+          "title": "Name",
+          "type": "string"
+        },
+        "type": {
+          "enum": [
+            "choice",
+            "predicate",
+            "score",
+            "refusal"
+          ],
+          "title": "Type",
+          "type": "string"
+        },
+        "choice": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Choice"
+        },
+        "probability": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Probability"
+        },
+        "score": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Score"
+        },
+        "confidence": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Confidence"
+        },
+        "probabilities": {
+          "additionalProperties": {
+            "type": "number"
+          },
+          "default": {},
+          "title": "Probabilities",
+          "type": "object"
+        }
+      },
+      "required": [
+        "name",
+        "type"
+      ],
+      "title": "DecisionAnswer",
+      "type": "object"
+    }
+  },
+  "properties": {
+    "schema_version": {
+      "default": "1.0",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "type": {
+      "const": "decision",
+      "default": "decision",
+      "title": "Type",
+      "type": "string"
+    },
+    "decision_id": {
+      "title": "Decision Id",
+      "type": "string"
+    },
+    "task": {
+      "enum": [
+        "D1_reacquire",
+        "D2_identity",
+        "D3_describe",
+        "D4_motion",
+        "D5_priority",
+        "D6_obstacle",
+        "D7_lead_triage",
+        "D8_next_sector",
+        "D9_route",
+        "D10_dispatch",
+        "D11_opening",
+        "D12_pursuit_route"
+      ],
+      "title": "Task",
+      "type": "string"
+    },
+    "engine": {
+      "title": "Engine",
+      "type": "string"
+    },
+    "model": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Model"
+    },
+    "status": {
+      "enum": [
+        "success",
+        "timeout",
+        "error",
+        "refusal",
+        "skipped",
+        "fallback"
+      ],
+      "title": "Status",
+      "type": "string"
+    },
+    "latency_ms": {
+      "anyOf": [
+        {
+          "type": "number"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Latency Ms"
+    },
+    "request_ts_ms": {
+      "title": "Request Ts Ms",
+      "type": "number"
+    },
+    "event_ids": {
+      "default": [],
+      "items": {
+        "type": "string"
+      },
+      "title": "Event Ids",
+      "type": "array"
+    },
+    "facts": {
+      "additionalProperties": true,
+      "default": {},
+      "title": "Facts",
+      "type": "object"
+    },
+    "answers": {
+      "default": [],
+      "items": {
+        "$ref": "#/$defs/DecisionAnswer"
+      },
+      "title": "Answers",
+      "type": "array"
+    },
+    "selected": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Selected"
+    },
+    "acted": {
+      "default": false,
+      "title": "Acted",
+      "type": "boolean"
+    },
+    "reason": {
+      "default": "",
+      "title": "Reason",
+      "type": "string"
+    },
+    "shadow": {
+      "default": false,
+      "title": "Shadow",
+      "type": "boolean"
+    },
+    "mock": {
+      "default": false,
+      "title": "Mock",
+      "type": "boolean"
+    },
+    "image_used": {
+      "default": false,
+      "title": "Image Used",
+      "type": "boolean"
+    },
+    "error": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Error"
+    },
+    "usage": {
+      "anyOf": [
+        {
+          "additionalProperties": true,
+          "type": "object"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Usage"
+    }
+  },
+  "required": [
+    "decision_id",
+    "task",
+    "engine",
+    "status",
+    "request_ts_ms"
+  ],
+  "title": "DecisionRecord",
+  "type": "object"
+}

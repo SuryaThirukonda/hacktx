@@ -1,0 +1,32 @@
+{
+  "scenario": "FR2",
+  "title": "Flood: route the crew around closed roads",
+  "problem_line": "The crew has to reach a stranded person while roads close above 0.3 m of water.",
+  "beats": [
+    {
+      "t": 0,
+      "caption": "Water rises; the drone watches the stranded person at the creek road.",
+      "highlight_entity": "actor:stranded-1",
+      "camera_preset": "overview"
+    },
+    {
+      "t": 5,
+      "caption": "The crew's route is planned live from where they are, with the water depth at the time they would reach each road.",
+      "highlight_entity": "crew_route",
+      "camera_preset": "top"
+    },
+    {
+      "t": 20,
+      "caption": "Each time the water updates the route is re-planned; roads above 0.3 m are closed.",
+      "highlight_entity": "hazard:water",
+      "camera_preset": "top"
+    },
+    {
+      "t": 35,
+      "caption": "The route proposed to a person keeps the crew out of deep water.",
+      "highlight_entity": "crew_route",
+      "camera_preset": "overview"
+    }
+  ],
+  "success_line": "A route that stays under 0.3 m of water, re-planned as the water rose, approved by a person."
+}

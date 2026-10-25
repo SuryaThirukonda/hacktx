@@ -1,0 +1,4 @@
+# Combined merge progress - Baseline: main 2d75621; hazards checkpoint 9b34d6d.
+- Hazards branch merged in f14030f. Resolved renderer conflicts preserving pursuit/story overlays, fixed stale scenario locks on loading, adapted fire preview routing to current planner. Python compilation and dashboard production build passed.
+- drone-v1 merged with current dispatch/GOTO, pursuit rules and control-epoch protection preserved. Production dashboard build passed. Hardware remains unverified.
+- Remaining: test12 loss FSM, City launcher/client/shared 3D, DJI model, rescue beacon/hold/moving crews/callouts, auth/quick fixes, headless and live verification, docs, final commits. Verification follows the merge plan: headless scenarios and live browser; no pytest. Use isolated local database and cleared paid-service keys for verification.

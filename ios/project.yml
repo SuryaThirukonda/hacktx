@@ -1,0 +1,55 @@
+# XcodeGen spec for the two native Overwatch apps.
+#   cd ios && xcodegen generate && pod install && open Overwatch.xcworkspace
+# Re-run `pod install` after every `xcodegen generate` (XcodeGen rewrites the project CocoaPods integrated into).
+name: Overwatch
+options:
+  bundleIdPrefix: com.overwatch
+  deploymentTarget:
+    iOS: "17.0"
+  createIntermediateGroups: true
+  developmentLanguage: en
+
+settings:
+  base:
+    SWIFT_VERSION: "5.0"
+    SWIFT_STRICT_CONCURRENCY: minimal
+    MARKETING_VERSION: "1.0"
+    CURRENT_PROJECT_VERSION: "1"
+    IPHONEOS_DEPLOYMENT_TARGET: "17.0"
+    TARGETED_DEVICE_FAMILY: "1"
+    CODE_SIGN_STYLE: Automatic
+    DEVELOPMENT_TEAM: ""            # set your Apple team ID here (or pick it in Xcode → Signing & Capabilities)
+    ENABLE_BITCODE: "NO"
+    GENERATE_INFOPLIST_FILE: "NO"
+
+targets:
+  OverwatchResponder:
+    type: application
+    platform: iOS
+    deploymentTarget: "17.0"
+    sources:
+      - path: OverwatchResponder/Sources
+      - path: Shared/Sources
+    settings:
+      base:
+        PRODUCT_NAME: OverwatchResponder
+        PRODUCT_BUNDLE_IDENTIFIER: com.overwatch.responder
+        INFOPLIST_FILE: OverwatchResponder/Info.plist
+    scheme: {}
+
+  OverwatchDroneBridge:
+    type: application
+    platform: iOS
+    deploymentTarget: "17.0"
+    sources:
+      - path: OverwatchDroneBridge/Sources
+      - path: Shared/Sources
+    settings:
+      base:
+        PRODUCT_NAME: OverwatchDroneBridge
+        PRODUCT_BUNDLE_IDENTIFIER: com.overwatch.dronebridge
+        DJISDK_APP_KEY: REPLACE_WITH_YOUR_DJI_APP_KEY
+        INFOPLIST_FILE: OverwatchDroneBridge/Info.plist
+        # CocoaPods' "[CP] Embed Pods Frameworks" script writes outside the sandbox (Xcode 15+ default is YES).
+        ENABLE_USER_SCRIPT_SANDBOXING: "NO"
+    scheme: {}

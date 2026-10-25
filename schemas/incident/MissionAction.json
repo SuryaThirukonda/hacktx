@@ -1,0 +1,97 @@
+{
+  "properties": {
+    "id": {
+      "title": "Id",
+      "type": "string"
+    },
+    "incident_id": {
+      "title": "Incident Id",
+      "type": "string"
+    },
+    "mission": {
+      "enum": [
+        "search",
+        "follow",
+        "structure",
+        "indoor"
+      ],
+      "title": "Mission",
+      "type": "string"
+    },
+    "action_type": {
+      "enum": [
+        "review_candidate",
+        "inspect_area",
+        "mark_last_seen",
+        "request_operator_confirmation",
+        "notify_responder",
+        "show_structure_side",
+        "hold_for_more_information",
+        "return_to_operator_review"
+      ],
+      "title": "Action Type",
+      "type": "string"
+    },
+    "proposed_by": {
+      "enum": [
+        "rules",
+        "model",
+        "human"
+      ],
+      "title": "Proposed By",
+      "type": "string"
+    },
+    "parameters": {
+      "additionalProperties": true,
+      "title": "Parameters",
+      "type": "object"
+    },
+    "approval_status": {
+      "default": "pending",
+      "enum": [
+        "not_required",
+        "pending",
+        "approved",
+        "rejected"
+      ],
+      "title": "Approval Status",
+      "type": "string"
+    },
+    "execution_status": {
+      "default": "not_started",
+      "enum": [
+        "not_started",
+        "done",
+        "failed",
+        "cancelled"
+      ],
+      "title": "Execution Status",
+      "type": "string"
+    },
+    "safety_constraints": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Safety Constraints",
+      "type": "array"
+    },
+    "reason": {
+      "default": "",
+      "title": "Reason",
+      "type": "string"
+    },
+    "created_at": {
+      "format": "date-time",
+      "title": "Created At",
+      "type": "string"
+    }
+  },
+  "required": [
+    "incident_id",
+    "mission",
+    "action_type",
+    "proposed_by"
+  ],
+  "title": "MissionAction",
+  "type": "object"
+}

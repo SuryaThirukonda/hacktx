@@ -1,0 +1,201 @@
+{
+  "$defs": {
+    "LockCandidate": {
+      "properties": {
+        "track_id": {
+          "title": "Track Id",
+          "type": "string"
+        },
+        "similarity": {
+          "title": "Similarity",
+          "type": "number"
+        },
+        "distance_m": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Distance M"
+        }
+      },
+      "required": [
+        "track_id",
+        "similarity"
+      ],
+      "title": "LockCandidate",
+      "type": "object"
+    }
+  },
+  "properties": {
+    "role": {
+      "enum": [
+        "subject",
+        "responder"
+      ],
+      "title": "Role",
+      "type": "string"
+    },
+    "state": {
+      "default": "UNLOCKED",
+      "enum": [
+        "UNLOCKED",
+        "LOCKED",
+        "COAST",
+        "REACQUIRE",
+        "UNCERTAIN",
+        "HOLD"
+      ],
+      "title": "State",
+      "type": "string"
+    },
+    "track_id": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Track Id"
+    },
+    "since_ts_ms": {
+      "anyOf": [
+        {
+          "type": "number"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Since Ts Ms"
+    },
+    "lost_ms": {
+      "anyOf": [
+        {
+          "type": "number"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Lost Ms"
+    },
+    "predicted_xy_m": {
+      "anyOf": [
+        {
+          "maxItems": 2,
+          "minItems": 2,
+          "prefixItems": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "number"
+            }
+          ],
+          "type": "array"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Predicted Xy M"
+    },
+    "search_radius_m": {
+      "anyOf": [
+        {
+          "type": "number"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Search Radius M"
+    },
+    "last_seen_xy_m": {
+      "anyOf": [
+        {
+          "maxItems": 2,
+          "minItems": 2,
+          "prefixItems": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "number"
+            }
+          ],
+          "type": "array"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Last Seen Xy M"
+    },
+    "last_seen_ts_ms": {
+      "anyOf": [
+        {
+          "type": "number"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Last Seen Ts Ms"
+    },
+    "candidates": {
+      "default": [],
+      "items": {
+        "$ref": "#/$defs/LockCandidate"
+      },
+      "title": "Candidates",
+      "type": "array"
+    },
+    "needs_operator_confirm": {
+      "default": false,
+      "title": "Needs Operator Confirm",
+      "type": "boolean"
+    },
+    "verified": {
+      "default": true,
+      "title": "Verified",
+      "type": "boolean"
+    },
+    "rebinds": {
+      "default": 0,
+      "title": "Rebinds",
+      "type": "integer"
+    },
+    "description": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Description"
+    }
+  },
+  "required": [
+    "role"
+  ],
+  "title": "LockState",
+  "type": "object"
+}

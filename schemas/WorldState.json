@@ -1,0 +1,2768 @@
+{
+  "$defs": {
+    "Alert": {
+      "properties": {
+        "schema_version": {
+          "default": "1.0",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "type": {
+          "const": "alert",
+          "default": "alert",
+          "title": "Type",
+          "type": "string"
+        },
+        "alert_id": {
+          "title": "Alert Id",
+          "type": "string"
+        },
+        "kind": {
+          "title": "Kind",
+          "type": "string"
+        },
+        "severity": {
+          "enum": [
+            "info",
+            "attention",
+            "warning",
+            "critical",
+            "sensor_fault",
+            "local_proximity"
+          ],
+          "title": "Severity",
+          "type": "string"
+        },
+        "ts_ms": {
+          "title": "Ts Ms",
+          "type": "number"
+        },
+        "expires_ts_ms": {
+          "title": "Expires Ts Ms",
+          "type": "number"
+        },
+        "text": {
+          "title": "Text",
+          "type": "string"
+        },
+        "spoken_text": {
+          "title": "Spoken Text",
+          "type": "string"
+        },
+        "bearing_rel_deg": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Bearing Rel Deg"
+        },
+        "clock": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Clock"
+        },
+        "range_m": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Range M"
+        },
+        "closing_mps": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Closing Mps"
+        },
+        "ttc_s": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Ttc S"
+        },
+        "haptic": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Haptic"
+        },
+        "delivery": {
+          "default": [
+            "dashboard"
+          ],
+          "items": {
+            "type": "string"
+          },
+          "title": "Delivery",
+          "type": "array"
+        },
+        "message_source": {
+          "default": "rules",
+          "title": "Message Source",
+          "type": "string"
+        },
+        "evidence_event_ids": {
+          "default": [],
+          "items": {
+            "type": "string"
+          },
+          "title": "Evidence Event Ids",
+          "type": "array"
+        },
+        "decision_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Decision Id"
+        },
+        "ack_required": {
+          "default": false,
+          "title": "Ack Required",
+          "type": "boolean"
+        },
+        "acked": {
+          "default": false,
+          "title": "Acked",
+          "type": "boolean"
+        },
+        "acked_ts_ms": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Acked Ts Ms"
+        },
+        "can_read_as_confirmed_location": {
+          "default": false,
+          "title": "Can Read As Confirmed Location",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "alert_id",
+        "kind",
+        "severity",
+        "ts_ms",
+        "expires_ts_ms",
+        "text",
+        "spoken_text"
+      ],
+      "title": "Alert",
+      "type": "object"
+    },
+    "AutonomyState": {
+      "properties": {
+        "mode": {
+          "default": "MANUAL",
+          "enum": [
+            "MANUAL",
+            "FOLLOW",
+            "HOLD",
+            "RTL",
+            "ESTOP"
+          ],
+          "title": "Mode",
+          "type": "string"
+        },
+        "fsm": {
+          "default": "IDLE",
+          "enum": [
+            "IDLE",
+            "TRACKING",
+            "VERIFY",
+            "COAST",
+            "REACQUIRE",
+            "HOLD"
+          ],
+          "title": "Fsm",
+          "type": "string"
+        },
+        "target_is_sim": {
+          "default": true,
+          "title": "Target Is Sim",
+          "type": "boolean"
+        },
+        "link": {
+          "default": "sim",
+          "enum": [
+            "sim",
+            "real",
+            "none"
+          ],
+          "title": "Link",
+          "type": "string"
+        },
+        "real_flight_allowed": {
+          "default": false,
+          "title": "Real Flight Allowed",
+          "type": "boolean"
+        },
+        "commands_enabled": {
+          "default": false,
+          "title": "Commands Enabled",
+          "type": "boolean"
+        },
+        "primitive": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Primitive"
+        },
+        "primitive_source": {
+          "default": "none",
+          "title": "Primitive Source",
+          "type": "string"
+        },
+        "last_command": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/VStickCommand"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "gimbal_cmd_deg": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Gimbal Cmd Deg"
+        },
+        "safety": {
+          "$ref": "#/$defs/SafetyStatus",
+          "default": {
+            "geofence_ok": true,
+            "geofence_margin_m": null,
+            "altitude_ok": true,
+            "battery_state": "unknown",
+            "link_ok": true,
+            "people_over": false,
+            "clamps": []
+          }
+        },
+        "note": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Note"
+        },
+        "route": {
+          "anyOf": [
+            {
+              "items": {
+                "maxItems": 2,
+                "minItems": 2,
+                "prefixItems": [
+                  {
+                    "type": "number"
+                  },
+                  {
+                    "type": "number"
+                  }
+                ],
+                "type": "array"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Route"
+        },
+        "route_label": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Route Label"
+        }
+      },
+      "title": "AutonomyState",
+      "type": "object"
+    },
+    "CalibrationStatus": {
+      "properties": {
+        "calibration_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Calibration Id"
+        },
+        "source": {
+          "default": "none",
+          "enum": [
+            "markers",
+            "chained",
+            "telemetry",
+            "manual",
+            "none"
+          ],
+          "title": "Source",
+          "type": "string"
+        },
+        "valid": {
+          "default": false,
+          "title": "Valid",
+          "type": "boolean"
+        },
+        "reason": {
+          "default": "not calibrated",
+          "title": "Reason",
+          "type": "string"
+        },
+        "H_img_to_ground": {
+          "anyOf": [
+            {
+              "items": {
+                "items": {
+                  "type": "number"
+                },
+                "type": "array"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "H Img To Ground"
+        },
+        "markers_detected": {
+          "default": 0,
+          "title": "Markers Detected",
+          "type": "integer"
+        },
+        "markers_used": {
+          "default": 0,
+          "title": "Markers Used",
+          "type": "integer"
+        },
+        "holdout_count": {
+          "default": 0,
+          "title": "Holdout Count",
+          "type": "integer"
+        },
+        "holdout_rmse_m": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Holdout Rmse M"
+        },
+        "fit_rmse_m": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Fit Rmse M"
+        },
+        "age_s": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Age S"
+        },
+        "error_bound_m": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Error Bound M"
+        },
+        "markers": {
+          "default": [],
+          "items": {
+            "$ref": "#/$defs/MarkerObservation"
+          },
+          "title": "Markers",
+          "type": "array"
+        },
+        "last_marker_calibration_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Last Marker Calibration Id"
+        }
+      },
+      "title": "CalibrationStatus",
+      "type": "object"
+    },
+    "DecisionStatus": {
+      "properties": {
+        "primary": {
+          "title": "Primary",
+          "type": "string"
+        },
+        "active": {
+          "title": "Active",
+          "type": "string"
+        },
+        "ai_paused": {
+          "default": false,
+          "title": "Ai Paused",
+          "type": "boolean"
+        },
+        "pause_reason": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Pause Reason"
+        },
+        "engines": {
+          "default": [],
+          "items": {
+            "$ref": "#/$defs/EngineStatus"
+          },
+          "title": "Engines",
+          "type": "array"
+        },
+        "calls_total": {
+          "default": 0,
+          "title": "Calls Total",
+          "type": "integer"
+        },
+        "acted_total": {
+          "default": 0,
+          "title": "Acted Total",
+          "type": "integer"
+        },
+        "disagreements": {
+          "default": 0,
+          "title": "Disagreements",
+          "type": "integer"
+        },
+        "mode_label": {
+          "default": "",
+          "title": "Mode Label",
+          "type": "string"
+        },
+        "session": {
+          "default": 0,
+          "title": "Session",
+          "type": "integer"
+        },
+        "session_model_calls": {
+          "default": 0,
+          "title": "Session Model Calls",
+          "type": "integer"
+        },
+        "session_tokens": {
+          "default": 0,
+          "title": "Session Tokens",
+          "type": "integer"
+        },
+        "budget_exhausted": {
+          "default": false,
+          "title": "Budget Exhausted",
+          "type": "boolean"
+        },
+        "dropped_stale": {
+          "default": 0,
+          "title": "Dropped Stale",
+          "type": "integer"
+        },
+        "rejected_invalid": {
+          "default": 0,
+          "title": "Rejected Invalid",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "primary",
+        "active"
+      ],
+      "title": "DecisionStatus",
+      "type": "object"
+    },
+    "DepthSector": {
+      "properties": {
+        "sector": {
+          "enum": [
+            "left",
+            "front_left",
+            "front",
+            "front_right",
+            "right"
+          ],
+          "title": "Sector",
+          "type": "string"
+        },
+        "nearest_m": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Nearest M"
+        },
+        "confidence": {
+          "default": "unknown",
+          "enum": [
+            "high",
+            "medium",
+            "low",
+            "unknown"
+          ],
+          "title": "Confidence",
+          "type": "string"
+        },
+        "num_valid_points": {
+          "default": 0,
+          "title": "Num Valid Points",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "sector"
+      ],
+      "title": "DepthSector",
+      "type": "object"
+    },
+    "DroneState": {
+      "properties": {
+        "position_xy_m": {
+          "anyOf": [
+            {
+              "maxItems": 2,
+              "minItems": 2,
+              "prefixItems": [
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "number"
+                }
+              ],
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Position Xy M"
+        },
+        "alt_m": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Alt M"
+        },
+        "yaw_deg": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Yaw Deg"
+        },
+        "gimbal_pitch_deg": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Gimbal Pitch Deg"
+        },
+        "battery_pct": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Battery Pct"
+        },
+        "velocity_xy_mps": {
+          "anyOf": [
+            {
+              "maxItems": 2,
+              "minItems": 2,
+              "prefixItems": [
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "number"
+                }
+              ],
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Velocity Xy Mps"
+        },
+        "lat": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Lat"
+        },
+        "lon": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Lon"
+        },
+        "flying": {
+          "default": false,
+          "title": "Flying",
+          "type": "boolean"
+        },
+        "vstick_enabled": {
+          "default": false,
+          "title": "Vstick Enabled",
+          "type": "boolean"
+        },
+        "sim": {
+          "default": false,
+          "title": "Sim",
+          "type": "boolean"
+        },
+        "footprint_xy_m": {
+          "anyOf": [
+            {
+              "items": {
+                "maxItems": 2,
+                "minItems": 2,
+                "prefixItems": [
+                  {
+                    "type": "number"
+                  },
+                  {
+                    "type": "number"
+                  }
+                ],
+                "type": "array"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Footprint Xy M"
+        },
+        "telemetry_age_ms": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Telemetry Age Ms"
+        }
+      },
+      "title": "DroneState",
+      "type": "object"
+    },
+    "EngineStatus": {
+      "properties": {
+        "name": {
+          "title": "Name",
+          "type": "string"
+        },
+        "available": {
+          "title": "Available",
+          "type": "boolean"
+        },
+        "mock": {
+          "default": false,
+          "title": "Mock",
+          "type": "boolean"
+        },
+        "detail": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Detail"
+        },
+        "p50_ms": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "P50 Ms"
+        },
+        "p95_ms": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "P95 Ms"
+        },
+        "calls": {
+          "default": 0,
+          "title": "Calls",
+          "type": "integer"
+        },
+        "errors": {
+          "default": 0,
+          "title": "Errors",
+          "type": "integer"
+        },
+        "timeouts": {
+          "default": 0,
+          "title": "Timeouts",
+          "type": "integer"
+        },
+        "refusals": {
+          "default": 0,
+          "title": "Refusals",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "name",
+        "available"
+      ],
+      "title": "EngineStatus",
+      "type": "object"
+    },
+    "Guardrail": {
+      "properties": {
+        "id": {
+          "title": "Id",
+          "type": "string"
+        },
+        "label": {
+          "title": "Label",
+          "type": "string"
+        },
+        "status": {
+          "enum": [
+            "enforced",
+            "active",
+            "warning",
+            "disabled"
+          ],
+          "title": "Status",
+          "type": "string"
+        },
+        "detail": {
+          "default": "",
+          "title": "Detail",
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "label",
+        "status"
+      ],
+      "title": "Guardrail",
+      "type": "object"
+    },
+    "IncidentState": {
+      "properties": {
+        "incident_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Incident Id"
+        },
+        "active": {
+          "default": false,
+          "title": "Active",
+          "type": "boolean"
+        },
+        "recording": {
+          "default": false,
+          "title": "Recording",
+          "type": "boolean"
+        },
+        "started_ts_ms": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Started Ts Ms"
+        },
+        "consent_confirmed": {
+          "default": false,
+          "title": "Consent Confirmed",
+          "type": "boolean"
+        }
+      },
+      "title": "IncidentState",
+      "type": "object"
+    },
+    "LockCandidate": {
+      "properties": {
+        "track_id": {
+          "title": "Track Id",
+          "type": "string"
+        },
+        "similarity": {
+          "title": "Similarity",
+          "type": "number"
+        },
+        "distance_m": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Distance M"
+        }
+      },
+      "required": [
+        "track_id",
+        "similarity"
+      ],
+      "title": "LockCandidate",
+      "type": "object"
+    },
+    "LockState": {
+      "properties": {
+        "role": {
+          "enum": [
+            "subject",
+            "responder"
+          ],
+          "title": "Role",
+          "type": "string"
+        },
+        "state": {
+          "default": "UNLOCKED",
+          "enum": [
+            "UNLOCKED",
+            "LOCKED",
+            "COAST",
+            "REACQUIRE",
+            "UNCERTAIN",
+            "HOLD"
+          ],
+          "title": "State",
+          "type": "string"
+        },
+        "track_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Track Id"
+        },
+        "since_ts_ms": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Since Ts Ms"
+        },
+        "lost_ms": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Lost Ms"
+        },
+        "predicted_xy_m": {
+          "anyOf": [
+            {
+              "maxItems": 2,
+              "minItems": 2,
+              "prefixItems": [
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "number"
+                }
+              ],
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Predicted Xy M"
+        },
+        "search_radius_m": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Search Radius M"
+        },
+        "last_seen_xy_m": {
+          "anyOf": [
+            {
+              "maxItems": 2,
+              "minItems": 2,
+              "prefixItems": [
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "number"
+                }
+              ],
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Last Seen Xy M"
+        },
+        "last_seen_ts_ms": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Last Seen Ts Ms"
+        },
+        "candidates": {
+          "default": [],
+          "items": {
+            "$ref": "#/$defs/LockCandidate"
+          },
+          "title": "Candidates",
+          "type": "array"
+        },
+        "needs_operator_confirm": {
+          "default": false,
+          "title": "Needs Operator Confirm",
+          "type": "boolean"
+        },
+        "verified": {
+          "default": true,
+          "title": "Verified",
+          "type": "boolean"
+        },
+        "rebinds": {
+          "default": 0,
+          "title": "Rebinds",
+          "type": "integer"
+        },
+        "description": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Description"
+        }
+      },
+      "required": [
+        "role"
+      ],
+      "title": "LockState",
+      "type": "object"
+    },
+    "MarkerObservation": {
+      "properties": {
+        "id": {
+          "title": "Id",
+          "type": "integer"
+        },
+        "center_px": {
+          "maxItems": 2,
+          "minItems": 2,
+          "prefixItems": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "number"
+            }
+          ],
+          "title": "Center Px",
+          "type": "array"
+        },
+        "corners_px": {
+          "default": [],
+          "items": {
+            "maxItems": 2,
+            "minItems": 2,
+            "prefixItems": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "number"
+              }
+            ],
+            "type": "array"
+          },
+          "title": "Corners Px",
+          "type": "array"
+        },
+        "world_xy": {
+          "anyOf": [
+            {
+              "maxItems": 2,
+              "minItems": 2,
+              "prefixItems": [
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "number"
+                }
+              ],
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "World Xy"
+        },
+        "used_for_fit": {
+          "default": false,
+          "title": "Used For Fit",
+          "type": "boolean"
+        },
+        "holdout": {
+          "default": false,
+          "title": "Holdout",
+          "type": "boolean"
+        },
+        "error_m": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Error M"
+        }
+      },
+      "required": [
+        "id",
+        "center_px"
+      ],
+      "title": "MarkerObservation",
+      "type": "object"
+    },
+    "MetricsSnapshot": {
+      "properties": {
+        "counters": {
+          "additionalProperties": {
+            "type": "number"
+          },
+          "default": {},
+          "title": "Counters",
+          "type": "object"
+        },
+        "latencies": {
+          "additionalProperties": {
+            "additionalProperties": {
+              "anyOf": [
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "type": "object"
+          },
+          "default": {},
+          "title": "Latencies",
+          "type": "object"
+        },
+        "rates": {
+          "additionalProperties": {
+            "type": "number"
+          },
+          "default": {},
+          "title": "Rates",
+          "type": "object"
+        }
+      },
+      "title": "MetricsSnapshot",
+      "type": "object"
+    },
+    "PhoneSummary": {
+      "properties": {
+        "connected": {
+          "default": false,
+          "title": "Connected",
+          "type": "boolean"
+        },
+        "provenance": {
+          "anyOf": [
+            {
+              "enum": [
+                "LIVE",
+                "RECORDED",
+                "SYNTHETIC"
+              ],
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Provenance"
+        },
+        "tracking_state": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Tracking State"
+        },
+        "lidar_supported": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Lidar Supported"
+        },
+        "depth_valid_fraction": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Depth Valid Fraction"
+        },
+        "sectors": {
+          "default": [],
+          "items": {
+            "$ref": "#/$defs/DepthSector"
+          },
+          "title": "Sectors",
+          "type": "array"
+        },
+        "nearest_m": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Nearest M"
+        },
+        "nearest_sector": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Nearest Sector"
+        },
+        "local_alert_active": {
+          "default": false,
+          "title": "Local Alert Active",
+          "type": "boolean"
+        },
+        "heading_deg": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Heading Deg"
+        },
+        "heading_accuracy_deg": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Heading Accuracy Deg"
+        },
+        "age_ms": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Age Ms"
+        },
+        "frustum_xy_m": {
+          "anyOf": [
+            {
+              "items": {
+                "maxItems": 2,
+                "minItems": 2,
+                "prefixItems": [
+                  {
+                    "type": "number"
+                  },
+                  {
+                    "type": "number"
+                  }
+                ],
+                "type": "array"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Frustum Xy M"
+        }
+      },
+      "title": "PhoneSummary",
+      "type": "object"
+    },
+    "RegistrationStatus": {
+      "properties": {
+        "method": {
+          "default": "none",
+          "enum": [
+            "auto_trajectory",
+            "compass_point",
+            "manual_two_point",
+            "none"
+          ],
+          "title": "Method",
+          "type": "string"
+        },
+        "valid": {
+          "default": false,
+          "title": "Valid",
+          "type": "boolean"
+        },
+        "confidence": {
+          "default": "none",
+          "enum": [
+            "high",
+            "medium",
+            "low",
+            "none"
+          ],
+          "title": "Confidence",
+          "type": "string"
+        },
+        "residual_m": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Residual M"
+        },
+        "pairs": {
+          "default": 0,
+          "title": "Pairs",
+          "type": "integer"
+        },
+        "yaw_deg": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Yaw Deg"
+        },
+        "translation_m": {
+          "anyOf": [
+            {
+              "maxItems": 2,
+              "minItems": 2,
+              "prefixItems": [
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "number"
+                }
+              ],
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Translation M"
+        },
+        "reason": {
+          "default": "phone frame not registered to the local map",
+          "title": "Reason",
+          "type": "string"
+        }
+      },
+      "title": "RegistrationStatus",
+      "type": "object"
+    },
+    "RelativeKinematics": {
+      "properties": {
+        "valid": {
+          "default": false,
+          "title": "Valid",
+          "type": "boolean"
+        },
+        "reason": {
+          "default": "no subject lock",
+          "title": "Reason",
+          "type": "string"
+        },
+        "range_m": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Range M"
+        },
+        "range_error_m": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Range Error M"
+        },
+        "bearing_rel_deg": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Bearing Rel Deg"
+        },
+        "bearing_abs_deg": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Bearing Abs Deg"
+        },
+        "clock": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Clock"
+        },
+        "closing_mps": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Closing Mps"
+        },
+        "ttc_s": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Ttc S"
+        },
+        "alignment_cos": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Alignment Cos"
+        },
+        "subject_speed_mps": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Subject Speed Mps"
+        },
+        "subject_heading_deg": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Subject Heading Deg"
+        },
+        "subject_accel_mps2": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Subject Accel Mps2"
+        },
+        "predicted_path_xy_m": {
+          "default": [],
+          "items": {
+            "maxItems": 2,
+            "minItems": 2,
+            "prefixItems": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "number"
+              }
+            ],
+            "type": "array"
+          },
+          "title": "Predicted Path Xy M",
+          "type": "array"
+        }
+      },
+      "title": "RelativeKinematics",
+      "type": "object"
+    },
+    "ResponderState": {
+      "properties": {
+        "position_xy_m": {
+          "anyOf": [
+            {
+              "maxItems": 2,
+              "minItems": 2,
+              "prefixItems": [
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "number"
+                }
+              ],
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Position Xy M"
+        },
+        "position_source": {
+          "default": "none",
+          "enum": [
+            "drone_lock",
+            "arkit_registered",
+            "gps",
+            "none"
+          ],
+          "title": "Position Source",
+          "type": "string"
+        },
+        "position_error_m": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Position Error M"
+        },
+        "heading_deg": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Heading Deg"
+        },
+        "heading_source": {
+          "default": "none",
+          "enum": [
+            "head_yaw",
+            "compass",
+            "arkit",
+            "motion",
+            "none"
+          ],
+          "title": "Heading Source",
+          "type": "string"
+        },
+        "heading_valid": {
+          "default": false,
+          "title": "Heading Valid",
+          "type": "boolean"
+        },
+        "track_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Track Id"
+        },
+        "lat": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Lat"
+        },
+        "lon": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Lon"
+        }
+      },
+      "title": "ResponderState",
+      "type": "object"
+    },
+    "SafetyStatus": {
+      "properties": {
+        "geofence_ok": {
+          "default": true,
+          "title": "Geofence Ok",
+          "type": "boolean"
+        },
+        "geofence_margin_m": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Geofence Margin M"
+        },
+        "altitude_ok": {
+          "default": true,
+          "title": "Altitude Ok",
+          "type": "boolean"
+        },
+        "battery_state": {
+          "default": "unknown",
+          "enum": [
+            "ok",
+            "warn",
+            "rtl",
+            "unknown"
+          ],
+          "title": "Battery State",
+          "type": "string"
+        },
+        "link_ok": {
+          "default": true,
+          "title": "Link Ok",
+          "type": "boolean"
+        },
+        "people_over": {
+          "default": false,
+          "title": "People Over",
+          "type": "boolean"
+        },
+        "clamps": {
+          "default": [],
+          "items": {
+            "type": "string"
+          },
+          "title": "Clamps",
+          "type": "array"
+        }
+      },
+      "title": "SafetyStatus",
+      "type": "object"
+    },
+    "SimStatus": {
+      "properties": {
+        "scenario": {
+          "title": "Scenario",
+          "type": "string"
+        },
+        "scenario_name": {
+          "title": "Scenario Name",
+          "type": "string"
+        },
+        "t_s": {
+          "title": "T S",
+          "type": "number"
+        },
+        "duration_s": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Duration S"
+        },
+        "speed": {
+          "default": 1.0,
+          "title": "Speed",
+          "type": "number"
+        },
+        "paused": {
+          "default": false,
+          "title": "Paused",
+          "type": "boolean"
+        },
+        "faults": {
+          "additionalProperties": true,
+          "default": {},
+          "title": "Faults",
+          "type": "object"
+        },
+        "gt_available": {
+          "default": true,
+          "title": "Gt Available",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "scenario",
+        "scenario_name",
+        "t_s"
+      ],
+      "title": "SimStatus",
+      "type": "object"
+    },
+    "SourceHealth": {
+      "properties": {
+        "source_id": {
+          "title": "Source Id",
+          "type": "string"
+        },
+        "kind": {
+          "enum": [
+            "drone",
+            "phone",
+            "telemetry",
+            "detector",
+            "calibration",
+            "decisions",
+            "bridge"
+          ],
+          "title": "Kind",
+          "type": "string"
+        },
+        "status": {
+          "enum": [
+            "OK",
+            "STALE",
+            "OFFLINE",
+            "DEGRADED",
+            "NOT_CONFIGURED",
+            "PAUSED"
+          ],
+          "title": "Status",
+          "type": "string"
+        },
+        "provenance": {
+          "anyOf": [
+            {
+              "enum": [
+                "LIVE",
+                "RECORDED",
+                "SYNTHETIC"
+              ],
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Provenance"
+        },
+        "last_age_ms": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Last Age Ms"
+        },
+        "fps": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Fps"
+        },
+        "received": {
+          "default": 0,
+          "title": "Received",
+          "type": "integer"
+        },
+        "processed": {
+          "default": 0,
+          "title": "Processed",
+          "type": "integer"
+        },
+        "dropped": {
+          "default": 0,
+          "title": "Dropped",
+          "type": "integer"
+        },
+        "reconnects": {
+          "default": 0,
+          "title": "Reconnects",
+          "type": "integer"
+        },
+        "detail": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Detail"
+        }
+      },
+      "required": [
+        "source_id",
+        "kind",
+        "status"
+      ],
+      "title": "SourceHealth",
+      "type": "object"
+    },
+    "Track": {
+      "properties": {
+        "track_id": {
+          "title": "Track Id",
+          "type": "string"
+        },
+        "class_name": {
+          "title": "Class Name",
+          "type": "string"
+        },
+        "confidence": {
+          "title": "Confidence",
+          "type": "number"
+        },
+        "state": {
+          "enum": [
+            "TENTATIVE",
+            "CONFIRMED",
+            "LOST",
+            "EXPIRED"
+          ],
+          "title": "State",
+          "type": "string"
+        },
+        "visibility": {
+          "enum": [
+            "visible",
+            "occluded",
+            "lost"
+          ],
+          "title": "Visibility",
+          "type": "string"
+        },
+        "source": {
+          "default": "drone",
+          "enum": [
+            "drone",
+            "phone"
+          ],
+          "title": "Source",
+          "type": "string"
+        },
+        "model_id": {
+          "title": "Model Id",
+          "type": "string"
+        },
+        "box_xyxy_px": {
+          "anyOf": [
+            {
+              "maxItems": 4,
+              "minItems": 4,
+              "prefixItems": [
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "number"
+                }
+              ],
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Box Xyxy Px"
+        },
+        "first_seen_ts_ms": {
+          "title": "First Seen Ts Ms",
+          "type": "number"
+        },
+        "last_seen_ts_ms": {
+          "title": "Last Seen Ts Ms",
+          "type": "number"
+        },
+        "hits": {
+          "title": "Hits",
+          "type": "integer"
+        },
+        "ground_xy_m": {
+          "anyOf": [
+            {
+              "maxItems": 2,
+              "minItems": 2,
+              "prefixItems": [
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "number"
+                }
+              ],
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Ground Xy M"
+        },
+        "ground_error_m": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Ground Error M"
+        },
+        "velocity_xy_mps": {
+          "anyOf": [
+            {
+              "maxItems": 2,
+              "minItems": 2,
+              "prefixItems": [
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "number"
+                }
+              ],
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Velocity Xy Mps"
+        },
+        "speed_mps": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Speed Mps"
+        },
+        "heading_deg": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Heading Deg"
+        },
+        "velocity_valid": {
+          "default": false,
+          "title": "Velocity Valid",
+          "type": "boolean"
+        },
+        "calibration_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Calibration Id"
+        },
+        "lat": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Lat"
+        },
+        "lon": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Lon"
+        },
+        "role": {
+          "anyOf": [
+            {
+              "enum": [
+                "subject",
+                "responder"
+              ],
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Role"
+        },
+        "trail": {
+          "default": [],
+          "items": {
+            "maxItems": 3,
+            "minItems": 3,
+            "prefixItems": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "number"
+              },
+              {
+                "type": "number"
+              }
+            ],
+            "type": "array"
+          },
+          "title": "Trail",
+          "type": "array"
+        }
+      },
+      "required": [
+        "track_id",
+        "class_name",
+        "confidence",
+        "state",
+        "visibility",
+        "model_id",
+        "first_seen_ts_ms",
+        "last_seen_ts_ms",
+        "hits"
+      ],
+      "title": "Track",
+      "type": "object"
+    },
+    "VStickCommand": {
+      "properties": {
+        "type": {
+          "const": "vstick",
+          "default": "vstick",
+          "title": "Type",
+          "type": "string"
+        },
+        "seq": {
+          "default": 0,
+          "title": "Seq",
+          "type": "integer"
+        },
+        "ts_ms": {
+          "default": 0.0,
+          "title": "Ts Ms",
+          "type": "number"
+        },
+        "forward_mps": {
+          "default": 0.0,
+          "title": "Forward Mps",
+          "type": "number"
+        },
+        "right_mps": {
+          "default": 0.0,
+          "title": "Right Mps",
+          "type": "number"
+        },
+        "up_mps": {
+          "default": 0.0,
+          "title": "Up Mps",
+          "type": "number"
+        },
+        "yaw_rate_dps": {
+          "default": 0.0,
+          "title": "Yaw Rate Dps",
+          "type": "number"
+        },
+        "ttl_ms": {
+          "default": 300.0,
+          "title": "Ttl Ms",
+          "type": "number"
+        }
+      },
+      "title": "VStickCommand",
+      "type": "object"
+    },
+    "Zone": {
+      "properties": {
+        "zone_id": {
+          "title": "Zone Id",
+          "type": "string"
+        },
+        "name": {
+          "title": "Name",
+          "type": "string"
+        },
+        "polygon_xy_m": {
+          "items": {
+            "maxItems": 2,
+            "minItems": 2,
+            "prefixItems": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "number"
+              }
+            ],
+            "type": "array"
+          },
+          "title": "Polygon Xy M",
+          "type": "array"
+        },
+        "kind": {
+          "default": "task",
+          "enum": [
+            "task",
+            "geofence",
+            "keep_out"
+          ],
+          "title": "Kind",
+          "type": "string"
+        }
+      },
+      "required": [
+        "zone_id",
+        "name",
+        "polygon_xy_m"
+      ],
+      "title": "Zone",
+      "type": "object"
+    }
+  },
+  "properties": {
+    "schema_version": {
+      "default": "1.0",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "type": {
+      "const": "state",
+      "default": "state",
+      "title": "Type",
+      "type": "string"
+    },
+    "session_id": {
+      "title": "Session Id",
+      "type": "string"
+    },
+    "seq": {
+      "title": "Seq",
+      "type": "integer"
+    },
+    "server_ts_ms": {
+      "title": "Server Ts Ms",
+      "type": "number"
+    },
+    "mode": {
+      "enum": [
+        "SIMULATED",
+        "LIVE",
+        "REPLAY"
+      ],
+      "title": "Mode",
+      "type": "string"
+    },
+    "provenance": {
+      "enum": [
+        "LIVE",
+        "RECORDED",
+        "SYNTHETIC"
+      ],
+      "title": "Provenance",
+      "type": "string"
+    },
+    "mission_profile": {
+      "title": "Mission Profile",
+      "type": "string"
+    },
+    "map_mode": {
+      "enum": [
+        "REGISTERED_METRIC",
+        "DRONE_LOCAL",
+        "PHONE_ONLY",
+        "UNCALIBRATED"
+      ],
+      "title": "Map Mode",
+      "type": "string"
+    },
+    "sources": {
+      "default": [],
+      "items": {
+        "$ref": "#/$defs/SourceHealth"
+      },
+      "title": "Sources",
+      "type": "array"
+    },
+    "calibration": {
+      "$ref": "#/$defs/CalibrationStatus",
+      "default": {
+        "calibration_id": null,
+        "source": "none",
+        "valid": false,
+        "reason": "not calibrated",
+        "H_img_to_ground": null,
+        "markers_detected": 0,
+        "markers_used": 0,
+        "holdout_count": 0,
+        "holdout_rmse_m": null,
+        "fit_rmse_m": null,
+        "age_s": null,
+        "error_bound_m": null,
+        "markers": [],
+        "last_marker_calibration_id": null
+      }
+    },
+    "registration": {
+      "$ref": "#/$defs/RegistrationStatus",
+      "default": {
+        "method": "none",
+        "valid": false,
+        "confidence": "none",
+        "residual_m": null,
+        "pairs": 0,
+        "yaw_deg": null,
+        "translation_m": null,
+        "reason": "phone frame not registered to the local map"
+      }
+    },
+    "drone": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/DroneState"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    },
+    "phone": {
+      "$ref": "#/$defs/PhoneSummary",
+      "default": {
+        "connected": false,
+        "provenance": null,
+        "tracking_state": null,
+        "lidar_supported": null,
+        "depth_valid_fraction": null,
+        "sectors": [],
+        "nearest_m": null,
+        "nearest_sector": null,
+        "local_alert_active": false,
+        "heading_deg": null,
+        "heading_accuracy_deg": null,
+        "age_ms": null,
+        "frustum_xy_m": null
+      }
+    },
+    "responder": {
+      "$ref": "#/$defs/ResponderState",
+      "default": {
+        "position_xy_m": null,
+        "position_source": "none",
+        "position_error_m": null,
+        "heading_deg": null,
+        "heading_source": "none",
+        "heading_valid": false,
+        "track_id": null,
+        "lat": null,
+        "lon": null
+      }
+    },
+    "tracks": {
+      "default": [],
+      "items": {
+        "$ref": "#/$defs/Track"
+      },
+      "title": "Tracks",
+      "type": "array"
+    },
+    "selected_track_id": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Selected Track Id"
+    },
+    "locks": {
+      "additionalProperties": {
+        "$ref": "#/$defs/LockState"
+      },
+      "default": {},
+      "title": "Locks",
+      "type": "object"
+    },
+    "memory": {
+      "default": [],
+      "items": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "title": "Memory",
+      "type": "array"
+    },
+    "kinematics": {
+      "$ref": "#/$defs/RelativeKinematics",
+      "default": {
+        "valid": false,
+        "reason": "no subject lock",
+        "range_m": null,
+        "range_error_m": null,
+        "bearing_rel_deg": null,
+        "bearing_abs_deg": null,
+        "clock": null,
+        "closing_mps": null,
+        "ttc_s": null,
+        "alignment_cos": null,
+        "subject_speed_mps": null,
+        "subject_heading_deg": null,
+        "subject_accel_mps2": null,
+        "predicted_path_xy_m": []
+      }
+    },
+    "obstacles": {
+      "default": [],
+      "items": {
+        "maxItems": 3,
+        "minItems": 3,
+        "prefixItems": [
+          {
+            "type": "number"
+          },
+          {
+            "type": "number"
+          },
+          {
+            "type": "number"
+          }
+        ],
+        "type": "array"
+      },
+      "title": "Obstacles",
+      "type": "array"
+    },
+    "zones": {
+      "default": [],
+      "items": {
+        "$ref": "#/$defs/Zone"
+      },
+      "title": "Zones",
+      "type": "array"
+    },
+    "geofence": {
+      "default": [],
+      "items": {
+        "maxItems": 2,
+        "minItems": 2,
+        "prefixItems": [
+          {
+            "type": "number"
+          },
+          {
+            "type": "number"
+          }
+        ],
+        "type": "array"
+      },
+      "title": "Geofence",
+      "type": "array"
+    },
+    "autonomy": {
+      "$ref": "#/$defs/AutonomyState",
+      "default": {
+        "mode": "MANUAL",
+        "fsm": "IDLE",
+        "target_is_sim": true,
+        "link": "sim",
+        "real_flight_allowed": false,
+        "commands_enabled": false,
+        "primitive": null,
+        "primitive_source": "none",
+        "last_command": null,
+        "gimbal_cmd_deg": null,
+        "safety": {
+          "altitude_ok": true,
+          "battery_state": "unknown",
+          "clamps": [],
+          "geofence_margin_m": null,
+          "geofence_ok": true,
+          "link_ok": true,
+          "people_over": false
+        },
+        "note": null,
+        "route": null,
+        "route_label": null
+      }
+    },
+    "decisions": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/DecisionStatus"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    },
+    "alerts_active": {
+      "default": [],
+      "items": {
+        "$ref": "#/$defs/Alert"
+      },
+      "title": "Alerts Active",
+      "type": "array"
+    },
+    "metrics": {
+      "$ref": "#/$defs/MetricsSnapshot",
+      "default": {
+        "counters": {},
+        "latencies": {},
+        "rates": {}
+      }
+    },
+    "sim": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/SimStatus"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    },
+    "incident": {
+      "$ref": "#/$defs/IncidentState",
+      "default": {
+        "incident_id": null,
+        "active": false,
+        "recording": false,
+        "started_ts_ms": null,
+        "consent_confirmed": false
+      }
+    },
+    "guardrails": {
+      "default": [],
+      "items": {
+        "$ref": "#/$defs/Guardrail"
+      },
+      "title": "Guardrails",
+      "type": "array"
+    },
+    "notices": {
+      "default": [],
+      "items": {
+        "type": "string"
+      },
+      "title": "Notices",
+      "type": "array"
+    },
+    "narration": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Narration"
+    }
+  },
+  "required": [
+    "session_id",
+    "seq",
+    "server_ts_ms",
+    "mode",
+    "provenance",
+    "mission_profile",
+    "map_mode"
+  ],
+  "title": "WorldState",
+  "type": "object"
+}

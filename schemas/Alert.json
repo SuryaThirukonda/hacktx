@@ -1,0 +1,196 @@
+{
+  "properties": {
+    "schema_version": {
+      "default": "1.0",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "type": {
+      "const": "alert",
+      "default": "alert",
+      "title": "Type",
+      "type": "string"
+    },
+    "alert_id": {
+      "title": "Alert Id",
+      "type": "string"
+    },
+    "kind": {
+      "title": "Kind",
+      "type": "string"
+    },
+    "severity": {
+      "enum": [
+        "info",
+        "attention",
+        "warning",
+        "critical",
+        "sensor_fault",
+        "local_proximity"
+      ],
+      "title": "Severity",
+      "type": "string"
+    },
+    "ts_ms": {
+      "title": "Ts Ms",
+      "type": "number"
+    },
+    "expires_ts_ms": {
+      "title": "Expires Ts Ms",
+      "type": "number"
+    },
+    "text": {
+      "title": "Text",
+      "type": "string"
+    },
+    "spoken_text": {
+      "title": "Spoken Text",
+      "type": "string"
+    },
+    "bearing_rel_deg": {
+      "anyOf": [
+        {
+          "type": "number"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Bearing Rel Deg"
+    },
+    "clock": {
+      "anyOf": [
+        {
+          "type": "integer"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Clock"
+    },
+    "range_m": {
+      "anyOf": [
+        {
+          "type": "number"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Range M"
+    },
+    "closing_mps": {
+      "anyOf": [
+        {
+          "type": "number"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Closing Mps"
+    },
+    "ttc_s": {
+      "anyOf": [
+        {
+          "type": "number"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Ttc S"
+    },
+    "haptic": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Haptic"
+    },
+    "delivery": {
+      "default": [
+        "dashboard"
+      ],
+      "items": {
+        "type": "string"
+      },
+      "title": "Delivery",
+      "type": "array"
+    },
+    "message_source": {
+      "default": "rules",
+      "title": "Message Source",
+      "type": "string"
+    },
+    "evidence_event_ids": {
+      "default": [],
+      "items": {
+        "type": "string"
+      },
+      "title": "Evidence Event Ids",
+      "type": "array"
+    },
+    "decision_id": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Decision Id"
+    },
+    "ack_required": {
+      "default": false,
+      "title": "Ack Required",
+      "type": "boolean"
+    },
+    "acked": {
+      "default": false,
+      "title": "Acked",
+      "type": "boolean"
+    },
+    "acked_ts_ms": {
+      "anyOf": [
+        {
+          "type": "number"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Acked Ts Ms"
+    },
+    "can_read_as_confirmed_location": {
+      "default": false,
+      "title": "Can Read As Confirmed Location",
+      "type": "boolean"
+    }
+  },
+  "required": [
+    "alert_id",
+    "kind",
+    "severity",
+    "ts_ms",
+    "expires_ts_ms",
+    "text",
+    "spoken_text"
+  ],
+  "title": "Alert",
+  "type": "object"
+}

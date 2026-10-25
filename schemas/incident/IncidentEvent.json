@@ -1,0 +1,34 @@
+{
+  "description": "One entry of the append-only incident log (enough to replay the incident).",
+  "properties": {
+    "seq": {
+      "default": 0,
+      "title": "Seq",
+      "type": "integer"
+    },
+    "incident_id": {
+      "title": "Incident Id",
+      "type": "string"
+    },
+    "at": {
+      "format": "date-time",
+      "title": "At",
+      "type": "string"
+    },
+    "kind": {
+      "title": "Kind",
+      "type": "string"
+    },
+    "payload": {
+      "additionalProperties": true,
+      "title": "Payload",
+      "type": "object"
+    }
+  },
+  "required": [
+    "incident_id",
+    "kind"
+  ],
+  "title": "IncidentEvent",
+  "type": "object"
+}

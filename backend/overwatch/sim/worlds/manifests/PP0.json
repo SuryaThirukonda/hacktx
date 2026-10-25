@@ -1,0 +1,38 @@
+{
+  "scenario": "PP0",
+  "title": "A person runs, the drone follows",
+  "problem_line": "Launch from the station, find a person in a red shirt and jeans by their clothing words, and keep them in view without a pilot.",
+  "beats": [
+    {
+      "t": 0,
+      "caption": "The drone waits on the station's pad. The request: red shirt, jeans, last seen on Main Street.",
+      "highlight_entity": "box:station-pad",
+      "camera_preset": "overview"
+    },
+    {
+      "t": 3,
+      "caption": "Dispatch: take off, fly to the area, fly search legs.",
+      "highlight_entity": "route",
+      "camera_preset": "chase"
+    },
+    {
+      "t": 40,
+      "caption": "People seen on the way are compared by clothing colour words only. Never a face.",
+      "highlight_entity": "actor:subject",
+      "camera_preset": "chase"
+    },
+    {
+      "t": 72,
+      "caption": "The person starts to jog east, then north up Oak Street. The drone keeps them in frame on its own.",
+      "highlight_entity": "actor:subject",
+      "camera_preset": "chase"
+    },
+    {
+      "t": 110,
+      "caption": "Round the corner onto North Road: still in view, position reported from the pad.",
+      "highlight_entity": "actor:subject",
+      "camera_preset": "top"
+    }
+  ],
+  "success_line": "Matched by clothing, followed round two corners, never on anyone else."
+}

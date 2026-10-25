@@ -1,0 +1,30 @@
+{
+  "properties": {
+    "lat": {
+      "title": "Lat",
+      "type": "number"
+    },
+    "lon": {
+      "title": "Lon",
+      "type": "number"
+    },
+    "accuracy_m": {
+      "anyOf": [
+        {
+          "type": "number"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Accuracy M"
+    }
+  },
+  "required": [
+    "lat",
+    "lon"
+  ],
+  "title": "GPSFix",
+  "type": "object"
+}

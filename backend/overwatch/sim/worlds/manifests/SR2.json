@@ -1,0 +1,26 @@
+{
+  "scenario": "SR2",
+  "title": "Search: decoys along the sweep",
+  "problem_line": "Two objects that look like people lie along the sweep. Only a person decides what is real.",
+  "beats": [
+    {
+      "t": 0,
+      "caption": "A lawnmower sweep over the sector, camera straight down.",
+      "highlight_entity": "route",
+      "camera_preset": "top"
+    },
+    {
+      "t": 25,
+      "caption": "Each candidate is flagged once and grouped with its re-sightings; the decoys too.",
+      "highlight_entity": "actor:lost",
+      "camera_preset": "top"
+    },
+    {
+      "t": 60,
+      "caption": "The review queue holds the lost person and exactly the two planted decoys, all pending.",
+      "highlight_entity": "actor:lost",
+      "camera_preset": "overview"
+    }
+  ],
+  "success_line": "The lost person is found; the two decoys are candidates for review, never confirmations."
+}

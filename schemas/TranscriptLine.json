@@ -1,0 +1,41 @@
+{
+  "properties": {
+    "type": {
+      "const": "transcript",
+      "default": "transcript",
+      "title": "Type",
+      "type": "string"
+    },
+    "ts_ms": {
+      "title": "Ts Ms",
+      "type": "number"
+    },
+    "text": {
+      "title": "Text",
+      "type": "string"
+    },
+    "source": {
+      "title": "Source",
+      "type": "string"
+    },
+    "alert_id": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Alert Id"
+    }
+  },
+  "required": [
+    "ts_ms",
+    "text",
+    "source"
+  ],
+  "title": "TranscriptLine",
+  "type": "object"
+}

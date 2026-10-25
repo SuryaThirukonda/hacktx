@@ -1,0 +1,259 @@
+{
+  "properties": {
+    "track_id": {
+      "title": "Track Id",
+      "type": "string"
+    },
+    "class_name": {
+      "title": "Class Name",
+      "type": "string"
+    },
+    "confidence": {
+      "title": "Confidence",
+      "type": "number"
+    },
+    "state": {
+      "enum": [
+        "TENTATIVE",
+        "CONFIRMED",
+        "LOST",
+        "EXPIRED"
+      ],
+      "title": "State",
+      "type": "string"
+    },
+    "visibility": {
+      "enum": [
+        "visible",
+        "occluded",
+        "lost"
+      ],
+      "title": "Visibility",
+      "type": "string"
+    },
+    "source": {
+      "default": "drone",
+      "enum": [
+        "drone",
+        "phone"
+      ],
+      "title": "Source",
+      "type": "string"
+    },
+    "model_id": {
+      "title": "Model Id",
+      "type": "string"
+    },
+    "box_xyxy_px": {
+      "anyOf": [
+        {
+          "maxItems": 4,
+          "minItems": 4,
+          "prefixItems": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "number"
+            },
+            {
+              "type": "number"
+            },
+            {
+              "type": "number"
+            }
+          ],
+          "type": "array"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Box Xyxy Px"
+    },
+    "first_seen_ts_ms": {
+      "title": "First Seen Ts Ms",
+      "type": "number"
+    },
+    "last_seen_ts_ms": {
+      "title": "Last Seen Ts Ms",
+      "type": "number"
+    },
+    "hits": {
+      "title": "Hits",
+      "type": "integer"
+    },
+    "ground_xy_m": {
+      "anyOf": [
+        {
+          "maxItems": 2,
+          "minItems": 2,
+          "prefixItems": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "number"
+            }
+          ],
+          "type": "array"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Ground Xy M"
+    },
+    "ground_error_m": {
+      "anyOf": [
+        {
+          "type": "number"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Ground Error M"
+    },
+    "velocity_xy_mps": {
+      "anyOf": [
+        {
+          "maxItems": 2,
+          "minItems": 2,
+          "prefixItems": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "number"
+            }
+          ],
+          "type": "array"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Velocity Xy Mps"
+    },
+    "speed_mps": {
+      "anyOf": [
+        {
+          "type": "number"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Speed Mps"
+    },
+    "heading_deg": {
+      "anyOf": [
+        {
+          "type": "number"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Heading Deg"
+    },
+    "velocity_valid": {
+      "default": false,
+      "title": "Velocity Valid",
+      "type": "boolean"
+    },
+    "calibration_id": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Calibration Id"
+    },
+    "lat": {
+      "anyOf": [
+        {
+          "type": "number"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Lat"
+    },
+    "lon": {
+      "anyOf": [
+        {
+          "type": "number"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Lon"
+    },
+    "role": {
+      "anyOf": [
+        {
+          "enum": [
+            "subject",
+            "responder"
+          ],
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Role"
+    },
+    "trail": {
+      "default": [],
+      "items": {
+        "maxItems": 3,
+        "minItems": 3,
+        "prefixItems": [
+          {
+            "type": "number"
+          },
+          {
+            "type": "number"
+          },
+          {
+            "type": "number"
+          }
+        ],
+        "type": "array"
+      },
+      "title": "Trail",
+      "type": "array"
+    }
+  },
+  "required": [
+    "track_id",
+    "class_name",
+    "confidence",
+    "state",
+    "visibility",
+    "model_id",
+    "first_seen_ts_ms",
+    "last_seen_ts_ms",
+    "hits"
+  ],
+  "title": "Track",
+  "type": "object"
+}

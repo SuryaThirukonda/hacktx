@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>test12 · Police drone dispatch</title>
+  <link rel="stylesheet" href="/test12/style.css" />
+</head>
+<body>
+  <header class="top">
+    <div class="brand">
+      <span class="logo" aria-hidden="true">◆</span>
+      <strong>OVERWATCH</strong>
+      <span class="sub">test12 · police drone dispatch</span>
+      <span class="badge sim">SIMULATED</span>
+    </div>
+    <a class="link" href="/">← simulation demo</a>
+  </header>
+
+  <section class="controls">
+    <button id="start" class="primary" type="button">▶ Start simulation</button>
+    <label class="seed">seed <input id="seed" type="number" min="1" placeholder="random" inputmode="numeric" /></label>
+    <span class="chip" id="spawn-chip" title="Click the map to choose where the suspect starts">Suspect start:
+      <b id="spawn-text">random</b> <button id="spawn-clear" type="button" class="mini" hidden>✕</button></span>
+    <button id="stop" type="button" disabled>■ Stop</button>
+    <label class="voice"><input type="checkbox" id="voice" checked /> 🔊 Voice callouts <span class="muted" id="voice-note"></span></label>
+    <div class="status" id="status">Idle. Press Start: a crime is reported and the drone is dispatched. Click the map
+      to choose where the suspect starts.</div>
+  </section>
+
+  <main class="grid">
+    <section class="card camera">
+      <div class="card-h"><span id="cam-title">Drone camera</span>
+        <span class="views" role="group" aria-label="Camera view">
+          <button type="button" data-view="drone" class="on">Drone camera</button>
+          <button type="button" data-view="chase">Third person</button>
+          <button type="button" data-view="top">Bird's-eye</button>
+        </span>
+        <span class="muted" id="cam-note">DJI Mini 2 (simulated) · 720p 30 fps · YOLO26n at 5 Hz</span></div>
+      <div class="video"><img id="video" src="/api/test12/stream.mjpg" alt="Simulated drone camera with detections drawn over it" /></div>
+      <ol class="steps" id="steps">
+        <li data-p="REPORTED">911 call</li>
+        <li data-p="TAKEOFF">Take-off</li>
+        <li data-p="SEARCH">Search</li>
+        <li data-p="FOLLOW">Follow</li>
+        <li data-p="POLICE">Police en route</li>
+        <li data-p="SCENE">Police on scene</li>
+      </ol>
+    </section>
+
+    <section class="card map">
+      <div class="card-h"><span>Map <span class="muted">(metres from the base)</span></span>
+        <span class="toggles">
+          <label><input type="checkbox" id="t-belief" checked /> where they could be</label>
+          <label><input type="checkbox" id="t-survey" checked /> surveyed</label>
+          <label><input type="checkbox" id="t-truth" checked /> truth (sim)</label>
+        </span>
+      </div>
+      <div class="canvas-wrap"><canvas id="map" aria-label="Map of the search"></canvas></div>
+      <div class="legend">
+        <span><i class="sw drone"></i>drone and its camera's view</span>
+        <span><i class="sw survey"></i>ground seen (fades with time)</span>
+        <span><i class="sw belief"></i>where the suspect could be</span>
+        <span><i class="sw report"></i>reports to police</span>
+        <span><i class="sw police"></i>police car, its ping and the latest callout</span>
+        <span><i class="sw scan"></i>360° scan (what it sees all round)</span>
+        <span><i class="sw spawn"></i>where the suspect starts (picked)</span>
+        <span><i class="sw truth"></i>true position (simulator only)</span>
+      </div>
+    </section>
+
+    <section class="card report">
+      <div class="card-h"><span>Report to police</span><span class="muted" id="rep-t"></span></div>
+      <div id="callout" class="callout" hidden></div>
+      <div id="report" class="report-body"><p class="muted">No position yet. The drone reports once its camera has
+        found the person in the red shirt.</p></div>
+      <div id="police" class="police muted">Police car: parked at the station.</div>
+    </section>
+
+    <section class="card events">
+      <div class="card-h"><span>What happened</span><span class="muted" id="ev-n"></span></div>
+      <ol id="events" class="ev"></ol>
+    </section>
+
+    <section class="card summary" id="summary-card" hidden>
+      <div class="card-h"><span>Run summary</span><span class="muted">scored against the simulator's ground truth</span></div>
+      <div id="summary" class="summary-grid"></div>
+    </section>
+  </main>
+  <footer class="foot muted">Everything on this page is simulated: the map, the people, the aircraft and the camera.
+    People are found by the pretrained COCO YOLO26n model plus a shirt-colour check; the police car by its red and blue
+    light bar (classical colour detection). The drone's positions are dead reckoning from the drone pad, never GPS; the
+    police car pings its own position every second and the callouts say where the suspect is from it. Callouts are
+    spoken with ElevenLabs (the browser's own voice if that is not available). The third-person and bird's-eye views
+    are simulator cameras for watching; the drone only uses its own.</footer>
+  <script src="/test12/app.js"></script>
+</body>
+</html>

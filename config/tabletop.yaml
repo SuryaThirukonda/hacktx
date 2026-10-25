@@ -1,0 +1,40 @@
+# Tabletop / expo-floor station (Overwatch demo plan §9): drone camera on a ~2.5 m stand looking down at a taped
+# ~3 x 3 m floor area with A4-printed markers. Use with: OVERWATCH_CONFIG=config/tabletop.yaml
+# Print markers with: python backend/scripts/make_markers.py --size-m 0.18   (then measure and edit positions!)
+session:
+  mode: LIVE
+calibration:
+  markers:
+    size_m: 0.18
+    layout:
+      0: [0.0, 0.0]
+      1: [2.4, 0.0]
+      2: [2.4, 1.8]
+      3: [0.0, 1.8]
+      4: [1.2, 0.0]
+      5: [1.2, 1.8]
+    holdout_ids: [4, 5]
+    detect_every_n_frames: 2
+  max_holdout_rmse_m: 0.08      # small area: demand centimetre-level holdout error (tune after measuring)
+  telemetry_projection: false   # the drone is on a stand: pose-from-telemetry is meaningless here
+fusion:
+  occupancy_cell_m: 0.05
+  occupancy_size_m: [6.0, 5.0]
+  occupancy_origin_m: [-1.5, -1.5]
+  ground_contact_sigma_m: 0.08
+locks:
+  search_radius_m: 0.6
+  search_growth_mps: 0.8
+alerts:
+  closing_fast_mps: 1.2         # people lunge, not sprint, on a 3 m floor
+  warning_range_m: 2.0
+  warning_closing_mps: 0.5
+  ttc_critical_s: 1.5
+phone:
+  proximity_alert_m: 0.8
+autonomy:
+  enabled: false                # aircraft is mounted; virtual stick goes to the DJI simulator only if enabled
+perception:
+  detector: ultralytics
+  yolo_weights: yolo26s.pt
+  yolo_imgsz: 960

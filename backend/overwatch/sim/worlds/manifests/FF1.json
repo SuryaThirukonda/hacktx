@@ -1,0 +1,32 @@
+{
+  "scenario": "FF1",
+  "title": "Fire: route a crew outside the keep-out zone",
+  "problem_line": "A grass fire spreads towards the house. Which door can the crew reach, and by which way?",
+  "beats": [
+    {
+      "t": 0,
+      "caption": "A grass fire spreads from the south-west (screening model, time compressed).",
+      "highlight_entity": "hazard:fire",
+      "camera_preset": "overview"
+    },
+    {
+      "t": 6,
+      "caption": "Keep-out: ground the fire reaches within two minutes of the crew getting there.",
+      "highlight_entity": "hazard:keep_out",
+      "camera_preset": "top"
+    },
+    {
+      "t": 12,
+      "caption": "The crew route is planned live and re-planned as the fire grows; smoke costs extra.",
+      "highlight_entity": "crew_route",
+      "camera_preset": "top"
+    },
+    {
+      "t": 24,
+      "caption": "The route reaches a door outside the keep-out area. Nothing here says an entry is safe.",
+      "highlight_entity": "crew_route",
+      "camera_preset": "overview"
+    }
+  ],
+  "success_line": "A walking route with no keep-out cells, to a door the fire does not reach in time."
+}

@@ -1,0 +1,103 @@
+{
+  "scene": "training-area-a",
+  "openings": [
+    {
+      "id": "door-a1",
+      "building": "bldg-1",
+      "kind": "door",
+      "side": "A",
+      "compass": "S",
+      "xy": [
+        -15.2,
+        13.0
+      ],
+      "z": [
+        0.0,
+        2.1
+      ],
+      "width_m": 1.0,
+      "blocked": false
+    },
+    {
+      "id": "window-b1",
+      "building": "bldg-1",
+      "kind": "window",
+      "side": "B",
+      "compass": "W",
+      "xy": [
+        -17.5,
+        16.5
+      ],
+      "z": [
+        1.0,
+        2.1
+      ],
+      "width_m": 1.4,
+      "blocked": false
+    },
+    {
+      "id": "door-c1",
+      "building": "bldg-1",
+      "kind": "door",
+      "side": "C",
+      "compass": "N",
+      "xy": [
+        -14.8,
+        23.0
+      ],
+      "z": [
+        0.0,
+        2.1
+      ],
+      "width_m": 1.0,
+      "blocked": false
+    },
+    {
+      "id": "garage-d1",
+      "building": "bldg-1",
+      "kind": "garage_door",
+      "side": "D",
+      "compass": "E",
+      "xy": [
+        -10.5,
+        18.0
+      ],
+      "z": [
+        0.0,
+        2.3
+      ],
+      "width_m": 2.6,
+      "blocked": true
+    }
+  ],
+  "supplies": [
+    {
+      "id": "supply-1",
+      "label": "Emergency supply cache",
+      "xy": [
+        -7.5,
+        10.5
+      ]
+    }
+  ],
+  "people": [
+    {
+      "id": "volunteer",
+      "role": "subject",
+      "label": "Volunteer (missing person)",
+      "start": [
+        -20.0,
+        12.5
+      ]
+    },
+    {
+      "id": "responder",
+      "role": "responder",
+      "label": "Ground responder",
+      "start": [
+        2.0,
+        -6.0
+      ]
+    }
+  ]
+}

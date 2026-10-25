@@ -1,0 +1,417 @@
+{
+  "$defs": {
+    "DepthSector": {
+      "properties": {
+        "sector": {
+          "enum": [
+            "left",
+            "front_left",
+            "front",
+            "front_right",
+            "right"
+          ],
+          "title": "Sector",
+          "type": "string"
+        },
+        "nearest_m": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Nearest M"
+        },
+        "confidence": {
+          "default": "unknown",
+          "enum": [
+            "high",
+            "medium",
+            "low",
+            "unknown"
+          ],
+          "title": "Confidence",
+          "type": "string"
+        },
+        "num_valid_points": {
+          "default": 0,
+          "title": "Num Valid Points",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "sector"
+      ],
+      "title": "DepthSector",
+      "type": "object"
+    },
+    "GPSFix": {
+      "properties": {
+        "lat": {
+          "title": "Lat",
+          "type": "number"
+        },
+        "lon": {
+          "title": "Lon",
+          "type": "number"
+        },
+        "accuracy_m": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Accuracy M"
+        }
+      },
+      "required": [
+        "lat",
+        "lon"
+      ],
+      "title": "GPSFix",
+      "type": "object"
+    }
+  },
+  "description": "Responder phone uplink (native iOS app or simulator). Depth is processed on-device into sectors.",
+  "properties": {
+    "schema_version": {
+      "default": "1.0",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "type": {
+      "const": "phone_observation",
+      "default": "phone_observation",
+      "title": "Type",
+      "type": "string"
+    },
+    "session_id": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Session Id"
+    },
+    "source_id": {
+      "default": "responder-iphone",
+      "title": "Source Id",
+      "type": "string"
+    },
+    "seq": {
+      "default": 0,
+      "title": "Seq",
+      "type": "integer"
+    },
+    "capture_ts_ms": {
+      "title": "Capture Ts Ms",
+      "type": "number"
+    },
+    "arkit_tracking_state": {
+      "default": "normal",
+      "enum": [
+        "normal",
+        "limited",
+        "not_available"
+      ],
+      "title": "Arkit Tracking State",
+      "type": "string"
+    },
+    "tracking_reason": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Tracking Reason"
+    },
+    "camera_pose_4x4": {
+      "anyOf": [
+        {
+          "items": {
+            "items": {
+              "type": "number"
+            },
+            "type": "array"
+          },
+          "type": "array"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Camera Pose 4X4"
+    },
+    "camera_intrinsics_3x3": {
+      "anyOf": [
+        {
+          "items": {
+            "items": {
+              "type": "number"
+            },
+            "type": "array"
+          },
+          "type": "array"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Camera Intrinsics 3X3"
+    },
+    "image_resolution": {
+      "anyOf": [
+        {
+          "maxItems": 2,
+          "minItems": 2,
+          "prefixItems": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "integer"
+            }
+          ],
+          "type": "array"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Image Resolution"
+    },
+    "image_orientation": {
+      "anyOf": [
+        {
+          "enum": [
+            "up",
+            "down",
+            "left",
+            "right"
+          ],
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Image Orientation"
+    },
+    "lidar_supported": {
+      "default": true,
+      "title": "Lidar Supported",
+      "type": "boolean"
+    },
+    "depth_mode": {
+      "default": "sceneDepth",
+      "enum": [
+        "sceneDepth",
+        "smoothedSceneDepth",
+        "none"
+      ],
+      "title": "Depth Mode",
+      "type": "string"
+    },
+    "depth_valid_fraction": {
+      "anyOf": [
+        {
+          "type": "number"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Depth Valid Fraction"
+    },
+    "sectors": {
+      "default": [],
+      "items": {
+        "$ref": "#/$defs/DepthSector"
+      },
+      "title": "Sectors",
+      "type": "array"
+    },
+    "obstacle_points": {
+      "anyOf": [
+        {
+          "items": {
+            "maxItems": 3,
+            "minItems": 3,
+            "prefixItems": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "number"
+              },
+              {
+                "type": "number"
+              }
+            ],
+            "type": "array"
+          },
+          "type": "array"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Obstacle Points"
+    },
+    "floor_y_m": {
+      "anyOf": [
+        {
+          "type": "number"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Floor Y M"
+    },
+    "heading_deg": {
+      "anyOf": [
+        {
+          "type": "number"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Heading Deg"
+    },
+    "heading_accuracy_deg": {
+      "anyOf": [
+        {
+          "type": "number"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Heading Accuracy Deg"
+    },
+    "head_yaw_deg": {
+      "anyOf": [
+        {
+          "type": "number"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Head Yaw Deg"
+    },
+    "gps": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/GPSFix"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    },
+    "battery_pct": {
+      "anyOf": [
+        {
+          "type": "number"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Battery Pct"
+    },
+    "vision_boxes": {
+      "anyOf": [
+        {
+          "items": {
+            "maxItems": 4,
+            "minItems": 4,
+            "prefixItems": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "number"
+              },
+              {
+                "type": "number"
+              },
+              {
+                "type": "number"
+              }
+            ],
+            "type": "array"
+          },
+          "type": "array"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Vision Boxes"
+    },
+    "vision_ranges_m": {
+      "anyOf": [
+        {
+          "items": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "type": "array"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Vision Ranges M"
+    },
+    "local_alert_active": {
+      "default": false,
+      "title": "Local Alert Active",
+      "type": "boolean"
+    }
+  },
+  "required": [
+    "capture_ts_ms"
+  ],
+  "title": "PhoneObservation",
+  "type": "object"
+}

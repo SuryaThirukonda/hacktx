@@ -1,0 +1,171 @@
+{
+  "version": "scene-1",
+  "id": "training-area-a",
+  "title": "Training area A",
+  "seed": 11,
+  "description": "Disaster-training yard: one building (sides A to D), a blocked garage door, a supply cache, one volunteer playing a missing person, one responder.",
+  "buildings": [
+    {
+      "id": "bldg-1",
+      "name": "Training building",
+      "center": [
+        -14.0,
+        18.0
+      ],
+      "size_ew_m": 7.0,
+      "size_ns_m": 10.0,
+      "height_m": 3.6,
+      "side_a": "S",
+      "color": [
+        148,
+        152,
+        158
+      ],
+      "openings": [
+        {
+          "id": "door-a1",
+          "kind": "door",
+          "side": "A",
+          "offset_m": -1.2,
+          "width_m": 1.0,
+          "height_m": 2.1,
+          "sill_m": 0.0,
+          "blocked": false
+        },
+        {
+          "id": "window-b1",
+          "kind": "window",
+          "side": "B",
+          "offset_m": 1.5,
+          "width_m": 1.4,
+          "height_m": 1.1,
+          "sill_m": 1.0,
+          "blocked": false
+        },
+        {
+          "id": "door-c1",
+          "kind": "door",
+          "side": "C",
+          "offset_m": 0.8,
+          "width_m": 1.0,
+          "height_m": 2.1,
+          "sill_m": 0.0,
+          "blocked": false
+        },
+        {
+          "id": "garage-d1",
+          "kind": "garage_door",
+          "side": "D",
+          "offset_m": 0.0,
+          "width_m": 2.6,
+          "height_m": 2.3,
+          "sill_m": 0.0,
+          "blocked": true
+        }
+      ]
+    }
+  ],
+  "supplies": [
+    {
+      "id": "supply-1",
+      "label": "Emergency supply cache",
+      "xy": [
+        -7.5,
+        10.5
+      ],
+      "size_m": [
+        1.2,
+        0.8,
+        0.7
+      ]
+    }
+  ],
+  "people": [
+    {
+      "id": "volunteer",
+      "role": "subject",
+      "label": "Volunteer (missing person)",
+      "start": [
+        -20.0,
+        12.5
+      ],
+      "heading": 120.0,
+      "shirt": [
+        30,
+        140,
+        230
+      ],
+      "script": [
+        [
+          "wait",
+          45.0
+        ],
+        [
+          -19.0,
+          9.0,
+          0.9
+        ],
+        [
+          -16.0,
+          7.5,
+          0.9
+        ],
+        [
+          "wait",
+          120.0
+        ]
+      ]
+    },
+    {
+      "id": "responder",
+      "role": "responder",
+      "label": "Ground responder",
+      "start": [
+        2.0,
+        -6.0
+      ],
+      "heading": 330.0,
+      "shirt": [
+        90,
+        40,
+        20
+      ],
+      "script": [
+        [
+          "wait",
+          5.0
+        ],
+        [
+          -4.0,
+          4.0,
+          1.3
+        ],
+        [
+          -7.0,
+          8.5,
+          1.2
+        ],
+        [
+          "wait",
+          8.0
+        ],
+        [
+          -12.5,
+          10.0,
+          1.1
+        ],
+        [
+          "wait",
+          200.0
+        ]
+      ]
+    }
+  ],
+  "drone": {
+    "x": -8.0,
+    "y": 0.0,
+    "alt": 24.0,
+    "heading": 320.0,
+    "gimbal_pitch": -58.0
+  }
+}

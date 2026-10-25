@@ -1,0 +1,40 @@
+{
+  "properties": {
+    "type": {
+      "enum": [
+        "vstick",
+        "gimbal",
+        "mode",
+        "hover",
+        "rtl",
+        "sim_start",
+        "sim_stop",
+        "ping",
+        "estop"
+      ],
+      "title": "Type",
+      "type": "string"
+    },
+    "seq": {
+      "default": 0,
+      "title": "Seq",
+      "type": "integer"
+    },
+    "ts_ms": {
+      "default": 0.0,
+      "title": "Ts Ms",
+      "type": "number"
+    },
+    "payload": {
+      "additionalProperties": true,
+      "default": {},
+      "title": "Payload",
+      "type": "object"
+    }
+  },
+  "required": [
+    "type"
+  ],
+  "title": "BridgeCommand",
+  "type": "object"
+}

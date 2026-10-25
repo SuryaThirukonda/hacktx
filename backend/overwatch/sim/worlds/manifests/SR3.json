@@ -1,0 +1,20 @@
+{
+  "scenario": "SR3",
+  "title": "Search: under the canopy",
+  "problem_line": "The person is under dense canopy. The camera cannot see them. What does the system claim?",
+  "beats": [
+    {
+      "t": 0,
+      "caption": "The sweep passes over the crown that hides the person.",
+      "highlight_entity": "actor:lost",
+      "camera_preset": "top"
+    },
+    {
+      "t": 40,
+      "caption": "Not detected, and the sector is not declared clear: it keeps its probability.",
+      "highlight_entity": "zone:S5",
+      "camera_preset": "overview"
+    }
+  ],
+  "success_line": "Nothing seen, nothing claimed: the sector keeps probability for the next search."
+}

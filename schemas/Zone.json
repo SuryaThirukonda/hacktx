@@ -1,0 +1,46 @@
+{
+  "properties": {
+    "zone_id": {
+      "title": "Zone Id",
+      "type": "string"
+    },
+    "name": {
+      "title": "Name",
+      "type": "string"
+    },
+    "polygon_xy_m": {
+      "items": {
+        "maxItems": 2,
+        "minItems": 2,
+        "prefixItems": [
+          {
+            "type": "number"
+          },
+          {
+            "type": "number"
+          }
+        ],
+        "type": "array"
+      },
+      "title": "Polygon Xy M",
+      "type": "array"
+    },
+    "kind": {
+      "default": "task",
+      "enum": [
+        "task",
+        "geofence",
+        "keep_out"
+      ],
+      "title": "Kind",
+      "type": "string"
+    }
+  },
+  "required": [
+    "zone_id",
+    "name",
+    "polygon_xy_m"
+  ],
+  "title": "Zone",
+  "type": "object"
+}

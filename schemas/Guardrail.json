@@ -1,0 +1,34 @@
+{
+  "properties": {
+    "id": {
+      "title": "Id",
+      "type": "string"
+    },
+    "label": {
+      "title": "Label",
+      "type": "string"
+    },
+    "status": {
+      "enum": [
+        "enforced",
+        "active",
+        "warning",
+        "disabled"
+      ],
+      "title": "Status",
+      "type": "string"
+    },
+    "detail": {
+      "default": "",
+      "title": "Detail",
+      "type": "string"
+    }
+  },
+  "required": [
+    "id",
+    "label",
+    "status"
+  ],
+  "title": "Guardrail",
+  "type": "object"
+}

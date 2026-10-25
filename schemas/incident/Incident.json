@@ -1,0 +1,148 @@
+{
+  "$defs": {
+    "CoordinateReference": {
+      "description": "Where the incident's ENU origin sits on Earth, if known.",
+      "properties": {
+        "enu_frame": {
+          "title": "Enu Frame",
+          "type": "string"
+        },
+        "origin_lat": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Origin Lat"
+        },
+        "origin_lon": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Origin Lon"
+        },
+        "origin_alt_m": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Origin Alt M"
+        },
+        "north_offset_deg": {
+          "default": 0.0,
+          "title": "North Offset Deg",
+          "type": "number"
+        },
+        "note": {
+          "default": "",
+          "title": "Note",
+          "type": "string"
+        }
+      },
+      "required": [
+        "enu_frame"
+      ],
+      "title": "CoordinateReference",
+      "type": "object"
+    }
+  },
+  "properties": {
+    "schema_version": {
+      "default": "incident-1.0",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "id": {
+      "title": "Id",
+      "type": "string"
+    },
+    "title": {
+      "title": "Title",
+      "type": "string"
+    },
+    "created_at": {
+      "format": "date-time",
+      "title": "Created At",
+      "type": "string"
+    },
+    "status": {
+      "default": "active",
+      "enum": [
+        "active",
+        "closed"
+      ],
+      "title": "Status",
+      "type": "string"
+    },
+    "mission_mode": {
+      "default": "search",
+      "enum": [
+        "search",
+        "follow",
+        "structure",
+        "indoor"
+      ],
+      "title": "Mission Mode",
+      "type": "string"
+    },
+    "coordinate_reference": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/CoordinateReference"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    },
+    "operator_notes": {
+      "default": "",
+      "title": "Operator Notes",
+      "type": "string"
+    },
+    "provenance": {
+      "default": "simulated",
+      "enum": [
+        "live",
+        "replay",
+        "simulated",
+        "manual"
+      ],
+      "title": "Provenance",
+      "type": "string"
+    },
+    "scenario_id": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Scenario Id"
+    }
+  },
+  "required": [
+    "title"
+  ],
+  "title": "Incident",
+  "type": "object"
+}

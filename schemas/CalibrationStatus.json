@@ -1,0 +1,233 @@
+{
+  "$defs": {
+    "MarkerObservation": {
+      "properties": {
+        "id": {
+          "title": "Id",
+          "type": "integer"
+        },
+        "center_px": {
+          "maxItems": 2,
+          "minItems": 2,
+          "prefixItems": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "number"
+            }
+          ],
+          "title": "Center Px",
+          "type": "array"
+        },
+        "corners_px": {
+          "default": [],
+          "items": {
+            "maxItems": 2,
+            "minItems": 2,
+            "prefixItems": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "number"
+              }
+            ],
+            "type": "array"
+          },
+          "title": "Corners Px",
+          "type": "array"
+        },
+        "world_xy": {
+          "anyOf": [
+            {
+              "maxItems": 2,
+              "minItems": 2,
+              "prefixItems": [
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "number"
+                }
+              ],
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "World Xy"
+        },
+        "used_for_fit": {
+          "default": false,
+          "title": "Used For Fit",
+          "type": "boolean"
+        },
+        "holdout": {
+          "default": false,
+          "title": "Holdout",
+          "type": "boolean"
+        },
+        "error_m": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Error M"
+        }
+      },
+      "required": [
+        "id",
+        "center_px"
+      ],
+      "title": "MarkerObservation",
+      "type": "object"
+    }
+  },
+  "properties": {
+    "calibration_id": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Calibration Id"
+    },
+    "source": {
+      "default": "none",
+      "enum": [
+        "markers",
+        "chained",
+        "telemetry",
+        "manual",
+        "none"
+      ],
+      "title": "Source",
+      "type": "string"
+    },
+    "valid": {
+      "default": false,
+      "title": "Valid",
+      "type": "boolean"
+    },
+    "reason": {
+      "default": "not calibrated",
+      "title": "Reason",
+      "type": "string"
+    },
+    "H_img_to_ground": {
+      "anyOf": [
+        {
+          "items": {
+            "items": {
+              "type": "number"
+            },
+            "type": "array"
+          },
+          "type": "array"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "H Img To Ground"
+    },
+    "markers_detected": {
+      "default": 0,
+      "title": "Markers Detected",
+      "type": "integer"
+    },
+    "markers_used": {
+      "default": 0,
+      "title": "Markers Used",
+      "type": "integer"
+    },
+    "holdout_count": {
+      "default": 0,
+      "title": "Holdout Count",
+      "type": "integer"
+    },
+    "holdout_rmse_m": {
+      "anyOf": [
+        {
+          "type": "number"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Holdout Rmse M"
+    },
+    "fit_rmse_m": {
+      "anyOf": [
+        {
+          "type": "number"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Fit Rmse M"
+    },
+    "age_s": {
+      "anyOf": [
+        {
+          "type": "number"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Age S"
+    },
+    "error_bound_m": {
+      "anyOf": [
+        {
+          "type": "number"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Error Bound M"
+    },
+    "markers": {
+      "default": [],
+      "items": {
+        "$ref": "#/$defs/MarkerObservation"
+      },
+      "title": "Markers",
+      "type": "array"
+    },
+    "last_marker_calibration_id": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Last Marker Calibration Id"
+    }
+  },
+  "title": "CalibrationStatus",
+  "type": "object"
+}

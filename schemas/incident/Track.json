@@ -1,0 +1,184 @@
+{
+  "$defs": {
+    "BoundingBox": {
+      "properties": {
+        "frame": {
+          "title": "Frame",
+          "type": "string"
+        },
+        "x0": {
+          "title": "X0",
+          "type": "number"
+        },
+        "y0": {
+          "title": "Y0",
+          "type": "number"
+        },
+        "x1": {
+          "title": "X1",
+          "type": "number"
+        },
+        "y1": {
+          "title": "Y1",
+          "type": "number"
+        }
+      },
+      "required": [
+        "frame",
+        "x0",
+        "y0",
+        "x1",
+        "y1"
+      ],
+      "title": "BoundingBox",
+      "type": "object"
+    },
+    "Position": {
+      "properties": {
+        "frame": {
+          "title": "Frame",
+          "type": "string"
+        },
+        "x": {
+          "title": "X",
+          "type": "number"
+        },
+        "y": {
+          "title": "Y",
+          "type": "number"
+        },
+        "z": {
+          "default": 0.0,
+          "title": "Z",
+          "type": "number"
+        }
+      },
+      "required": [
+        "frame",
+        "x",
+        "y"
+      ],
+      "title": "Position",
+      "type": "object"
+    },
+    "TrackPoint": {
+      "properties": {
+        "t": {
+          "format": "date-time",
+          "title": "T",
+          "type": "string"
+        },
+        "position": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Position"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "bbox": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/BoundingBox"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        }
+      },
+      "required": [
+        "t"
+      ],
+      "title": "TrackPoint",
+      "type": "object"
+    }
+  },
+  "properties": {
+    "id": {
+      "title": "Id",
+      "type": "string"
+    },
+    "incident_id": {
+      "title": "Incident Id",
+      "type": "string"
+    },
+    "observation_ids": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Observation Ids",
+      "type": "array"
+    },
+    "first_seen": {
+      "format": "date-time",
+      "title": "First Seen",
+      "type": "string"
+    },
+    "last_seen": {
+      "format": "date-time",
+      "title": "Last Seen",
+      "type": "string"
+    },
+    "positions": {
+      "items": {
+        "$ref": "#/$defs/TrackPoint"
+      },
+      "title": "Positions",
+      "type": "array"
+    },
+    "tracking_status": {
+      "default": "active",
+      "enum": [
+        "active",
+        "lost",
+        "ended"
+      ],
+      "title": "Tracking Status",
+      "type": "string"
+    },
+    "identity_status": {
+      "default": "unverified",
+      "enum": [
+        "unverified",
+        "operator_designated"
+      ],
+      "title": "Identity Status",
+      "type": "string"
+    },
+    "designated_by": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Designated By"
+    },
+    "provenance": {
+      "enum": [
+        "live",
+        "replay",
+        "simulated",
+        "manual"
+      ],
+      "title": "Provenance",
+      "type": "string"
+    }
+  },
+  "required": [
+    "incident_id",
+    "first_seen",
+    "last_seen",
+    "provenance"
+  ],
+  "title": "Track",
+  "type": "object"
+}

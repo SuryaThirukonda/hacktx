@@ -1,0 +1,192 @@
+{
+  "properties": {
+    "schema_version": {
+      "default": "1.0",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "type": {
+      "const": "telemetry",
+      "default": "telemetry",
+      "title": "Type",
+      "type": "string"
+    },
+    "source_id": {
+      "default": "mini2-bridge",
+      "title": "Source Id",
+      "type": "string"
+    },
+    "seq": {
+      "default": 0,
+      "title": "Seq",
+      "type": "integer"
+    },
+    "capture_ts_ms": {
+      "title": "Capture Ts Ms",
+      "type": "number"
+    },
+    "lat": {
+      "anyOf": [
+        {
+          "type": "number"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Lat"
+    },
+    "lon": {
+      "anyOf": [
+        {
+          "type": "number"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Lon"
+    },
+    "alt_rel_m": {
+      "anyOf": [
+        {
+          "type": "number"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Alt Rel M"
+    },
+    "yaw_deg": {
+      "anyOf": [
+        {
+          "type": "number"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Yaw Deg"
+    },
+    "pitch_deg": {
+      "default": 0.0,
+      "title": "Pitch Deg",
+      "type": "number"
+    },
+    "roll_deg": {
+      "default": 0.0,
+      "title": "Roll Deg",
+      "type": "number"
+    },
+    "vel_ned": {
+      "anyOf": [
+        {
+          "maxItems": 3,
+          "minItems": 3,
+          "prefixItems": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "number"
+            },
+            {
+              "type": "number"
+            }
+          ],
+          "type": "array"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Vel Ned"
+    },
+    "gimbal_pitch_deg": {
+      "anyOf": [
+        {
+          "type": "number"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Gimbal Pitch Deg"
+    },
+    "battery_pct": {
+      "anyOf": [
+        {
+          "type": "number"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Battery Pct"
+    },
+    "gps_level": {
+      "anyOf": [
+        {
+          "type": "integer"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Gps Level"
+    },
+    "sats": {
+      "anyOf": [
+        {
+          "type": "integer"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Sats"
+    },
+    "flying": {
+      "default": false,
+      "title": "Flying",
+      "type": "boolean"
+    },
+    "vstick_enabled": {
+      "default": false,
+      "title": "Vstick Enabled",
+      "type": "boolean"
+    },
+    "sim": {
+      "default": false,
+      "title": "Sim",
+      "type": "boolean"
+    },
+    "flight_mode": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Flight Mode"
+    }
+  },
+  "required": [
+    "capture_ts_ms"
+  ],
+  "title": "DroneTelemetry",
+  "type": "object"
+}

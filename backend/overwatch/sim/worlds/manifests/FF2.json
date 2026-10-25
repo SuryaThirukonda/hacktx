@@ -1,0 +1,26 @@
+{
+  "scenario": "FF2",
+  "title": "Fire: smoke over the openings",
+  "problem_line": "Smoke drifts over two sides of the house. What can the camera honestly say about the openings?",
+  "beats": [
+    {
+      "t": 0,
+      "caption": "Smoke drifts north-east over sides B and C.",
+      "highlight_entity": "hazard:smoke",
+      "camera_preset": "overview"
+    },
+    {
+      "t": 15,
+      "caption": "Openings under smoke read 'unclear': the option to say anything else is removed by code.",
+      "highlight_entity": "hazard:smoke",
+      "camera_preset": "top"
+    },
+    {
+      "t": 30,
+      "caption": "When the smoke thins, the occupant outside side C is detected.",
+      "highlight_entity": "actor:occupant",
+      "camera_preset": "chase"
+    }
+  ],
+  "success_line": "Nothing declared safe; the occupant found when the camera could actually see."
+}

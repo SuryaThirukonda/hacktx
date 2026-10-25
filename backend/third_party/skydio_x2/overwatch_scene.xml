@@ -1,0 +1,7 @@
+<!-- Overwatch: the Menagerie Skydio X2 over a flat ground plane (world x = east, y = north, z = up). -->
+<mujoco model="Overwatch X2 scene">
+  <include file="x2.xml"/>
+  <worldbody>
+    <geom name="floor" type="plane" size="0 0 0.05" rgba="0.3 0.45 0.3 1"/>
+  </worldbody>
+</mujoco>

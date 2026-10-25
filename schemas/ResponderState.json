@@ -1,0 +1,116 @@
+{
+  "properties": {
+    "position_xy_m": {
+      "anyOf": [
+        {
+          "maxItems": 2,
+          "minItems": 2,
+          "prefixItems": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "number"
+            }
+          ],
+          "type": "array"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Position Xy M"
+    },
+    "position_source": {
+      "default": "none",
+      "enum": [
+        "drone_lock",
+        "arkit_registered",
+        "gps",
+        "none"
+      ],
+      "title": "Position Source",
+      "type": "string"
+    },
+    "position_error_m": {
+      "anyOf": [
+        {
+          "type": "number"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Position Error M"
+    },
+    "heading_deg": {
+      "anyOf": [
+        {
+          "type": "number"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Heading Deg"
+    },
+    "heading_source": {
+      "default": "none",
+      "enum": [
+        "head_yaw",
+        "compass",
+        "arkit",
+        "motion",
+        "none"
+      ],
+      "title": "Heading Source",
+      "type": "string"
+    },
+    "heading_valid": {
+      "default": false,
+      "title": "Heading Valid",
+      "type": "boolean"
+    },
+    "track_id": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Track Id"
+    },
+    "lat": {
+      "anyOf": [
+        {
+          "type": "number"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Lat"
+    },
+    "lon": {
+      "anyOf": [
+        {
+          "type": "number"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Lon"
+    }
+  },
+  "title": "ResponderState",
+  "type": "object"
+}

@@ -1,0 +1,50 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "backend",
+      "runtimeExecutable": "bash",
+      "runtimeArgs": [
+        "-c",
+        "cd /home/surya/repos/txhack_init_claude/backend && exec .venv/bin/python -m uvicorn overwatch.main:app --host 127.0.0.1 --port 8000"
+      ],
+      "port": 8000
+    },
+    {
+      "name": "dashboard",
+      "runtimeExecutable": "bash",
+      "runtimeArgs": [
+        "-c",
+        "cd /home/surya/repos/txhack_init_claude/dashboard && exec npx vite --host 127.0.0.1 --port 5188 --strictPort"
+      ],
+      "port": 5188
+    },
+    {
+      "name": "backend-check",
+      "runtimeExecutable": "bash",
+      "runtimeArgs": [
+        "-c",
+        "cd /home/surya/repos/txhack_init_claude/backend && OVERWATCH_DB=/tmp/claude-1000/-home-surya-repos-txhack-init-claude/3d508844-a47a-48b5-8d03-6763d81f3181/scratchpad/check.db TIGER_DATABASE_URL=postgresql://off@127.0.0.1:9/off OPENAI_API_KEY= exec .venv/bin/python -m uvicorn overwatch.main:app --host 127.0.0.1 --port 8010"
+      ],
+      "port": 8010
+    },
+    {
+      "name": "dashboard-check",
+      "runtimeExecutable": "bash",
+      "runtimeArgs": [
+        "-c",
+        "cd /home/surya/repos/txhack_init_claude/dashboard && OVERWATCH_BACKEND=http://127.0.0.1:8010 exec npx vite --host 127.0.0.1 --port 5190 --strictPort"
+      ],
+      "port": 5190
+    },
+    {
+      "name": "test12",
+      "runtimeExecutable": "bash",
+      "runtimeArgs": [
+        "-c",
+        "cd /home/surya/repos/txhack_init_claude/backend && OVERWATCH_PORT=8012 OVERWATCH_DB=/tmp/claude-1000/-home-surya-repos-txhack-init-claude/ff4af4bc-9e9b-49ee-a923-7c459138927e/scratchpad/test12.db TIGER_DATABASE_URL=postgresql://off@127.0.0.1:9/off OPENAI_API_KEY= exec .venv/bin/python -m uvicorn overwatch.main:app --host 127.0.0.1 --port 8012"
+      ],
+      "port": 8012
+    }
+  ]
+}

@@ -1,0 +1,46 @@
+[project]
+name = "overwatch"
+version = "0.1.0"
+description = "Overwatch: first-responder aerial copilot (drone + responder phone fusion, alerts, decisions, autonomy sim)"
+readme = {text = "Overwatch backend. See the repository README.md for setup and operation.", content-type = "text/plain"}
+requires-python = ">=3.11,<3.14"
+license = { text = "AGPL-3.0-or-later" }
+dependencies = [
+    "anyio>=4.0",
+    "fastapi>=0.115",
+    "uvicorn[standard]>=0.30",
+    "pydantic>=2.7",
+    "pydantic-settings>=2.3",
+    "numpy>=1.26,<3",
+    "scipy>=1.12",
+    "opencv-contrib-python-headless>=4.10,<5",
+    "httpx>=0.27",
+    "orjson>=3.10",
+    "pyyaml>=6.0",
+    "websockets>=12.0",
+]
+
+[project.optional-dependencies]
+vision = ["ultralytics>=8.3"]
+rfdetr = ["rfdetr>=1.2"]
+h264 = ["av>=12.0"]
+voice = ["google-genai>=1.0"]
+sim3d = ["mujoco>=3.2"]  # Skydio X2 rigid-body drone for scenario OW7 (falls back to the kinematic model)
+timeseries = ["psycopg[binary]>=3.1"]
+dev = ["pytest>=8.0", "pytest-asyncio>=0.23", "hypothesis>=6.100", "ruff>=0.5"]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["overwatch"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+asyncio_mode = "auto"
+filterwarnings = ["ignore::DeprecationWarning"]
+
+[tool.ruff]
+line-length = 110
+target-version = "py311"

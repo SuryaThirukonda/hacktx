@@ -1,0 +1,80 @@
+{
+  "properties": {
+    "name": {
+      "title": "Name",
+      "type": "string"
+    },
+    "type": {
+      "enum": [
+        "choice",
+        "predicate",
+        "score",
+        "refusal"
+      ],
+      "title": "Type",
+      "type": "string"
+    },
+    "choice": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Choice"
+    },
+    "probability": {
+      "anyOf": [
+        {
+          "type": "number"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Probability"
+    },
+    "score": {
+      "anyOf": [
+        {
+          "type": "number"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Score"
+    },
+    "confidence": {
+      "anyOf": [
+        {
+          "type": "number"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Confidence"
+    },
+    "probabilities": {
+      "additionalProperties": {
+        "type": "number"
+      },
+      "default": {},
+      "title": "Probabilities",
+      "type": "object"
+    }
+  },
+  "required": [
+    "name",
+    "type"
+  ],
+  "title": "DecisionAnswer",
+  "type": "object"
+}
