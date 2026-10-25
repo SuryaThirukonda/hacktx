@@ -5,7 +5,7 @@
 	<key>CFBundleDevelopmentRegion</key>
 	<string>en</string>
 	<key>CFBundleDisplayName</key>
-	<string>Overwatch</string>
+	<string>Eye in the Sky</string>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>
@@ -41,13 +41,13 @@
 	<key>UIStatusBarStyle</key>
 	<string>UIStatusBarStyleLightContent</string>
 	<key>NSCameraUsageDescription</key>
-	<string>Overwatch uses the camera and LiDAR to detect obstacles around you and to share your view with the incident commander.</string>
+	<string>Eye in the Sky uses the camera and LiDAR to detect obstacles around you and to share your view with the incident commander.</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>Overwatch uses your location and compass heading to place you on the incident map and to tell you where the subject is relative to you.</string>
+	<string>Eye in the Sky uses your location and compass heading to place you on the incident map and to tell you where the subject is relative to you.</string>
 	<key>NSMotionUsageDescription</key>
-	<string>Overwatch uses AirPods head tracking (optional) to give alert directions relative to where you are looking.</string>
+	<string>Eye in the Sky uses AirPods head tracking (optional) to give alert directions relative to where you are looking.</string>
 	<key>NSLocalNetworkUsageDescription</key>
-	<string>Overwatch connects to the incident Mac on your local network to send sensor data and receive alerts.</string>
+	<string>Eye in the Sky connects to the incident Mac on your local network to send sensor data and receive alerts.</string>
 	<key>NSAppTransportSecurity</key>
 	<dict>
 		<key>NSAllowsLocalNetworking</key>

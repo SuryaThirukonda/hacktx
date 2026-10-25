@@ -59,7 +59,7 @@ struct ContentView: View {
                 .fill(statusColor)
                 .frame(width: 12, height: 12)
             VStack(alignment: .leading, spacing: 2) {
-                Text("OVERWATCH")
+                Text("Eye in the Sky")
                     .font(.headline.weight(.heavy))
                     .tracking(1.5)
                     .foregroundStyle(Color.white)

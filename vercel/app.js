@@ -14,7 +14,7 @@ function card(s, i) {
 }
 
 function show(s) {
-  document.title = `Overwatch · ${s.name} (recorded)`;
+  document.title = `Eye in the Sky · ${s.name} (recorded)`;
   $("home").hidden = true;
   $("player").hidden = false;
   $("p-name").textContent = s.name;

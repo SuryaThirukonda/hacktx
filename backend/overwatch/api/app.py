@@ -155,7 +155,7 @@ def create_app(cfg: Config | None = None) -> FastAPI:
         yield
         await rt.stop()
 
-    app = FastAPI(title="Overwatch", version=__version__, lifespan=lifespan)
+    app = FastAPI(title="Eye in the Sky", version=__version__, lifespan=lifespan)
     app.state.rt = rt
     app.add_middleware(CORSMiddleware, allow_origins=cfg.server.cors_origins, allow_methods=["*"], allow_headers=["*"])
     token = cfg.secrets.overwatch_token

@@ -27,7 +27,7 @@ export function Drive() {
 
   useEffect(() => {
     document.documentElement.setAttribute("data-theme", "dark");
-    document.title = "Overwatch · drive the target";
+    document.title = "Eye in the Sky · drive the target";
     let stop = false;
     const load = () =>
       api.get<{ available: boolean; people: SimPerson[] }>("/api/simulation/people")
@@ -75,7 +75,7 @@ export function Drive() {
   return (
     <div className="flex h-[100dvh] flex-col overflow-hidden bg-page text-ink-1" style={{ touchAction: "none" }}>
       <header className="flex h-11 shrink-0 items-center gap-2 border-b border-line bg-surface px-3">
-        <span className="text-[12px] font-extrabold tracking-[0.14em]">OVERWATCH</span>
+        <span className="text-[12px] font-extrabold tracking-[0.14em]">Eye in the Sky</span>
         <select
           aria-label="Who to drive"
           value={sel ?? ""}

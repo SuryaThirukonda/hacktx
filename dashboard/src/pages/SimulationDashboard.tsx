@@ -77,7 +77,7 @@ export function SimulationDashboard() {
   if (state?.mode === "LIVE") return <Mission />;
   return <div className={`simulation-app ${running ? "is-running" : "is-landing"}`} data-appearance={theme}>
     {!running ? <>
-      <nav className="launch-nav"><a className="overwatch-brand" href="/">◈ Overwatch</a>
+      <nav className="launch-nav"><a className="overwatch-brand" href="/">◈ Eye in the Sky</a>
         <div className="nav-center"><h1>SIMULATION WORKSPACE</h1></div>
         <button className="theme-button" aria-label="Toggle color theme" onClick={toggleTheme}>{theme === "navy" ? <Sun size={17} /> : <Moon size={17} />}</button>
         <a href="/command">Incident command <ArrowUpRight size={15} /></a></nav>
@@ -99,10 +99,10 @@ export function SimulationDashboard() {
           <section className="launch-action"><div className="view-choice">{(["drone", "3d"] as const).map((v) => <button key={v} aria-pressed={view === v} onClick={() => setView(v)}>{v === "drone" ? "Drone POV" : "3D world"}</button>)}</div>
             <p>Local simulation · physical flight permission remains separate</p><button disabled={busy || !sid} className="launch-button" onClick={launch}>{busy ? "Starting simulation…" : "Launch simulation"} <ArrowUpRight size={16} /></button></section></div>
         {error && <p role="alert" className="simulation-error">{error}</p>}
-      </main><footer className="launch-footer"><span className="overwatch-brand">Overwatch</span><span>Measurements, predictions and simulator truth remain distinct.</span><a href="/demo">Classic demo tools</a></footer>
+      </main><footer className="launch-footer"><span className="overwatch-brand">Eye in the Sky</span><span>Measurements, predictions and simulator truth remain distinct.</span><a href="/demo">Classic demo tools</a></footer>
     </> : <>
       <nav className="mission-nav"><button className="back-button" disabled={busy} onClick={back}><ArrowLeft size={15} /><span>Situations</span></button>
-        <span className="overwatch-brand">◈ Overwatch</span><span className="mission-name">{selected?.name}<strong>{sid}</strong></span><span className="sim-badge">SIMULATED</span>
+        <span className="overwatch-brand">◈ Eye in the Sky</span><span className="mission-name">{selected?.name}<strong>{sid}</strong></span><span className="sim-badge">SIMULATED</span>
         <a href="/command">Incident command <ArrowUpRight size={13} /></a><a href="/responder">Responder</a><button aria-label="Toggle color theme" onClick={toggleTheme}><Sun size={15} /></button></nav>
       <div className="mission-viewport" ref={viewport}>
         <header className="mission-heading"><div><p className="eyebrow">Mission workspace</p><h1>{scenario?.name ?? "City chase"}</h1></div>

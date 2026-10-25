@@ -132,11 +132,11 @@ export function PersonMark({ incidentId, announce }: { incidentId: string; annou
     finally { setBusy(false); }
   };
   const button = "rounded-lg border border-line bg-surface-2 px-3 py-2 font-semibold disabled:opacity-40";
-  return <section className="mt-3 rounded-xl border border-line bg-surface p-3 text-[13px]" aria-label="Overwatch assistant">
-    <h2 className="font-bold">Chat with Overwatch · one person of interest</h2>
+  return <section className="mt-3 rounded-xl border border-line bg-surface p-3 text-[13px]" aria-label="Eye in the Sky assistant">
+    <h2 className="font-bold">Chat with Eye in the Sky · one person of interest</h2>
     <p className="mt-1 text-ink-3">Describe visible clothing. Muse proposes a visible match. Simulation can select it automatically; live aircraft require human confirmation.</p>
-    <div role="log" aria-label="Overwatch conversation" className="mt-2 max-h-56 space-y-2 overflow-y-auto">
-      {chat.map((message, index) => <p key={index} className={`rounded p-2 ${message.role === "user" ? "bg-surface-2" : "border border-line"}`}><b>{message.role === "user" ? "You" : "Overwatch"}:</b> {message.text}</p>)}
+    <div role="log" aria-label="Eye in the Sky conversation" className="mt-2 max-h-56 space-y-2 overflow-y-auto">
+      {chat.map((message, index) => <p key={index} className={`rounded p-2 ${message.role === "user" ? "bg-surface-2" : "border border-line"}`}><b>{message.role === "user" ? "You" : "Eye in the Sky"}:</b> {message.text}</p>)}
     </div>
     <form className="mt-2 flex flex-col gap-2" onSubmit={(e) => { e.preventDefault(); void submit(text); }}>
       <input aria-label="Person clothing description" maxLength={500} value={text} onChange={(e) => setText(e.target.value)}

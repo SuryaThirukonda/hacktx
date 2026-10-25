@@ -62,7 +62,7 @@ export function Responder() {
 
   useEffect(() => {
     document.documentElement.setAttribute("data-theme", "dark");
-    document.title = "Overwatch · responder";
+    document.title = "Eye in the Sky · responder";
     if ("serviceWorker" in navigator && window.isSecureContext) navigator.serviceWorker.register("/sw.js").catch(() => undefined);
     api.get<{ current: string | null; items: Incident[] }>("/api/incidents").then((r) => {
       setIncidents(r.items);
@@ -321,7 +321,7 @@ function Header({ conn, incident }: { conn: SocketStatus; incident: Incident | n
     <header className="flex items-center gap-2">
       <Navigation size={18} className="text-[var(--s1)]" />
       <div className="min-w-0">
-        <div className="truncate text-[15px] font-extrabold tracking-wide">{incident ? incident.title : "Overwatch responder"}</div>
+        <div className="truncate text-[15px] font-extrabold tracking-wide">{incident ? incident.title : "Eye in the Sky responder"}</div>
         {incident && <div className="text-[12px] text-ink-3">mission: {incident.mission_mode} · {(incident.provenance ?? "").toUpperCase()}</div>}
       </div>
       <span className={`ml-auto inline-flex items-center gap-1 rounded-full px-2 py-1 text-[12px] font-semibold ${ok ? "text-[var(--good)]" : "text-[var(--warning)]"}`}>

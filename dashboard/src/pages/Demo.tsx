@@ -32,7 +32,7 @@ export function Demo() {
 
   useEffect(() => {
     document.documentElement.setAttribute("data-theme", localStorage.getItem("overwatch.theme") === "light" ? "light" : "dark");
-    document.title = "Overwatch · simulation demo";
+    document.title = "Eye in the Sky · simulation demo";
     loadHome().catch((e) => showToast(String((e as Error).message), "error"));
     // the world's launchpad and the scenario's dispatch request, refreshed as scenarios change
     let stop = false;
@@ -68,7 +68,7 @@ export function Demo() {
     <div className="flex h-full min-h-0 flex-col bg-page text-ink-1">
       <header className="flex h-11 shrink-0 items-center gap-2 border-b border-line bg-surface px-3">
         <Shield size={16} className="text-[var(--s1)]" />
-        <span className="text-[13px] font-extrabold tracking-[0.14em]">OVERWATCH</span>
+        <span className="text-[13px] font-extrabold tracking-[0.14em]">Eye in the Sky</span>
         <span className="hidden text-[12px] text-ink-3 sm:inline">simulation demo</span>
         <Badge color="var(--s7)" solid className="ml-1">SIMULATED</Badge>
         <div className="ml-auto flex items-center gap-1.5">

@@ -26,7 +26,7 @@ final class DJIVideoRelay: NSObject {
             guard let self = self, self.isStreaming else { return }
             if snapshot.socket.state == .connected {
                 self.onStatusChanged?(snapshot.vstick.inhibited ? "Streaming · website re-arm required" : "Streaming · controls ready", .systemGreen)
-            } else { self.onStatusChanged?("Connecting to Overwatch…", .systemYellow) }
+            } else { self.onStatusChanged?("Connecting to Eye in the Sky…", .systemYellow) }
         }
         bridge.start(externalSDK: true)
         poll = Timer.scheduledTimer(withTimeInterval: 0.5, repeats: true) { [weak self] _ in

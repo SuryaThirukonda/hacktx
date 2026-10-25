@@ -1,6 +1,6 @@
-# Overwatch
+# Eye in the Sky
 
-Overwatch combines a drone camera, an operator workspace and a responder phone in one incident. It detects and tracks people, retains a labelled last-known position through temporary loss, supports human review of assistance candidates, and delivers assessed guidance with acknowledgment. Simulation, live observations and predictions are kept distinct.
+Eye in the Sky combines a drone camera, an operator workspace and a responder phone in one incident. It detects and tracks people, retains a labelled last-known position through temporary loss, supports human review of assistance candidates, and delivers assessed guidance with acknowledgment. Simulation, live observations and predictions are kept distinct.
 
 This repository contains the repaired `hacktx` platform plus the manually synchronized persistent-memory/SAR and Windows detector-tool work. The full feature inventory, repairs, validation evidence and remaining limits are in [6am.md](6am.md).
 

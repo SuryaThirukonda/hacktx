@@ -45,7 +45,7 @@ export function TopBar() {
           <path d="M16 3v5M16 24v5M3 16h5M24 16h5" stroke="var(--s1)" strokeWidth="2.5" strokeLinecap="round" />
         </svg>
         <div className="leading-tight">
-          <div className="text-[14px] font-bold tracking-wide">OVERWATCH</div>
+          <div className="text-[14px] font-bold tracking-wide">Eye in the Sky</div>
           <div className="hidden text-[10px] text-ink-3 2xl:block">responder aerial copilot</div>
         </div>
       </div>

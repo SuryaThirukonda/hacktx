@@ -145,7 +145,7 @@ export function Sim3D() {
 
   useEffect(() => {
     document.documentElement.setAttribute("data-theme", localStorage.getItem("overwatch.theme") === "light" ? "light" : "dark");
-    document.title = "Overwatch · 3D decision view";
+    document.title = "Eye in the Sky · 3D decision view";
     if (!host.current) return;
     const c = new SceneController(host.current);
     ctl.current = c;

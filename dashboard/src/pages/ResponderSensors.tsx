@@ -143,7 +143,7 @@ export function ResponderSensors() {
   return (
     <div className="mx-auto flex min-h-full max-w-md flex-col gap-3 p-4">
       <header className="flex items-center gap-2">
-        <div className="text-[15px] font-bold tracking-wide">OVERWATCH · responder</div>
+        <div className="text-[15px] font-bold tracking-wide">Eye in the Sky · responder</div>
         <span className="ml-auto inline-flex items-center gap-1 text-[12px]" style={{ color: conn === "open" ? "var(--good)" : "var(--critical)" }}>
           {conn === "open" ? <Wifi size={14} /> : <WifiOff size={14} />} {conn === "open" ? "linked" : conn}
         </span>
