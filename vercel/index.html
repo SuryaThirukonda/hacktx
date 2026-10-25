@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Overwatch · Simulation replays</title>
+  <meta name="description" content="Recorded runs of the Overwatch drone simulator: pursuit, city chase, search and rescue, flood and wildfire." />
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+  <link rel="stylesheet" href="/style.css" />
+</head>
+<body>
+  <header class="top">
+    <a class="brand" href="/">◈ Overwatch</a>
+    <span class="mid">Simulation workspace</span>
+    <span class="badge">Recorded replays</span>
+  </header>
+
+  <main id="home">
+    <p class="eyebrow"><span></span> Select a situation</p>
+    <h1>An overhead view. A clearer next step.</h1>
+    <p class="lede">Each situation plays a run recorded from the Overwatch simulator running locally: the real
+      dashboard, the real flight logic and the real detector output. Nothing on this page is computed live.</p>
+    <div id="cards" class="cards"></div>
+  </main>
+
+  <main id="player" hidden>
+    <a class="back" href="/">← Situations</a>
+    <p class="eyebrow"><span></span> <b id="p-name"></b> · <code id="p-sid"></code></p>
+    <h1 id="p-title"></h1>
+    <p class="lede" id="p-detail"></p>
+    <div class="screen">
+      <video id="p-video" controls autoplay muted playsinline preload="auto"></video>
+    </div>
+    <p class="note">Recorded replay of a simulated scenario. The people, aircraft and camera are simulated; the boxes
+      and labels are what the pipeline detected during that run. For the live, interactive simulator, run Overwatch
+      locally.</p>
+  </main>
+
+  <footer><span>Overwatch</span><span>Measurements, predictions and simulator truth remain distinct.</span></footer>
+  <script src="/app.js"></script>
+</body>
+</html>

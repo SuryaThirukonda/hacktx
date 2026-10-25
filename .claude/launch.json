@@ -45,6 +45,15 @@
         "cd /home/surya/repos/txhack_init_claude/backend && OVERWATCH_PORT=8012 OVERWATCH_DB=/tmp/claude-1000/-home-surya-repos-txhack-init-claude/ff4af4bc-9e9b-49ee-a923-7c459138927e/scratchpad/test12.db TIGER_DATABASE_URL=postgresql://off@127.0.0.1:9/off OPENAI_API_KEY= exec .venv/bin/python -m uvicorn overwatch.main:app --host 127.0.0.1 --port 8012"
       ],
       "port": 8012
+    },
+    {
+      "name": "vercel-static",
+      "runtimeExecutable": "bash",
+      "runtimeArgs": [
+        "-c",
+        "cd /home/surya/repos/txhack_init_claude/vercel && exec python3 -m http.server 8030 --bind 127.0.0.1"
+      ],
+      "port": 8030
     }
   ]
 }
