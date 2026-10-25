@@ -102,6 +102,9 @@ class PersonMarkService:
         with self.rt.pipeline.lock:
             if self._muse_busy:
                 raise ValueError("Muse is still matching; wait a few seconds before requesting again")
+            capture = self.rt.pipeline.counters["drone"].last_capture_ms
+            if capture is None or not -100 <= self.rt.clock.now_ms() - capture <= self.rt.cfg.sources.drone.max_age_ms:
+                raise ValueError("no fresh captured drone frame; restart the stream before requesting a match")
             self.request(iid, description, continuous=True)
             state = self.requests[iid]
             state.update(engine="clothing_rules_fallback", fallback_reason="MODEL_API_KEY unavailable",
@@ -284,7 +287,10 @@ class PersonMarkService:
         if (iid != self.service.current_id or state["session_id"] != p.session_id or not p.incident.active or p.crowd
                 or state.get("tracker_epoch", p.tracker.epoch) != p.tracker.epoch):
             return "Incident/session changed; request a new mark."
+        # Muse is a background network request, not a real-time 1.5 s flight decision.
+        # Current captured evidence is still checked independently below.
         max_age = (float("inf") if state.get("continuous") else
+                   10000 if state.get("engine") == "muse" else
                    self.rt.cfg.decisions.stale_after_s * 1000 if check_request_age else 30000)
         if self.rt.clock.now_ms() - state["created_ms"] > max_age:
             return "Match expired; request a fresh match."

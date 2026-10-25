@@ -12,6 +12,7 @@ from overwatch.config import REPO_ROOT, Secrets, load_config
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--port", type=int, default=8012)
+    parser.add_argument("--host", default="127.0.0.1", help="Use 0.0.0.0 for a phone on the demo LAN")
     args = parser.parse_args()
     os.environ.setdefault("OVERWATCH_DB", str(REPO_ROOT / "data/merged-demo.db"))
     cfg = load_config()
@@ -23,7 +24,7 @@ def main():
     sys.path.insert(0, str(REPO_ROOT))
     from test12.server import mount
     mount(app)
-    uvicorn.run(app, host="127.0.0.1", port=args.port)
+    uvicorn.run(app, host=args.host, port=args.port)
 
 
 if __name__ == "__main__":

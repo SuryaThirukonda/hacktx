@@ -101,3 +101,30 @@ def test_api_failure_falls_back_and_none_does_not_select(monkeypatch):
     c.post(f'/api/incidents/{iid}/target/search', json={'description': 'red shirt'})
     assert wait_result(rt, iid)['status'] == 'no_match'
     assert not rt.pipeline.locks['subject'].active
+
+
+def test_muse_network_latency_does_not_use_flight_decision_expiry(monkeypatch):
+    monkeypatch.setenv('MODEL_API_KEY', 'test-not-a-real-key')
+    c, rt, iid, frame = setup_scene(monkeypatch)
+    tid = rt.pipeline.raw_tracks[0].track_id
+    started, finish = threading.Event(), threading.Event()
+    def select(*args):
+        started.set()
+        assert finish.wait(2)
+        return {'candidate_id': tid, 'confidence': .99}
+    monkeypatch.setattr('overwatch.incident.muse.select_candidate', select)
+    c.post(f'/api/incidents/{iid}/target/search', json={'description': 'red shirt'})
+    assert started.wait(1)
+    frame(30)  # 2.4 s elapsed, beyond generic decision expiry, with a new current frame
+    finish.set()
+    assert wait_result(rt, iid)['status'] == 'approved'
+    assert rt.pipeline.autonomy.mode == 'MANUAL'
+
+
+def test_muse_rejects_stale_capture_before_replacing_current_mark(monkeypatch):
+    monkeypatch.setenv('MODEL_API_KEY', 'test-not-a-real-key')
+    c, rt, iid, frame = setup_scene(monkeypatch)
+    rt.pipeline.counters['drone'].last_capture_ms = -10000
+    response = c.post(f'/api/incidents/{iid}/target/search', json={'description': 'red shirt'})
+    assert response.status_code == 409
+    assert rt.incidents.person_mark.view(iid)['status'] == 'idle'

@@ -27,3 +27,42 @@ Browser smoke: responder rendered, voice toggle changed to Voice on, description
 No `MODEL_API_KEY` was available: **no live Muse API success verified**. Model success tests use mocked responses with actual test-scene detection IDs and JPEG crops. **Physical iPhone/AirPods playback remains unverified.** System routing is reused, not programmatically forced. Background playback and hardware switching must be checked on the demo phone.
 
 API format reference: [Meta image understanding](https://dev.meta.ai/docs/image-understanding).
+
+## Final integration check
+
+Integrated `origin/main` at `ae8f967959bf96793804d09f71f62f98d5db9dd2` into the feature branch with a normal merge (no force-push). Preserved main's two-service Vercel configuration, backend-local YAML configuration, compatibility symlink, and writable state directory behavior. Pursuit, SAR/rescue core, DJI/native iOS, City, and 3D visualization files have no feature diff against that main.
+
+Fixed a demonstrated integration issue: Muse responses now have their own 10-second result-validity window rather than the real-time decision engine's 1.5-second expiry. Fresh current-frame measurements, capture age, incident, session, epoch, and operator-designation checks still apply. A stale captured frame is rejected before replacing the current mark.
+
+Validation after syncing main: 73 focused backend tests passed in 7.36 seconds; TypeScript/production build passed; fatal Python lint and whitespace checks passed. The actual local launcher started against an isolated temporary database and returned HTTP 200 for `/dashboard`, `/responder`, and `/api/test12/state`, with health reporting SIMULATED. Test server was stopped afterward; existing demo servers were left running.
+
+Local startup remains:
+
+```sh
+PYTHONPATH=backend:. backend/.venv/bin/python backend/scripts/run_sim_demo.py --port 8012
+```
+
+For a responder phone on the same demo LAN, use the optional host flag, then open the Mac's LAN IP on the phone:
+
+```sh
+PYTHONPATH=backend:. backend/.venv/bin/python backend/scripts/run_sim_demo.py --host 0.0.0.0 --port 8014
+```
+
+### Real Muse setup
+
+Create a key in the [Meta Model API dashboard](https://dev.meta.ai/) under API keys, following the [official quickstart](https://dev.meta.ai/docs/quickstart). The account/key must be able to use `muse-spark-1.3`. Set `MODEL_API_KEY` in the backend process environment or the repository-root `.env`; restart the local backend. For Vercel set it in the backend's Preview environment before redeploying the PR preview, and in Production before using production. Never use a `VITE_` variable or commit the key. No OpenAI SDK or additional Muse package is required: the existing httpx dependency sends Bearer-authenticated requests to `https://api.meta.ai/v1/chat/completions` with base64 JPEG data URLs, matching the official image-understanding API. No credential was available during validation, so a real API success is still unverified. Without credentials or on API failure the UI explicitly reports fallback.
+
+### Minimal AirPods hardware check
+
+1. Pair AirPods with the responder iPhone; choose them in Control Center's audio output picker. Open the reachable `/responder?incident=...` page and keep it foregrounded.
+2. Tap Enable voice; confirm the test announcement is audible in AirPods.
+3. In the operator dashboard confirm and dispatch a flood, fire, or forest SAR candidate. Confirm the responder receives the alert and speaks its existing calculated guidance.
+4. Tap ACKNOWLEDGE. Confirm the operator dashboard shows that same alert acknowledged.
+5. Reconnect/reload the same responder tab and re-enable voice: the automatically announced alert must not repeat. Explicit Repeat is intentional playback.
+6. Disconnect AirPods and dispatch a new alert. Verify speaker/system fallback, then reconnect and verify there is no duplicate announcement.
+
+Physical AirPods playback is not verified by automated tests. Browser speech needs an active page; no background notification guarantee is added.
+
+### Vercel status and release gate
+
+Both the original PR commit `dbe8e52` and latest main `ae8f967` had a failing Vercel status when inspected. The connected Vercel account returned 403 for this team's deployment metadata/build logs, so the exact deployment error could not be established. The old feature snapshot lacked main's deployment configuration; that configuration is now included. The existing module-style service entrypoint is supported by Vercel's [Services documentation](https://vercel.com/docs/services), so it was not speculatively replaced. Check the new PR deployment status after the push. Source integration/local demo checks pass; a green Vercel preview is still required to claim hosted-deployment readiness. Keep the working local demo path for the hackathon. PR must not merge automatically.
