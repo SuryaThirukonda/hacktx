@@ -445,7 +445,7 @@ export class SceneController {
 
   private buildDrone() {
     // placeholder until the X2 mesh loads: a small cross
-    const ph = new THREE.Mesh(new THREE.BoxGeometry(0.6, 0.08, 0.6), new THREE.MeshStandardMaterial({ color: "#d8d8d8" }));
+    const ph = new THREE.Mesh(new THREE.BoxGeometry(0.6, 0.6, 0.08), new THREE.MeshStandardMaterial({ color: "#d8d8d8" }));
     ph.name = "placeholder";
     this.droneBody.add(ph);
     this.drone.add(this.droneBody);
@@ -453,25 +453,79 @@ export class SceneController {
     ring.rotation.x = -Math.PI / 2;
     ring.name = "ground-dot";
     this.scene.add(ring);
-    const lbl = label("Skydio X2", "s3d-lbl s3d-lbl-drone");
+    const lbl = label("DJI Mini 2 · simulated", "s3d-lbl s3d-lbl-drone");
     lbl.position.set(0, 1.4, 0);
     this.drone.add(lbl);
   }
 
+  /** A DJI Mini 2 at true size (0.29 m motor to motor), in the aircraft body frame the attitude is given in:
+   *  x forward, y left, z up (ENU, the same frame as the simulator's quaternion), so it sits level and flies nose
+   *  first. Mini 2 shape: a slim grey body, a front gimbal with the camera, four arms with motor pods, two-blade
+   *  props that spin while airborne, landing feet, rear status lights. */
+  private props: THREE.Group[] = [];
+  private buildMini2() {
+    clearGroup(this.droneBody);
+    this.props = [];
+    const shell = new THREE.MeshStandardMaterial({ color: "#d9dbd7", roughness: 0.55, metalness: 0.05 });
+    const dark = new THREE.MeshStandardMaterial({ color: "#2b3034", roughness: 0.7 });
+    const arms = new THREE.MeshStandardMaterial({ color: "#b9bdbe", roughness: 0.6 });
+    const g = this.droneBody;
+    const add = (geom: THREE.BufferGeometry, mat: THREE.Material, x: number, y: number, z: number, rot?: [number, number, number]) => {
+      const m = new THREE.Mesh(geom, mat);
+      m.position.set(x, y, z);
+      if (rot) m.rotation.set(rot[0], rot[1], rot[2]);
+      m.castShadow = true;
+      g.add(m);
+      return m;
+    };
+    // body: a flat shell, a darker top deck, the battery hump underneath
+    add(new THREE.BoxGeometry(0.138, 0.078, 0.042), shell, 0, 0, 0);
+    add(new THREE.BoxGeometry(0.10, 0.06, 0.016), dark, -0.01, 0, 0.028);
+    add(new THREE.BoxGeometry(0.085, 0.058, 0.02), dark, -0.012, 0, -0.03);
+    // front: the gimbal link and the camera with its lens, looking forward and a little down
+    add(new THREE.CylinderGeometry(0.009, 0.009, 0.03, 10), dark, 0.072, 0, -0.012, [0, 0, Math.PI / 2]);
+    const cam = add(new THREE.BoxGeometry(0.022, 0.024, 0.022), dark, 0.084, 0, -0.02);
+    cam.rotation.y = 0.5;
+    const lens = add(new THREE.CylinderGeometry(0.006, 0.0075, 0.008, 12),
+      new THREE.MeshStandardMaterial({ color: "#0d1a24", roughness: 0.2, metalness: 0.5 }), 0.098, 0, -0.027, [0, 0, Math.PI / 2]);
+    lens.rotation.y = 0.5;
+    for (const y of [-0.024, 0.024]) add(new THREE.SphereGeometry(0.004, 8, 8), dark, 0.069, y, 0.006); // sensor eyes
+    // arms to the four motors (x forward, y left); the rear arms sit a little lower, as on the aircraft
+    const motors: [number, number][] = [[0.105, 0.105], [0.105, -0.105], [-0.105, 0.105], [-0.105, -0.105]];
+    for (const [mx, my] of motors) {
+      const ang = Math.atan2(my, mx);
+      const len = Math.hypot(mx, my) - 0.045;
+      const zArm = mx > 0 ? 0.004 : -0.006;
+      add(new THREE.BoxGeometry(len, 0.014, 0.011), arms, mx / 2 + 0.01 * Math.sign(mx), my / 2, zArm, [0, 0, ang]);
+      add(new THREE.CylinderGeometry(0.0125, 0.0135, 0.022, 14), dark, mx, my, zArm + 0.006, [Math.PI / 2, 0, 0]); // motor pod
+      add(new THREE.CylinderGeometry(0.004, 0.004, 0.006, 8), arms, mx, my, zArm + 0.02, [Math.PI / 2, 0, 0]); // shaft
+      const hub = new THREE.Group();
+      hub.position.set(mx, my, zArm + 0.023);
+      hub.rotation.z = (mx * my > 0 ? 0.4 : -0.4) + Math.random() * 0.5;
+      for (const k of [0, 1]) {
+        const blade = new THREE.Mesh(new THREE.BoxGeometry(0.074, 0.011, 0.0022),
+          new THREE.MeshStandardMaterial({ color: "#3a3f44", roughness: 0.5, transparent: true, opacity: 0.9 }));
+        blade.position.x = k === 0 ? 0.037 : -0.037;
+        blade.rotation.x = k === 0 ? 0.22 : -0.22; // blade pitch
+        hub.add(blade);
+      }
+      g.add(hub);
+      this.props.push(hub);
+      add(new THREE.BoxGeometry(0.012, 0.012, 0.026), dark, mx * 0.92, my * 0.92, zArm - 0.018); // landing foot
+    }
+    // rear status lights: red on the left, green on the right
+    add(new THREE.SphereGeometry(0.004, 8, 8), new THREE.MeshStandardMaterial({ color: "#ff3b3b", emissive: "#ff2020", emissiveIntensity: 0.9 }), -0.1, 0.1, 0.012);
+    add(new THREE.SphereGeometry(0.004, 8, 8), new THREE.MeshStandardMaterial({ color: "#39ff7a", emissive: "#20ff60", emissiveIntensity: 0.9 }), -0.1, -0.1, 0.012);
+  }
+
+  private spinProps(airborne: boolean) {
+    const w = airborne ? 0.55 : 0.0;
+    this.props.forEach((p, i) => { p.rotation.z += i % 2 === 0 ? w : -w; });
+  }
+
   loadDroneMesh(mesh: World3D["drone_mesh"]) {
     if (mesh.model === "mini2") {
-      clearGroup(this.droneBody);
-      const material = new THREE.MeshStandardMaterial({ color: "#c8cdd0", roughness: .6 });
-      const body = new THREE.Mesh(new THREE.BoxGeometry(.10, .045, .16), material);
-      this.droneBody.add(body);
-      for (const x of [-.10, .10]) for (const z of [-.10, .10]) {
-        const arm = new THREE.Mesh(new THREE.BoxGeometry(.15, .018, .018), material);
-        arm.position.set(x / 2, 0, z / 2); arm.rotation.y = x * z > 0 ? -.785 : .785;
-        this.droneBody.add(arm);
-        const rotor = new THREE.Mesh(new THREE.CylinderGeometry(.045, .045, .006, 16),
-          new THREE.MeshStandardMaterial({ color: "#2c3338" }));
-        rotor.position.set(x, .02, z); this.droneBody.add(rotor);
-      }
+      this.buildMini2();
       for (const child of this.drone.children) if (child instanceof CSS2DObject) child.element.textContent = "DJI Mini 2 · simulated";
       return;
     }
@@ -1252,6 +1306,7 @@ export class SceneController {
   update(f: Frame3D) {
     const resetPose = !this.frame || f.t_s < this.lastT - 0.5;
     this.frame = f;
+    this.spinProps(f.drone.pos[2] > 0.4);
     if (this.beaconMark) { clearGroup(this.beaconMark); this.scene.remove(this.beaconMark); this.beaconMark = null; }
     if (f.beacon && f.beacon.status !== "rejected") {
       const group = new THREE.Group();
