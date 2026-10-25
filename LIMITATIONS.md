@@ -12,8 +12,9 @@ What Overwatch does not do, does not know, or has not been tested on. Read this 
 - **No facial recognition, no identity beyond "the track an operator designated", and no intent or threat
   labels.** Follow never switches identity on its own; any re-binding is shown as unverified until a person
   confirms it.
-- **No detection does not mean the area is clear.** SR3 is a scenario for exactly this: a person under canopy is not
-  seen, and the sector keeps its probability.
+- **No detection does not mean the area is clear.** A sector's probability drops only where the camera actually
+  looked. (SR3 used to put the person under canopy to show this; since 25 Oct every marked target is in the open,
+  so the drone can see, detect and beacon them.)
 - **Nothing declares an entry safe or a structure stable.** No software output can say "safe" (FF scenarios check
   this).
 - **Near-IR is not thermal.** Near-IR shows reflected light. Enhancement is labelled image processing. No

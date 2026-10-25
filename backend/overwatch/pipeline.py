@@ -113,6 +113,10 @@ class Pipeline:
     def __init__(self, cfg: Config, clock: Clock, mode: str, faults: FaultInjector, metrics: Metrics,
                  router: DecisionRouter, bridge: Any, session_id: str) -> None:
         self.cfg = cfg
+        # the configured YOLO input size and tiling, kept so a scenario's override (perception_override) is undone
+        # by the next scenario without one
+        self._perception_defaults = {"yolo_imgsz": cfg.perception.yolo_imgsz, "tiling": cfg.perception.tiling.enabled,
+                                     "tile_px": cfg.perception.tiling.tile_px}
         self.clock = clock
         self.mode = mode
         self.faults = faults
@@ -211,6 +215,7 @@ class Pipeline:
         self._dispatch_seen: set[str] = set()
         self._dispatch_report_ms = -1e12
         self.detector_override: str | None = None  # a scenario's detector choice (simulator)
+        self.perception_override: dict | None = None  # a scenario's YOLO input size and tiling (simulator)
         # spoken callouts: short, one per operation, newest first on the page (the voice hook drops older ones)
         self.callouts: list[dict[str, Any]] = []
         self._callout_said: dict[str, float] = {}
@@ -265,9 +270,15 @@ class Pipeline:
     # ===========================================================================================================
     def _ensure_detector(self, provenance: str) -> None:
         choice = self.detector_override or self.cfg.perception.detector
-        if self.detector is None or self._detector_prov != (provenance, choice):
+        # the YOLO input size and tiling: the configured values unless the scenario asks for more (a high-resolution
+        # search feed is tiled so a distant person is still a few dozen pixels tall to the model)
+        ov = {**self._perception_defaults, **(self.perception_override or {})}
+        pc = self.cfg.perception
+        pc.yolo_imgsz, pc.tiling.enabled, pc.tiling.tile_px = int(ov["yolo_imgsz"]), bool(ov["tiling"]), int(ov["tile_px"])
+        key = f"{choice}@{pc.yolo_imgsz}/{'tiled' if pc.tiling.enabled else 'whole'}{pc.tiling.tile_px}"
+        if self.detector is None or self._detector_prov != (provenance, key):
             self.detector = build_detector(choice, provenance, self.cfg)
-            self._detector_prov = (provenance, choice)  # origin provenance of the frames the detector was chosen for
+            self._detector_prov = (provenance, key)  # origin provenance of the frames the detector was chosen for
             log.info("detector: %s for %s frames", self.detector.model_id, provenance)
 
     def process_drone_frame(self, pkt: FramePacket) -> FrameOverlay:

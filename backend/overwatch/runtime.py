@@ -224,6 +224,7 @@ class Runtime:
         self.clock.reset_to(0.0)  # type: ignore[attr-defined]
         p.reset_session(self.session_id)
         p.detector_override = sim.scenario.detector  # a scenario may ask for YOLO instead of the colour-blob stand-in
+        p.perception_override = sim.scenario.perception  # and for a larger YOLO input, tiled
         p.autonomy.obstacle_sensor = sim.obstacle_scene if sim.scenario.stack == "jev-x2" else None
         p.autonomy.bridge = sim.bridge
         p.bridge = sim.bridge

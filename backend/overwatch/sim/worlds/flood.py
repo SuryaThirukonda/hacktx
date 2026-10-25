@@ -254,8 +254,11 @@ def scenarios():
         limits=[MetricLimit("world.rescue_beacon_found", min=1), MetricLimit("world.rescue_unsafe_steps", max=0)],
         tags=["world:flood", "search", "rescue", "beacon", "static"])
     sc.hazards = FloodLayers(static_flood_model(), roads=rd, start="staging", goal=None)
+    from .sar import SEARCH_CAMERA, SEARCH_PERCEPTION
+    sc.detector = "ultralytics"  # the learned detector on a 1080p feed, a full-resolution YOLO pass
+    sc.camera, sc.perception = SEARCH_CAMERA, SEARCH_PERCEPTION
     sc.rescue = dict(kind="flood", description="yellow shirt", last_seen_xy=(reported[0] - 22.0, reported[1] + 18.0),
-                     radius_m=70.0, altitude_m=40.0, crew_speed_mps=3.0, max_depth_m=0.15)
+                     radius_m=70.0, altitude_m=28.0, crew_speed_mps=3.0, max_depth_m=0.15)
     sc.world_eval = lambda res, scenario: {"rescue_beacon_found": int(bool((res.rescue or {}).get("beacon"))),
                                            "rescue_unsafe_steps": (res.rescue or {}).get("unsafe_steps", 0),
                                            "stranded": {k: actor_found(res, k) for k in STRANDED}}

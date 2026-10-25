@@ -891,3 +891,32 @@ Earlier claims about Overwatch and FlyBy results are treated as claims; the numb
   the responder (police officer or crew) to the drone's estimate of the target with the words on it, so the demo
   shows what the callout is relative to. The survey map already drew the crew or police ping.
 - Not checked beyond compiling and type-checking (manual testing by Surya).
+
+### E10: visible targets, a high-resolution search feed, the crew route drawn at the beacon (done; not run here)
+
+- **Every marked target is in the open.** SR3 ("Search: person in the far clearing") now spawns the lost person in
+  the clearing at (-20, 10) instead of under canopy, and expects them found. `sim/world.under_cover(world, xy)` names
+  the structure or tree canopy that would hide a point; a check over SR1-SR5, SAR1, FL1 and WF1 found no subject under
+  cover. Pursuit scenarios keep their deliberate occlusions (carports, the city towers): those are the point of them.
+- **The search feed.** `Scenario.camera` (`{"width", "height", "fps", "hfov_deg"}`) and `Scenario.perception`
+  (`{"yolo_imgsz", "tiling", "tile_px"}`) are applied per scenario: the camera in `SimulationDriver.load` (the frame
+  is rendered at that size and rate), the detector in `Pipeline._ensure_detector` (rebuilt when the size or tiling
+  changes, the configured values restored for a scenario without overrides). SR1-SR4, VC2, FL1 and WF1 fly a 1080p
+  feed at 5 fps with YOLO26n on a full-resolution 1920 px pass; WF1 searches at 30 m (was 45), FL1 at 28 m (was 40).
+  Measured on the forest at 30 m (gimbal -50, CPU): the old 960x540 feed at imgsz 960 saw the person in 0 of 8 frames
+  (20-26 px tall); 1080p at 1280 in 2 of 8 (66 ms), at 1920 in 6 of 8 (191 ms), tiled 1280 px in 8 of 8 (293 ms).
+  The 1920 pass at 5 fps costs about a second of CPU per simulated second, so 2x and 3x still run ahead of real time
+  (the tiled 960 px variant dragged the simulation to a third of real time and was dropped).
+- **The crew route at the beacon.** `RescueMission` assesses the responder's way in (A* on the hazard grid,
+  `missions/sar_guidance.access_route` through `crew_routing.assessed_route`) the moment the beacon is created, and
+  replans every 2 s while the beacon is under review as well as while the crew walks. The 3D view draws it as the
+  green tube with the "crew route to rescue beacon N m" label (the same style as the hazard-layer routes) and, when
+  the assessment is blocked, says why at the beacon ("crew route: no assessed access route…"). `rescue.view()` now
+  carries `route` and `route_status`.
+- **WF1's ring of fire has a break** on the trailhead side (bearing 205, 36 degrees wide): the person inside was
+  unreachable by any route, so the assessment was always "blocked". The access route now threads the break (about
+  166 m from the responder's position). In a live run at 3x the beacon was placed at 71 s of simulated time and the
+  route appeared in the same frame.
+- Checked: `py_compile`, `ruff` on the touched files (no new findings beyond the pre-existing style ones), `tsc -b`,
+  `npm run build`; one WF1 run through the 3D frame stream for the beacon and route. Everything else is manual
+  testing by Surya.

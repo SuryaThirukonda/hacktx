@@ -86,7 +86,8 @@ class SimulationDriver:
         self.renderer = self._field[2]
         self._base_renderer = self.renderer
         dc = cfg.sources.drone
-        self.drone_intr = Intrinsics.from_hfov(dc.width, dc.height, dc.hfov_deg)
+        self.drone_intr = Intrinsics.from_hfov(dc.width, dc.height, dc.hfov_deg)  # per scenario in load()
+        self.drone_fps = float(dc.target_fps)
         self.rng = np.random.default_rng(seed + 101)
         self._autonomy_defaults = cfg.autonomy.model_dump()  # a scenario's overrides are undone on the next load
         self._locks_defaults = cfg.locks.model_dump()
@@ -95,6 +96,13 @@ class SimulationDriver:
     # ---------------------------------------------------------------------------------------------------------
     def load(self, scenario_id: str) -> None:
         sc: Scenario = get_scenario(scenario_id)
+        # the camera: the configured feed, or the scenario's own (rescue flies a high-resolution feed so people
+        # stay large enough for the detector at search altitude)
+        dc = self.cfg.sources.drone
+        cam = sc.camera or {}
+        self.drone_intr = Intrinsics.from_hfov(int(cam.get("width", dc.width)), int(cam.get("height", dc.height)),
+                                               float(cam.get("hfov_deg", dc.hfov_deg)))
+        self.drone_fps = float(cam.get("fps", dc.target_fps))  # a slower high-resolution feed keeps the CPU detector up
         if sc.world is not None:  # a world of its own (pursuit, search and rescue, flood, fire)
             base_world, texture = _scenario_world(sc)
             base_renderer = SceneRenderer(base_world, texture)
@@ -207,9 +215,9 @@ class SimulationDriver:
         # --- drone video -----------------------------------------------------------------------------------
         dc = self.cfg.sources.drone
         if self.t_s >= self._next_drone:
-            self._next_drone += 1.0 / dc.target_fps
+            self._next_drone += 1.0 / self.drone_fps
             if self._next_drone < self.t_s:
-                self._next_drone = self.t_s + 1.0 / dc.target_fps
+                self._next_drone = self.t_s + 1.0 / self.drone_fps
             if render and not f.get("drone_video_drop"):
                 drop_p = float(f.get("frame_drop_pct") or 0.0)
                 if drop_p > 0 and self.rng.random() < drop_p:

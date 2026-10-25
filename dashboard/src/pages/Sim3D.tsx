@@ -198,7 +198,7 @@ export function Sim3D() {
         .s3d-lbl { font: 600 11px Lato, system-ui, sans-serif; padding: 1px 6px; border-radius: 4px; white-space: nowrap;
                    background: rgba(13,13,13,0.66); color: #f0efec; transform: translateY(-50%); }
         .s3d-lbl-subject { color: #ffb08a; } .s3d-lbl-responder { color: #9cc3f5; } .s3d-lbl-callout { color: #ffd166; font-weight: 600; max-width: 260px; white-space: normal; text-align: center; } .s3d-lbl-bystander { color: #c3c2b7; font-weight: 400; }
-        .s3d-lbl-drone { color: #8fe0c0; } .s3d-lbl-est { color: #ffb08a; font-weight: 400; background: rgba(13,13,13,0.45); }
+        .s3d-lbl-drone { color: #8fe0c0; } .s3d-lbl-warn { color: #ffb08a; background: rgba(13,13,13,0.5); } .s3d-lbl-est { color: #ffb08a; font-weight: 400; background: rgba(13,13,13,0.45); }
         .s3d-lbl-static { color: #c3c2b7; font-weight: 400; background: rgba(13,13,13,0.4); }
         .s3d-pin { font-size: 10.5px; } .s3d-pin-ai { color: #c9c2ff; border: 1px solid #9085e9; }
         .s3d-pin-rules { color: #f2cf7c; border: 1px solid #c98500; }

@@ -91,6 +91,7 @@ def _paint(tex, img: np.ndarray, rng: np.random.Generator) -> np.ndarray:
 # fire is three burning patches in the core and a ring of fire round one of its clearings, with the person inside.
 BURNS = [(-90.0, -20.0, 40.0), (40.0, 60.0, 34.0), (85.0, -40.0, 30.0)]  # (x, y, radius): areas on fire
 RING = (10.0, -55.0, 30.0, 13.0)  # (x, y, outer, inner): the clearing at (10, -55) encircled; the person inside
+RING_GAP_DEG = (205.0, 36.0)  # (bearing, width): an unburnt break in the ring on the trailhead side, the crew's way in
 WILD_PEOPLE = {"stranded": (10.0, -55.0), "hiker": (-55.0, -45.0)}  # fixed positions, the same every run
 FIRE_GRID_RES_M = 4.0
 
@@ -102,7 +103,11 @@ def _wild_masks(g: Grid) -> np.ndarray:
         burning |= (X - cx) ** 2 + (Y - cy) ** 2 <= r * r
     cx, cy, ro, ri = RING
     d2 = (X - cx) ** 2 + (Y - cy) ** 2
-    burning |= (d2 <= ro * ro) & (d2 >= ri * ri)
+    ring = (d2 <= ro * ro) & (d2 >= ri * ri)
+    bearing = np.degrees(np.arctan2(X - cx, Y - cy)) % 360.0  # compass bearing from the clearing's centre
+    off = (bearing - RING_GAP_DEG[0] + 180.0) % 360.0 - 180.0
+    ring &= np.abs(off) > RING_GAP_DEG[1] / 2  # the break: the A* access route threads through it
+    burning |= ring
     return burning
 
 
@@ -263,9 +268,10 @@ def scenarios():
     sc = Scenario(
         "WF1", "Wildfire (static): survey the burn and beacon the person in the clearing",
         "On the search-and-rescue woodland: three patches of forest are burning and a ring of fire surrounds a "
-        "clearing with someone inside. Nothing spreads: the fire is where it is for the whole run. The drone launches "
-        "from the trailhead pad, sweeps the burn area, matches the yellow shirt and puts a beacon on the person; the "
-        "crew is routed round the fire.",
+        "clearing with someone inside, open only through a break on the trailhead side. Nothing spreads: the fire is "
+        "where it is for the whole run. The drone launches from the trailhead pad, sweeps the burn area, matches the "
+        "yellow shirt and puts a beacon on the person; the crew's way in (A* round the fire, through the break) is "
+        "assessed the moment the beacon is placed and drawn in 3D.",
         duration_s=300.0, drone=DroneInit(WILD_PAD[0], WILD_PAD[1], 0.6, 45.0, -50.0),
         actors=[responder((WILD_PAD[0] + 10.0, WILD_PAD[1] + 2.0), [Wait(999)], heading=45.0),
                 person("stranded", "subject", reported, MUSTARD, [Wait(999)], vary=False),
@@ -274,9 +280,11 @@ def scenarios():
         limits=[MetricLimit("world.rescue_beacon_found", min=1), MetricLimit("world.rescue_unsafe_steps", max=0)],
         tags=["world:fire", "search", "rescue", "beacon", "static"])
     sc.hazards = FireLayers(static_fire_model(), keep_out_margin_s=60.0, staging=WILD_PAD)
+    from .sar import SEARCH_CAMERA, SEARCH_PERCEPTION
     sc.detector = "ultralytics"  # the learned detector on the forest frames (the blob stand-in struggles with the burn)
+    sc.camera, sc.perception = SEARCH_CAMERA, SEARCH_PERCEPTION  # a 1080p feed, a full-resolution YOLO pass
     sc.rescue = dict(kind="fire", description="yellow shirt", last_seen_xy=(reported[0] + 30.0, reported[1] + 25.0),
-                     radius_m=80.0, altitude_m=45.0, crew_speed_mps=2.0)
+                     radius_m=80.0, altitude_m=30.0, crew_speed_mps=2.0)  # 30 m up: a person is ~70 px tall at 1080p
     sc.world_eval = lambda res, scenario: {"rescue_beacon_found": int(bool((res.rescue or {}).get("beacon"))),
                                            "rescue_unsafe_steps": (res.rescue or {}).get("unsafe_steps", 0),
                                            "stranded": actor_found(res, "stranded")}

@@ -117,6 +117,8 @@ class Scenario:
     hazards: Any = None  # object with overlays(t_s) / layers(t_s) for water, fire and smoke (screening models)
     world_eval: Any = None  # callable(res, scenario) -> dict merged into the report under "world"
     detector: str | None = None  # perception.detector override for this scenario (e.g. "ultralytics": YOLO26, tiled)
+    camera: dict | None = None  # drone camera override: {"width": 1920, "height": 1080} (a high-resolution feed)
+    perception: dict | None = None  # perception overrides: {"yolo_imgsz": 1280, "tiling": True, "tile_px": 960}
     stack: str = "mini2"  # mini2: the kinematic stand-in at pursuit altitude | jev-x2: MuJoCo X2 low, with the reflex and D6
     autonomy: dict | None = None  # autonomy config overrides for this scenario (altitude, standoff, speed caps)
     locks: dict | None = None  # lock config overrides (e.g. a longer search before the operator hand-off)

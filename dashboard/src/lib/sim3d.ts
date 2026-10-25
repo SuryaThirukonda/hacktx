@@ -252,7 +252,9 @@ export class SceneController {
   private beliefMarks = new THREE.Group();
   private beliefSig = "";
   private boxMeshes = new Map<string, THREE.Mesh>();
-  private crewLine: THREE.Line;
+  /** the rescue crew's assessed way in (A* on the hazard grid), drawn as soon as a beacon is placed */
+  private crewRouteGroup = new THREE.Group();
+  private crewRouteKey = "";
   private calloutLine: THREE.Line;
   private calloutLabel: CSS2DObject;
   private focus: string | null = null; // the story beat's entity: actor:<id> | box:<id prefix> | hypothesis:<id> | route
@@ -374,15 +376,13 @@ export class SceneController {
     this.focusRing.rotation.x = -Math.PI / 2;
     this.focusRing.visible = false;
     this.scene.add(this.focusRing);
-    this.crewLine = new THREE.Line(new THREE.BufferGeometry(), new THREE.LineBasicMaterial({ color: "#3ddc84" }));
-    this.crewLine.visible = false;
     // the callout line: from the responder (police or crew) to the drone's estimate of the target, carrying the
     // words the responder is being told, so the demo shows what the callout is relative to
     this.calloutLine = new THREE.Line(new THREE.BufferGeometry(), new THREE.LineDashedMaterial({ color: "#ffd166", dashSize: 1.2, gapSize: 0.8 }));
     this.calloutLine.visible = false;
     this.calloutLabel = label("", "s3d-lbl s3d-lbl-callout");
     this.calloutLabel.visible = false;
-    this.scene.add(this.hazardGroup, this.crewLine, this.calloutLine, this.calloutLabel);
+    this.scene.add(this.hazardGroup, this.crewRouteGroup, this.calloutLine, this.calloutLabel);
 
     this.buildDrone();
     this.scene.add(this.drone);
@@ -1088,27 +1088,27 @@ export class SceneController {
     }
   }
 
-  private addCrewRoute3D(waypoints: XY[], text: string) {
+  private addCrewRoute3D(waypoints: XY[], text: string, into: THREE.Group = this.hazardOverlayGroup) {
     const pts = waypoints.map(([x, y]) => v3(x, y, 0.45));
     const curve = new THREE.CatmullRomCurve3(pts);
     const tube = new THREE.Mesh(
       new THREE.TubeGeometry(curve, Math.max(16, waypoints.length * 4), 0.24, 8, false),
       new THREE.MeshBasicMaterial({ color: "#22c55e", transparent: true, opacity: 0.9 }),
     );
-    this.hazardOverlayGroup.add(tube);
+    into.add(tube);
     for (const [x, y] of [waypoints[0], waypoints[waypoints.length - 1]]) {
       const node = new THREE.Mesh(
         new THREE.SphereGeometry(0.5, 12, 10),
         new THREE.MeshBasicMaterial({ color: "#22c55e" }),
       );
       node.position.copy(v3(x, y, 0.5));
-      this.hazardOverlayGroup.add(node);
+      into.add(node);
     }
     const mid = waypoints[Math.floor(waypoints.length / 2)];
     const anchor = new THREE.Group();
     anchor.position.copy(v3(mid[0], mid[1], 1.8));
     anchor.add(label(text, "s3d-lbl s3d-lbl-drone"));
-    this.hazardOverlayGroup.add(anchor);
+    into.add(anchor);
   }
 
   private animateHazards(nowSec: number) {
@@ -1429,11 +1429,21 @@ export class SceneController {
 
     this.updateBelief(f);
     this.updateFocus(f);
+    // the rescue crew's way in: assessed (A* on the hazard grid) the moment a beacon is placed, redrawn as it is
+    // replanned; a blocked assessment is said at the beacon instead
     const crew = f.crew_route;
-    this.crewLine.visible = !!crew?.ok && crew.waypoints.length > 1;
-    if (crew) {
-      this.crewLine.geometry.dispose();
-      this.crewLine.geometry = new THREE.BufferGeometry().setFromPoints(crew.waypoints.map(([x,y]) => v3(x,y,0.4)));
+    const routeKey = crew ? `${crew.ok}|${crew.label}|${crew.waypoints.map(([x, y]) => `${x},${y}`).join(";")}` : "";
+    if (routeKey !== this.crewRouteKey) {
+      this.crewRouteKey = routeKey;
+      clearGroup(this.crewRouteGroup);
+      if (crew?.ok && crew.waypoints.length > 1) {
+        this.addCrewRoute3D(crew.waypoints, crew.label, this.crewRouteGroup);
+      } else if (crew && !crew.ok && f.beacon && f.beacon.status !== "rejected") {
+        const anchor = new THREE.Group();
+        anchor.position.copy(v3(f.beacon.xy[0], f.beacon.xy[1], 3.2));
+        anchor.add(label(`crew route: ${crew.label}`, "s3d-lbl s3d-lbl-warn"));
+        this.crewRouteGroup.add(anchor);
+      }
     }
 
     // decision pins where each D1 answer reached the drone

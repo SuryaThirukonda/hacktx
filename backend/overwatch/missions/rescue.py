@@ -123,7 +123,13 @@ class RescueMission:
                 self.p.autonomy.set_mode("HOLD", now, "rescue candidate awaiting human review")
                 self.p.autonomy.rescue_target = xy
                 self.event("rescue_beacon", "Person located: candidate beacon awaiting human review.", now)
+                if crew is not None:  # the way in is assessed straight away and drawn, before anyone moves
+                    self.last_plan = now
+                    self.plan(now, crew.pos)
                 self.say("Found. Review the beacon.", now, True)
+        if self.phase == "REVIEW" and crew is not None and self.beacon and now - self.last_plan >= 2000:
+            self.last_plan = now  # keep the route current while a person reviews the beacon
+            self.plan(now, crew.pos)
         if crew is not None and now - self.last_ping >= 1000:
             self.last_ping = now
             self.ping = dict(xy=crew.pos.tolist(), heading=crew.heading, t=now / 1000,
@@ -188,7 +194,7 @@ class RescueMission:
             result.update(signature=signature, id="rescue", label="to rescue beacon")
         self.p.crew.state = dict(kind=self.sim().scenario.rescue["kind"], label="SIMULATED rescue crew",
                                  route=result, crews=[dict(id="responder", xy=list(start))],
-                                 why=None if result else "no assessed route")
+                                 why=None if result else (self.last_assessment or {}).get("reason") or "no assessed route")
         self.p.crew.history.append(dict(ts_ms=now, depart_s=now / 1000, route=signature))
         if signature != self.last_signature:
             self.event("rescue_route", "Crew route updated." if result else "Crew holding: no assessed route.", now)
@@ -267,6 +273,8 @@ class RescueMission:
         if not self.active():
             return None
         return dict(phase=self.phase, beacon=self.beacon, ping=self.ping, callouts=self.callouts[-12:],
+                    route=[[round(float(v[0]), 2), round(float(v[1]), 2)] for v in self.route] or None,
+                    route_status=(self.last_assessment or {}).get("status"),
                     crew_speed_mps=self.sim().scenario.rescue.get("crew_speed_mps", 3),
                     crew_distance_m=round(self.distance, 2), movement_checks=self.move_checks,
                     max_water_depth_m=self.max_water_depth, no_safe_route=self.no_route,

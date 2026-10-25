@@ -178,6 +178,25 @@ def street_cover(streets: dict, boxes: list[BoxObj], trees: list[TreeObj], step_
     return out
 
 
+def under_cover(world: World, xy: tuple[float, float], margin: float = 0.5) -> str | None:
+    """What hides a standing person at ``xy`` from above: a structure's footprint or a tree canopy, or None."""
+    import math
+
+    x, y = xy
+    for b in world.boxes:
+        if b.size_lwh[2] < 1.2 or b.kind in ("pad", "pad_mark"):
+            continue
+        h = math.radians(b.heading_deg)
+        dx, dy = x - b.center_xy[0], y - b.center_xy[1]
+        along, across = dx * math.sin(h) + dy * math.cos(h), dx * math.cos(h) - dy * math.sin(h)
+        if abs(along) < b.size_lwh[0] / 2 + margin and abs(across) < b.size_lwh[1] / 2 + margin:
+            return b.oid
+    for t in world.trees:
+        if math.hypot(x - t.xy[0], y - t.xy[1]) < t.canopy_r + margin:
+            return t.oid
+    return None
+
+
 def launchpad_objects(xy: tuple[float, float], prefix: str = "pad") -> list[BoxObj]:
     """A landing pad (a light slab with a dark H) and a small hangar beside it."""
     x, y = xy

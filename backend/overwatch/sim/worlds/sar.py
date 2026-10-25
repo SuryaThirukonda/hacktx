@@ -36,6 +36,13 @@ SECTORS = {f"S{3 * r + c + 1}": [(-750.0 + 500 * c, -750.0 + 500 * r), (-250.0 +
                                   (-250.0 + 500 * c, -250.0 + 500 * r), (-750.0 + 500 * c, -250.0 + 500 * r)]
            for r in range(3) for c in range(3)}
 ALT_M, HFOV_DEG = 30.0, 82.0
+# The search feed: a 1080p camera at 5 fps and one full-resolution YOLO pass (driver.load applies the camera,
+# Pipeline._ensure_detector the detector). Measured on this forest at 30 m, gimbal -50, YOLO26n on the CPU
+# (25 Oct): the old 960x540 feed at imgsz 960 saw the person in 0 of 8 frames (20-26 px tall); 1080p at imgsz 1280
+# in 2 of 8 (66 ms), at 1920 in 6 of 8 (191 ms), tiled 1280 px in 8 of 8 (293 ms). At 5 fps the 1920 pass costs
+# about a second of CPU per simulated second, so the 2x and 3x speeds still run ahead of real time.
+SEARCH_CAMERA = {"width": 1920, "height": 1080, "fps": 5}
+SEARCH_PERCEPTION = {"yolo_imgsz": 1920, "tiling": False, "tile_px": 1280}
 
 
 def _paint(tex, img: np.ndarray, rng: np.random.Generator) -> np.ndarray:
@@ -220,17 +227,18 @@ def scenarios():
     sc2.world_eval = _eval("lost", s2, spacing)
     out.append(sc2)
 
-    # SR3: the person is under canopy: the camera does not see them, and the sector must not read as clear
+    # SR3: the person is in the open in the far clearing of the sector (marked targets are always visible to the
+    # drone; the under-canopy case was dropped on 25 Oct)
     s3 = sweep([(-50.0, -15.0), (10.0, -15.0), (10.0, 40.0), (-50.0, 40.0)])
     sc3 = Scenario(
-        "SR3", "Search: person under canopy (not seen)",
-        "The lost person sits under dense canopy. The sweep does not detect them; the sector keeps probability after "
-        "the sweep (no detection is not evidence of absence).",
+        "SR3", "Search: person in the far clearing",
+        "The lost person sits in the open in the clearing at the far side of the sector; the sweep reaches them on "
+        "its last legs. The sector's probability drops only where the camera actually looked.",
         duration_s=round(path_length(s3) / 6.0 + 12.0), drone=DroneInit(s3[0][0], s3[0][1] - 8, ALT_M, 0.0, -88.0),
-        actors=[team, person("lost", "subject", _under_canopy(), MUSTARD, [Wait(999)], pants=JEANS,
+        actors=[team, person("lost", "subject", (-20.0, 10.0), MUSTARD, [Wait(999)], pants=JEANS,
                              height=1.0)],
-        limits=[MetricLimit("world.lost_person.found", max=0), MetricLimit("world.searched_sector_poa_after", min=0.001)],
-        tags=["world:sar", "search", "canopy"])
+        limits=[MetricLimit("world.lost_person.found", min=1), MetricLimit("world.searched_sector_poa_after", min=0.001)],
+        tags=["world:sar", "search"])
     sc3.pilot_path = [(s3[0][0], s3[0][1] - 8, ALT_M, 0.0)] + [(x, y, ALT_M, 6.0) for x, y in s3]
     sc3.world_eval = _eval("lost", s3, spacing)
     out.append(sc3)
@@ -263,6 +271,9 @@ def scenarios():
 
     for s in out:
         s.world = build_world
+        # a 1080p feed and the learned detector on a larger input: a person stays a few dozen pixels tall to the
+        # model at search altitude, so the sweep does not miss them
+        s.detector, s.camera, s.perception = "ultralytics", SEARCH_CAMERA, SEARCH_PERCEPTION
     return out
 
 

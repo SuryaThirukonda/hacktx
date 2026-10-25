@@ -204,6 +204,7 @@ class HeadlessRunner:
         self.pipeline.rescue.sim_provider = lambda: self.sim
         self.sim.rescue = self.pipeline.rescue
         self.pipeline.detector_override = self.sim.scenario.detector
+        self.pipeline.perception_override = self.sim.scenario.perception
         self.pipeline.autonomy.obstacle_sensor = self.sim.obstacle_scene if self.sim.scenario.stack == "jev-x2" else None
         self.operator = OperatorEmulator(self.pipeline, self.sim)
         self._phone_gt: tuple[int, list[dict]] | None = None
