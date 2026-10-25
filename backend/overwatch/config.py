@@ -1,4 +1,4 @@
-"""Typed configuration loaded from config/default.yaml, an optional override YAML, and environment variables."""
+"""Typed configuration loaded from backend/config/default.yaml, an optional override YAML, and environment variables."""
 
 from __future__ import annotations
 
@@ -9,8 +9,14 @@ from typing import Any, Literal
 import yaml
 from pydantic import BaseModel, ConfigDict, Field
 
+BACKEND_ROOT = Path(__file__).resolve().parents[1]
 REPO_ROOT = Path(__file__).resolve().parents[2]
-DEFAULT_CONFIG_PATH = REPO_ROOT / "config" / "default.yaml"
+# Inside backend/ so a deployment of backend/ alone (the Vercel service root) still ships it; the repo root's
+# config/ is a symlink to it.
+DEFAULT_CONFIG_PATH = BACKEND_ROOT / "config" / "default.yaml"
+# Writable state (incident DB, evidence, scenes). Read-only deployments such as Vercel can only write under /tmp.
+DATA_DIR = Path(os.environ.get("OVERWATCH_DATA_DIR")
+                or ("/tmp/overwatch" if os.environ.get("VERCEL") else REPO_ROOT / "data"))
 
 
 class _Section(BaseModel):

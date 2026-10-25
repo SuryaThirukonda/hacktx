@@ -2,13 +2,17 @@
 .env.*
 !.env.example
 tiger-cloud-hacktx-credentials.txt
-backend/.venv
-dashboard/node_modules
-data
-sessions
-ios
-evaluation
-**/__pycache__
 *.db
 *.db-wal
 *.db-shm
+**/__pycache__
+# Anchored (leading /): an unanchored "evaluation" or "data" would also drop backend/overwatch/evaluation.
+/backend/.venv
+/backend/weights
+/backend/tests
+/dashboard/node_modules
+/config
+/data
+/sessions
+/ios
+/evaluation
