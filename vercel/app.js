@@ -21,6 +21,7 @@ function show(s) {
   $("p-sid").textContent = s.sid;
   $("p-title").textContent = s.title;
   $("p-detail").textContent = s.detail;
+  $("p-speed").textContent = s.speed > 1 ? `Recorded at ${s.speed}× simulation speed (the ${s.speed}x button in the view).` : "Recorded at 1× (real time).";
   const v = $("p-video");
   v.src = `/${s.video}`;
   v.play().catch(() => {}); // autoplay can be refused; the controls stay available

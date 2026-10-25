@@ -8,7 +8,8 @@
     "title": "Pursuit (autonomous): launch from the station, a person runs, the drone follows",
     "detail": "The drone sits on the station's pad. A consenting volunteer in a red shirt waits by the street, then jogs east, turns north at the intersection and east again. The drone launches, finds them by their clothing and keeps them in frame on its own.",
     "image": "images/pursuit.jpg",
-    "video": "recordings/PP0.mp4"
+    "video": "recordings/PP0.mp4",
+    "speed": 1
   },
   {
     "id": "city",
@@ -19,39 +20,19 @@
     "title": "City chase \u00b7 isolated engine",
     "detail": "Base launch, camera search, cover loss and recovery, police pings and shared 3D.",
     "image": "images/city.jpg",
-    "video": "recordings/T12.mp4"
+    "video": "recordings/T12.mp4",
+    "speed": 1
   },
   {
     "id": "sar",
     "name": "Search and rescue",
     "mission": "search",
-    "summary": "Find a lost person in woods: sectors with a probability-of-area prior, a lawnmower sweep, decoys, and a person under canopy that the camera cannot see.",
-    "sid": "SR1",
-    "title": "Search: lost person in a clearing",
-    "detail": "The pilot sweeps the first sector at 30 m with the camera straight down; the lost person sits in a clearing.",
+    "summary": "Find a lost person in woods: sectors with a probability-of-area prior, a lawnmower sweep, decoys, and a person in a far clearing reached on the last legs of the sweep.",
+    "sid": "SR5",
+    "title": "Forest clearing: launch, locate, review and beacon",
+    "detail": "SIMULATED: launch from base and search a reported location for a yellow shirt. A measured beacon requires human confirmation before crew movement. Keep visual contact, guide the crew, then return to base.",
     "image": "images/sar.jpg",
-    "video": "recordings/SR1.mp4"
-  },
-  {
-    "id": "flood",
-    "name": "Flood rescue",
-    "mission": "search",
-    "summary": "Standing water over the south of a neighbourhood with a few dry mounds. The drone launches from the pad, sweeps the flooded blocks, puts a beacon on the stranded person and guides the crew along dry roads. The water does not rise.",
-    "sid": "FL1",
-    "title": "Flood (static): survey the flooded blocks and beacon the stranded",
-    "detail": "The south of the neighbourhood is under about 0.75 m of standing water; a few mounds stay dry. The drone launches from the pad, sweeps the flooded blocks, puts a beacon on the person in the yellow shirt and guides the crew along dry roads. The water does not rise: nothing here depends on how long the search takes.",
-    "image": "images/flood.jpg",
-    "video": "recordings/FL1.mp4"
-  },
-  {
-    "id": "fire",
-    "name": "Wildfire rescue",
-    "mission": "search",
-    "summary": "Burning patches in a forest and a ring of fire round a clearing with someone inside; nothing spreads. The drone launches from the fire camp, sweeps the burn, puts a beacon on the person and the crew is routed round the fire.",
-    "sid": "WF1",
-    "title": "Wildfire (static): survey the burn and beacon the person in the clearing",
-    "detail": "On the search-and-rescue woodland: three patches of forest are burning and a ring of fire surrounds a clearing with someone inside, open only through a break on the trailhead side. Nothing spreads: the fire is where it is for the whole run. The drone launches from the trailhead pad, sweeps the burn area, matches the yellow shirt and puts a beacon on the person; the crew's way in (A* round the fire, through the break) is assessed the moment the beacon is placed and drawn in 3D.",
-    "image": "images/fire.jpg",
-    "video": "recordings/WF1.mp4"
+    "video": "recordings/SR5.mp4",
+    "speed": 2
   }
 ]
