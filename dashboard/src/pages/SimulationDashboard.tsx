@@ -59,9 +59,14 @@ export function SimulationDashboard() {
     try { await fn(); } catch (e) { setError((e as Error).message); } finally { setBusy(false); }
   };
   const launch = () => perform(async () => {
-    await api.post("/api/test12/stop");
-    if (city && sid === "T12") await api.post("/api/test12/start", { spawn });
-    else await actions.startIncident(`${selected?.name} · ${sid}`, selected?.mission ?? "search", sid);
+    if (city && sid === "T12") {
+      await api.post("/api/test12/stop");
+      await api.post("/api/test12/start", { spawn });
+    } else {
+      // stop a City run if one is going; a server without the City engine (the Vercel deployment) answers 404
+      await api.post("/api/test12/stop").catch(() => undefined);
+      await actions.startIncident(`${selected?.name} · ${sid}`, selected?.mission ?? "search", sid);
+    }
     setRunning(true);
   });
   const back = () => perform(async () => {
