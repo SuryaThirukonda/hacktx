@@ -16,7 +16,7 @@ from ..actors import Wait
 from ..hazards.fire import FireModel
 from ..hazards.grid import Grid
 from ..hazards.layers import FireLayers
-from ..world import BoxObj, TreeObj, World, ZoneSpec
+from ..world import BoxObj, TreeObj, World, ZoneSpec, launchpad_objects
 from .scoring import actor_found
 from .spec import BuildingSpec, OpeningSpec
 
@@ -84,6 +84,87 @@ def _paint(tex, img: np.ndarray, rng: np.random.Generator) -> np.ndarray:
     cv2.rectangle(m, (int(p[0]), int(q[1])), (int(q[0]), int(p[1])), 255, -1)
     f = (m.astype(np.float32) / 255.0)[..., None]
     return img * (1 - f) + np.array([150, 152, 154], np.float32)[None, None, :] * f
+
+
+# --- the static wildfire (WF1): burnt patches in a forest that do not spread ----------------------------------------
+WILD_BOUNDS = (-220.0, 220.0, -220.0, 220.0)
+WILD_PAD = (170.0, 170.0)  # the fire camp in the north-east corner, where the drone launches from
+BURNS = [(-90.0, -60.0, 48.0), (20.0, 70.0, 40.0), (110.0, -100.0, 36.0)]  # (x, y, radius): areas on fire
+RING = (-40.0, -140.0, 34.0, 16.0)  # (x, y, outer, inner): fire all round a clearing; the person is stranded inside
+CLEARINGS = [(-40.0, -140.0, 15.0), (60.0, 10.0, 18.0), (-140.0, 90.0, 20.0), (150.0, 60.0, 16.0)]
+WILD_PEOPLE = {"stranded": (-40.0, -140.0), "hiker": (-138.0, 92.0)}  # fixed positions, the same every run
+
+
+def _wild_masks(g: Grid) -> np.ndarray:
+    X, Y = g.xy()
+    burning = np.zeros((g.ny, g.nx), bool)
+    for cx, cy, r in BURNS:
+        burning |= (X - cx) ** 2 + (Y - cy) ** 2 <= r * r
+    cx, cy, ro, ri = RING
+    d2 = (X - cx) ** 2 + (Y - cy) ** 2
+    burning |= (d2 <= ro * ro) & (d2 >= ri * ri)
+    return burning
+
+
+def static_fire_model() -> FireModel:
+    """Fuel only where the fire already is, lit everywhere at once with a very fast spread inside: the burning area is
+    the patches themselves from the first second and never grows. Smoke drifts from them; keep-out is the patches."""
+    g = Grid.over(WILD_BOUNDS, 2.0)
+    burning = _wild_masks(g)
+    ignitions = [(float(x), float(y), 0.0) for x, y, _ in BURNS] + [(RING[0] + (RING[2] + RING[3]) / 2, RING[1], 0.0)]
+    return FireModel(g, burning.astype(float), ignitions, base_ros_mps=5000.0, wind_speed_mps=2.0, wind_to_deg=45.0)
+
+
+def wildfire_world() -> World:
+    w = World(bounds=WILD_BOUNDS, texture_res_m=0.25, seed=53)
+    w.name = "wildfire"
+    w.painter = _wild_paint
+    rng = np.random.default_rng(53)
+    g = Grid.over(WILD_BOUNDS, 2.0)
+    burning = _wild_masks(g)
+    while len(w.trees) < 900:
+        x, y = rng.uniform(WILD_BOUNDS[0] + 6, WILD_BOUNDS[1] - 6, 2)
+        if any((x - cx) ** 2 + (y - cy) ** 2 < r * r for cx, cy, r in CLEARINGS) or \
+                abs(x - WILD_PAD[0]) < 22 and abs(y - WILD_PAD[1]) < 22:
+            continue
+        r, c = g.cell(float(x), float(y))
+        col = (36, 44, 48) if burning[r, c] else (40, int(rng.integers(84, 100)), 50)  # charred trunks in the burn
+        w.trees.append(TreeObj(f"wf-tree-{len(w.trees)}", (float(x), float(y)),
+                               canopy_r=float(rng.uniform(1.4, 2.4)) if burning[r, c] else float(rng.uniform(2.4, 4.0)),
+                               color=col))
+    w.launchpad = WILD_PAD
+    w.boxes = launchpad_objects(WILD_PAD, "camp-pad") + [
+        BoxObj("engine-2", "vehicle", (WILD_PAD[0] - 14.0, WILD_PAD[1] + 6.0), (8.5, 2.5, 3.0), heading_deg=90.0,
+               color=(96, 98, 104), reflective=True)]
+    w.zones = [ZoneSpec("wf-camp", "Fire camp", [(150, 150), (190, 150), (190, 190), (150, 190)], kind="staging")]
+    w.geofence = [(WILD_BOUNDS[0] + 4, WILD_BOUNDS[2] + 4), (WILD_BOUNDS[1] - 4, WILD_BOUNDS[2] + 4),
+                  (WILD_BOUNDS[1] - 4, WILD_BOUNDS[3] - 4), (WILD_BOUNDS[0] + 4, WILD_BOUNDS[3] - 4)]
+    return w
+
+
+def _wild_paint(tex, img: np.ndarray, rng: np.random.Generator) -> np.ndarray:
+    """Forest floor, lighter clearings, and the burnt ground dark grey (the fire overlay is drawn on top of it)."""
+    import cv2
+
+    res = tex.res_m
+    h, w = img.shape[:2]
+    floor = np.array([46, 82, 70], np.float32)
+    shade = (0.85 + 0.3 * rng.random((h // 16 + 1, w // 16 + 1))).astype(np.float32)
+    shade = cv2.resize(shade, (w, h), interpolation=cv2.INTER_CUBIC)[..., None]
+    img = np.ascontiguousarray(floor[None, None, :] * shade, dtype=np.float32)
+    for cx, cy, r in CLEARINGS:
+        px, py = tex.to_px(cx, cy)
+        cv2.circle(img, (int(px), int(py)), int(r / res), (58, 118, 84), -1, cv2.LINE_AA)
+    for cx, cy, r in BURNS:
+        px, py = tex.to_px(cx, cy)
+        cv2.circle(img, (int(px), int(py)), int(r / res), (40, 42, 46), -1, cv2.LINE_AA)
+    cx, cy, ro, ri = RING
+    px, py = tex.to_px(cx, cy)
+    cv2.circle(img, (int(px), int(py)), int(ro / res), (40, 42, 46), -1, cv2.LINE_AA)
+    cv2.circle(img, (int(px), int(py)), int(ri / res), (58, 118, 84), -1, cv2.LINE_AA)
+    p, q = tex.to_px(WILD_PAD[0] - 16, WILD_PAD[1] - 12), tex.to_px(WILD_PAD[0] + 12, WILD_PAD[1] + 12)
+    cv2.rectangle(img, (int(p[0]), int(q[1])), (int(q[0]), int(p[1])), (118, 120, 122), -1)
+    return img
 
 
 def static_blocked(fire: FireModel) -> np.ndarray:
@@ -206,4 +287,30 @@ def scenarios():
 
     for s in out:
         s.world = build_world
+
+    # WF1: the static wildfire. Burning patches in a forest that do not spread, one of them a ring of fire round a
+    # clearing with a person stranded inside (fixed positions, the same every run). The drone launches from the fire
+    # camp, sweeps the burn area while the survey map fills in, puts a beacon on the person and guides the crew.
+    from ..scenarios import BLUE, ScriptedAction
+    reported = WILD_PEOPLE["stranded"]
+    sc = Scenario(
+        "WF1", "Wildfire (static): survey the burn and beacon the person in the clearing",
+        "Three patches of forest are burning and a ring of fire surrounds a clearing with someone inside. Nothing "
+        "spreads: the fire is where it is for the whole run. The drone launches from the fire camp, sweeps the burn "
+        "area, matches the yellow shirt and puts a beacon on the person; the crew is routed round the fire.",
+        duration_s=300.0, drone=DroneInit(WILD_PAD[0], WILD_PAD[1], 0.6, 225.0, -50.0),
+        actors=[responder((WILD_PAD[0] - 8.0, WILD_PAD[1] - 8.0), [Wait(999)], heading=225.0),
+                person("stranded", "subject", reported, MUSTARD, [Wait(999)], vary=False),
+                person("hiker", "bystander", WILD_PEOPLE["hiker"], BLUE, [Wait(999)], vary=False)],
+        actions=[ScriptedAction(1.0, "lock_responder", "responder")],
+        limits=[MetricLimit("world.rescue_beacon_found", min=1), MetricLimit("world.rescue_unsafe_steps", max=0)],
+        tags=["world:fire", "search", "rescue", "beacon", "static"])
+    sc.hazards = FireLayers(static_fire_model(), keep_out_margin_s=60.0, staging=WILD_PAD)
+    sc.rescue = dict(kind="fire", description="yellow shirt", last_seen_xy=(reported[0] + 30.0, reported[1] + 25.0),
+                     radius_m=80.0, altitude_m=45.0, crew_speed_mps=2.0)
+    sc.world_eval = lambda res, scenario: {"rescue_beacon_found": int(bool((res.rescue or {}).get("beacon"))),
+                                           "rescue_unsafe_steps": (res.rescue or {}).get("unsafe_steps", 0),
+                                           "stranded": actor_found(res, "stranded")}
+    sc.world = wildfire_world
+    out.append(sc)
     return out

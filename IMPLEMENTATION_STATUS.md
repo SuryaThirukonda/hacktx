@@ -851,3 +851,22 @@ Earlier claims about Overwatch and FlyBy results are treated as claims; the numb
 - **Not done:** ORBIT and LOOK (recognised and declined); no D12 or D13 report against a real model engine; unit
   tests were not run in this pass (by request: manual and scenario checks only), so `tests/unit/test_pursuit.py`
   and others may need updating.
+
+### E8: simulation speed, static flood and wildfire rescues (done; not run here)
+
+- **Speed.** 1x, 2x, 3x buttons in the camera-view toolbar of the simulation workspace, for the main engine
+  (`/api/simulation/control` speed) and the City engine (`POST /api/test12/speed`, a pace multiplier in its run
+  loop; the toolbar shows the pace it actually achieves when YOLO cannot keep up). Measured before the buttons moved:
+  2.01x and 2.94x on the main engine.
+- **FL1, flood (static).** The same 500 m neighbourhood with a pad by the staging area; the water level is fixed at
+  0.75 m (no rise), with three raised mounds that stay dry; three people stand on them at fixed positions (the same
+  every run). The rescue mission launches the drone, sweeps a 70 m radius round the reported spot (the survey map
+  fills in), matches the yellow shirt, puts a beacon on the person and routes the crew along dry roads.
+- **WF1, wildfire (static).** A new 440 m forest world (900 trees, charred in the burn, four clearings, a fire camp
+  with the pad): three burning patches and a ring of fire round a clearing with the person inside, fixed positions.
+  The fire model has fuel only inside those patches and lights them all at once, so the burning area is the patches
+  from the first second and never grows; smoke drifts from them and the keep-out is the patches. The drone sweeps an
+  80 m radius at 45 m, beacons the person, the crew is routed round the fire.
+- The picker lists only FL1 and WF1 for flood and fire; FR1 to FR3, SAR1 and FF1 to FF3 stay in the registry,
+  unlisted. Checked here: both scenarios register, the stranded positions are dry (0 m) with 1.27 m of water between
+  them, the fire mask is identical at 0.5 s and 300 s. Not run end to end (manual testing by Surya).

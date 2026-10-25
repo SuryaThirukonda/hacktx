@@ -16,7 +16,7 @@ from ..actors import Wait
 from ..hazards.grid import Grid
 from ..hazards.layers import FloodLayers
 from ..hazards.water import FloodModel, RoadGraph
-from ..world import BoxObj, TreeObj, World, ZoneSpec
+from ..world import BoxObj, TreeObj, World, ZoneSpec, launchpad_objects
 from .scoring import actor_found, false_tracks
 
 BOUNDS = (-250.0, 250.0, -250.0, 250.0)
@@ -37,6 +37,28 @@ def ground() -> tuple[Grid, np.ndarray]:
 def flood_model() -> FloodModel:
     g, z = ground()
     return FloodModel(g, z, level0_m=0.15, rise_m_per_min=1.2, level_max_m=1.1)  # time compressed for the demo
+
+
+# --- the static flood (FL1): water that is already there and stays there ------------------------------------------
+STATIC_LEVEL_M = 0.75  # the south half of the neighbourhood is under water; the north and a few mounds stay dry
+ISLANDS = [(-62.0, -56.0, 15.0), (12.0, -72.0, 13.0), (58.0, -42.0, 14.0)]  # (x, y, radius): raised ground
+FLOOD_PAD = (0.0, 96.0)  # the drone's pad beside the staging area
+STRANDED = {"stranded-a": (12.0, -70.0), "stranded-b": (-61.0, -55.0), "stranded-c": (57.0, -41.0)}  # fixed, on the islands
+
+
+def static_ground() -> tuple[Grid, np.ndarray]:
+    """The same ground with three raised mounds: dry islands inside the flooded blocks."""
+    g, z = ground()
+    X, Y = g.xy()
+    for cx, cy, r in ISLANDS:
+        z = z + 1.6 * np.exp(-(((X - cx) ** 2 + (Y - cy) ** 2) / (r * r)))
+    return g, z
+
+
+def static_flood_model() -> FloodModel:
+    """No rise: the level is fixed, so the run does not depend on how long the drone takes."""
+    g, z = static_ground()
+    return FloodModel(g, z, level0_m=STATIC_LEVEL_M, rise_m_per_min=0.0, level_max_m=STATIC_LEVEL_M)
 
 
 def roads() -> RoadGraph:
@@ -103,6 +125,8 @@ def build_world() -> World:
                for k, (x, y) in enumerate([(-62, -20), (-12, 22), (36, -18), (62, 40), (-38, 60)])]
     w.zones = [ZoneSpec("fr-low", "Low-lying blocks", [(-90, -90), (90, -90), (90, -20), (-90, -20)], kind="sector")]
     w.geofence = [(-245, -245), (245, -245), (245, 245), (-245, 245)]
+    w.launchpad = FLOOD_PAD
+    w.boxes += launchpad_objects(FLOOD_PAD, "flood-pad")
     return w
 
 
@@ -174,7 +198,7 @@ def _eval(stranded: list[str], at_s: float, goal: str):
 
 
 def scenarios():
-    from ..scenarios import BLUE, KHAKI, MUSTARD, PINK, DroneInit, MetricLimit, Scenario, person, responder
+    from ..scenarios import BLUE, KHAKI, MUSTARD, PINK, DroneInit, MetricLimit, Scenario, ScriptedAction, person, responder
 
     fm = flood_model()
     rd = roads()
@@ -209,6 +233,32 @@ def scenarios():
     sc.hazards = FloodLayers(fm, roads=rd, start="staging", goal="+0,-30")
     sc.world_eval = _eval(["stranded-1"], 40.0, "+0,-30")
     sc.crew_problem = lambda: crew_problem("+0,-30")
+    out.append(sc)
+
+    # FL1: the static flood. The water is already there and does not move, so the run never depends on how fast the
+    # drone finds anyone. Three people are stranded on dry mounds inside the flooded blocks (fixed positions, the same
+    # every run). The drone launches from the pad by the staging area, sweeps the flooded blocks (the survey map fills
+    # in as it goes), matches the reported clothing and puts a beacon on the person for the crew.
+    reported = STRANDED["stranded-a"]
+    sc = Scenario(
+        "FL1", "Flood (static): survey the flooded blocks and beacon the stranded",
+        "The south of the neighbourhood is under about 0.75 m of standing water; a few mounds stay dry. The drone "
+        "launches from the pad, sweeps the flooded blocks, puts a beacon on the person in the yellow shirt and guides "
+        "the crew along dry roads. The water does not rise: nothing here depends on how long the search takes.",
+        duration_s=300.0, drone=DroneInit(FLOOD_PAD[0], FLOOD_PAD[1], 0.6, 180.0, -50.0),
+        actors=[responder(STAGING, [Wait(999)], heading=180.0),
+                person("stranded-a", "subject", reported, MUSTARD, [Wait(999)], vary=False),
+                person("stranded-b", "bystander", STRANDED["stranded-b"], BLUE, [Wait(999)], vary=False),
+                person("stranded-c", "bystander", STRANDED["stranded-c"], PINK, [Wait(999)], vary=False)],
+        actions=[ScriptedAction(1.0, "lock_responder", "responder")],
+        limits=[MetricLimit("world.rescue_beacon_found", min=1), MetricLimit("world.rescue_unsafe_steps", max=0)],
+        tags=["world:flood", "search", "rescue", "beacon", "static"])
+    sc.hazards = FloodLayers(static_flood_model(), roads=rd, start="staging", goal=None)
+    sc.rescue = dict(kind="flood", description="yellow shirt", last_seen_xy=(reported[0] - 22.0, reported[1] + 18.0),
+                     radius_m=70.0, altitude_m=40.0, crew_speed_mps=3.0, max_depth_m=0.15)
+    sc.world_eval = lambda res, scenario: {"rescue_beacon_found": int(bool((res.rescue or {}).get("beacon"))),
+                                           "rescue_unsafe_steps": (res.rescue or {}).get("unsafe_steps", 0),
+                                           "stranded": {k: actor_found(res, k) for k in STRANDED}}
     out.append(sc)
 
     for s in out:

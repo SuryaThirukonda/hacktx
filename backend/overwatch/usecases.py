@@ -24,13 +24,15 @@ USECASES: list[dict[str, Any]] = [
                 "and a person under canopy that the camera cannot see.",
      "scenarios": ["SR1", "SR2", "SR3", "SR4", "SR5", "VC2"], "not_built": "SR6 to SR8 (terrain relief, second looks, ground-team guidance)"},
     {"id": "flood", "name": "Flood rescue", "mission": "search", "status": "ready",
-     "summary": "Spot people stranded by rising water (screening model); route crews around roads closed above "
-                "0.3 m of water.",
-     "scenarios": ["FR1", "FR2", "FR3", "SAR1"], "not_built": "FR4 to FR8 (radio reports, debris drift, boats)"},
-    {"id": "fire", "name": "Firefighter routing", "mission": "structure", "status": "ready",
-     "summary": "A grass fire spreads towards a house (screening model): keep-out areas, smoke over the openings, a "
-                "crew route that avoids the keep-out cells, an occupant outside.",
-     "scenarios": ["FF1", "FF2", "FF3"], "not_built": "FF4 to FF8 (interior, roof hatch access, multiple crews)"},
+     "summary": "Standing water over the south of a neighbourhood with a few dry mounds. The drone launches from the "
+                "pad, sweeps the flooded blocks, puts a beacon on the stranded person and guides the crew along dry "
+                "roads. The water does not rise.",
+     "scenarios": ["FL1"], "not_built": "the earlier rising-water scenarios FR1 to FR3 and SAR1 stay in the registry, unlisted"},
+    {"id": "fire", "name": "Wildfire rescue", "mission": "search", "status": "ready",
+     "summary": "Burning patches in a forest and a ring of fire round a clearing with someone inside; nothing "
+                "spreads. The drone launches from the fire camp, sweeps the burn, puts a beacon on the person and the "
+                "crew is routed round the fire.",
+     "scenarios": ["WF1"], "not_built": "the earlier spreading-fire scenarios FF1 to FF3 stay in the registry, unlisted"},
 ]
 
 
