@@ -21,6 +21,7 @@ from typing import Any, Literal
 import numpy as np
 from pydantic import BaseModel, Field
 
+from ..config import DATA_DIR
 from .models import FrameId, FrameMismatch, Position, Provenance, Transform, UTCDateTime, new_id, utcnow
 from .store import IncidentStore
 
@@ -248,7 +249,7 @@ def get_asset(store: IncidentStore, asset_id: str) -> SceneAsset:
 
 
 def scenes_dir(store: IncidentStore, repo_root: Path) -> Path:
-    base = Path(store.path).parent if store.path != ":memory:" else repo_root / "data"
+    base = Path(store.path).parent if store.path != ":memory:" else DATA_DIR
     d = base / "scenes"
     d.mkdir(parents=True, exist_ok=True)
     return d

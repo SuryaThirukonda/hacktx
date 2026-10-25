@@ -15,7 +15,7 @@ from collections import defaultdict
 from datetime import datetime, timezone
 from typing import TYPE_CHECKING, Any
 
-from ..config import REPO_ROOT
+from ..config import DATA_DIR, REPO_ROOT
 from .models import (PROVENANCE_FROM_WIRE, Alert, Incident, IncidentEvent, SensorSource, utcnow)
 from .store import IncidentStore, NotFound
 
@@ -32,7 +32,7 @@ SEVERITY_FROM_WIRE = {"info": "info", "attention": "attention", "warning": "warn
 
 
 def default_db_path() -> str:
-    return os.environ.get("OVERWATCH_DB") or str(REPO_ROOT / "data" / "overwatch.db")
+    return os.environ.get("OVERWATCH_DB") or str(DATA_DIR / "overwatch.db")
 
 
 class IncidentService:
@@ -408,7 +408,7 @@ class IncidentService:
     # -- observations from the live pipeline ----------------------------------------------------------------
     def evidence_dir(self) -> "Path":
         from pathlib import Path
-        base = Path(self.store.path).parent if self.store.path != ":memory:" else REPO_ROOT / "data"
+        base = Path(self.store.path).parent if self.store.path != ":memory:" else DATA_DIR
         d = base / "evidence"
         d.mkdir(parents=True, exist_ok=True)
         return d
