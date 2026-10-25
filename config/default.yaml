@@ -15,7 +15,7 @@ server:
   port: 8000
   state_hz: 10               # /ws/state publish rate
   video_jpeg_quality: 72
-  video_max_fps: 15
+  video_max_fps: 30          # simulation presentation; detector cadence stays at sources.drone.target_fps
   cors_origins: ["*"]
 
 world:

@@ -22,7 +22,7 @@ from .decisions.router import DecisionRouter, DecisionService
 from .evaluation.metrics import Metrics
 from .faults import FaultInjector
 from .ids import session_id
-from .pipeline import Pipeline
+from .pipeline import Pipeline, VideoFrameOut
 from .schemas import Zone
 from .evaluation.scenario_runner import OperatorEmulator
 from .sim.driver import SimulationDriver
@@ -106,6 +106,9 @@ class Runtime:
         self._last_auto_sim = -1e12
         self._last_render_sim_s = -1.0
         self._video_sent = {"drone": -1, "phone": -1}
+        self._display_drone = None
+        self._display_seq = 0
+        self._display_viewers = 0
         self.recorder = None
         self.started_wall = time.time()
         from .voice.gemini import GeminiNarrator
@@ -227,6 +230,7 @@ class Runtime:
         self.operator = OperatorEmulator(p, sim)
         self._last_tick_sim = self._last_auto_sim = -1e12
         self._video_sent = {"drone": -1, "phone": -1}
+        self._display_drone = None
 
     def _sim_step(self, dt: float, render: bool) -> None:
         sim = self.sim
@@ -239,7 +243,7 @@ class Runtime:
             self.metrics.reset()
             self.faults.clear_manual()
             self._new_sim_session()
-        out = sim.step(dt, render)
+        out = sim.step(dt, render, display_video=bool(self.video_hubs["drone"].subs or self._display_viewers))
         p = self.pipeline
         if out.restarted:
             self._new_sim_session()
@@ -256,6 +260,17 @@ class Runtime:
             p.note_dropped("drone")
         if out.drone_frame:
             p.process_drone_frame(out.drone_frame)
+        self._display_drone = None
+        if out.display_frame is not None and p.latest_drone is not None:
+            measured = p.latest_drone
+            overlay = measured.overlay.model_copy(update={"extra": {
+                **measured.overlay.extra,
+                "render_capture_ts_ms": out.display_frame.capture_ts_ms,
+                "detection_frame_id": measured.overlay.frame_id,
+                "presentation_only": True,
+            }})
+            self._display_seq += 1
+            self._display_drone = VideoFrameOut(out.display_frame.image, overlay, self._display_seq)
         # the same scripted operator as the headless runner: clicks on the named actor, and when the scenario says
         # so, watches the video and confirms (or re-designates) an unverified re-binding after a 1.2 s look
         if self.operator.pending:
@@ -391,7 +406,8 @@ class Runtime:
         while self.running:
             for src in ("drone", "phone"):
                 hub = self.video_hubs[src]
-                vf = self.pipeline.latest_drone if src == "drone" else self.pipeline.latest_phone
+                vf = ((self._display_drone or self.pipeline.latest_drone) if src == "drone"
+                      else self.pipeline.latest_phone)
                 if vf is None or vf.seq == self._video_sent[src] or not hub.subs:
                     continue
                 self._video_sent[src] = vf.seq

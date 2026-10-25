@@ -214,6 +214,6 @@ def register(app: FastAPI, rt) -> None:
                     last_world = key
                     await ws.send_json({"type": "world", **world_payload(rt.sim)})
                 await ws.send_json(frame_payload(rt))
-                await asyncio.sleep(0.05)
+                await asyncio.sleep(1 / 30)
         except (WebSocketDisconnect, RuntimeError):
             return

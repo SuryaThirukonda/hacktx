@@ -61,6 +61,7 @@ def _scenario_world(sc: Scenario) -> tuple[World, GroundTexture]:
 class SimOutputs:
     t_ms: float
     drone_frame: FramePacket | None = None
+    display_frame: FramePacket | None = None  # optional presentation frame; never enters perception
     phone: PhonePacket | None = None
     phone_gt: list[dict] | None = None  # per phone vision box (evaluation only; never sent to the pipeline)
     telemetry: TelemetryPacket | None = None
@@ -165,7 +166,7 @@ class SimulationDriver:
             active["markers_hidden"] = True
         self.faults.set_scripted(active)
 
-    def step(self, dt: float, render: bool = True) -> SimOutputs:
+    def step(self, dt: float, render: bool = True, display_video: bool = False) -> SimOutputs:
         """Advance by ``dt`` seconds. ``render=False`` skips image synthesis (used when catching up)."""
         out = SimOutputs(t_ms=0.0)
         if self.scenario.loop and self.t_s >= self.scenario.duration_s:
@@ -225,6 +226,12 @@ class SimulationDriver:
             _, pkt = self._delayed.popleft()
             pkt.receive_ts_ms = t_ms
             out.drone_frame = pkt  # newest due frame wins (latest-frame queue)
+
+        # The paced UI may draw each 30 Hz world step while detection retains its
+        # configured sensor cadence. Faulted video still follows the sensor path.
+        if (display_video and render and not f.get("drone_video_drop")
+                and not f.get("frame_drop_pct") and not f.get("video_latency_ms")):
+            out.display_frame = out.drone_frame or self._render_drone(t_ms, f)
 
         # --- phone -----------------------------------------------------------------------------------------
         if self.t_s >= self._next_phone:

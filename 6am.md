@@ -2,7 +2,7 @@
 
 ## Repository and integration state
 
-The repaired `hacktx` platform and the persistent-target/SAR work are manually synchronized in `/Users/gaurav/Documents/hacktx26_prog`. The checkout is on `main`, tracking `origin/main` at `https://github.com/SuryaThirukonda/hacktx.git`. Changes are local; this integration does not publish or deploy anything.
+The repaired `hacktx` platform and the persistent-target/SAR work are manually synchronized in `/Users/gaurav/Documents/hacktx26_prog`. The checkout is on `main`, tracking `origin/main` at `https://github.com/SuryaThirukonda/hacktx.git`. Publication to that repository's main branch has been explicitly authorized. Check `git status -sb` and `git log -1 origin/main` for the current publication state; no deployment is involved.
 
 | Input/checkpoint | Revision | Treatment |
 |---|---|---|
@@ -136,6 +136,24 @@ Repairs reconstructed rescue/survey/visibility, the City shared-3D adapter and f
 
 ## Recorded validation
 
+### City loading and smooth presentation update
+
+The local unguarded launcher was re-executing the web server inside spawned City workers, causing a second bind to the occupied port and a long startup wait. `backend/scripts/run_sim_demo.py` replaces it with a guarded, portable entry point. City startup now detects child exits promptly and returns a useful error instead of silently waiting for three minutes.
+
+The existing HackTX City worker/renderer/YOLO separation is preserved. Presentation poses now update at 30 Hz alongside its existing 30 FPS video; rich map/detection state retains its lower rate. The main simulator can render additional display-only camera frames without invoking detection, changing evidence freshness or sending additional aircraft controls. The dashboard's former 240 ms frame throttle is removed, and the drone mesh interpolates at a 30 FPS render target.
+
+Only a production build, syntax/undefined-name checks and a short live startup/video check were run for this update. City started in 2.9 s and reported 29.9 FPS with no startup error; main video measured 27.6 FPS over a three-second sample. The configured detector rates remain 15 FPS for main and 5 Hz for City. The full-suite results below apply to the earlier integration checkpoint and were not rerun for this short update, as requested.
+
+### Source contributions
+
+| Source | Main functionality preserved or added |
+|---|---|
+| Published HackTX platform | New dashboard styling/assets, simulation worlds, maps/coverage and beacon foundations, pursuit/belief work, City engine with independent 30 FPS rendering and slower YOLO, voice and native DJI/LiDAR platform |
+| Gaurav integration source | Persistent logical subject history, continuous clothing acquisition, simulated assistance assessment, human review, assessed guidance connected to existing delivery/ACK, incident/session safety guards and Windows detector evaluation tooling |
+| Combined integration | Repairs to broken/unwired published modules, activation of the new dashboard, linking beacons with SAR evidence/review/guidance, City/main ownership handoff, safe local startup and smoother presentation |
+
+This is a feature-provenance summary, not an assertion of exclusive authorship: both inputs share earlier platform functionality.
+
 Evidence lives under `evaluation/current/`; platform scenario details are under `evaluation/merge/platform/`. These are measured results for the listed cases, not claims about every supported environment.
 
 | Check | Result |
@@ -212,7 +230,7 @@ The simple FR3 demonstration places the person at local coordinates `(20, 14)`, 
 
 ## Publishing this checkout
 
-The folder already points to the requested repository and local `main` tracks `origin/main`. No force push or unrelated-history merge is needed. Publication is a separate step after review:
+The folder points to the requested repository and local `main` tracks `origin/main`. The user authorized publication. No force push or unrelated-history merge is needed. Inspect current state with:
 
 ```sh
 cd /Users/gaurav/Documents/hacktx26_prog
@@ -221,4 +239,4 @@ git fetch origin
 git log --oneline --left-right HEAD...origin/main
 ```
 
-If `origin/main` is still the recorded base, normal `git push origin main` publishes the local repair and integration commits. If teammates have advanced it, review the new diff and integrate it without overwriting their changes, rerun affected checks, then push normally. This audit does not authorize or perform that push.
+Use a normal `git push origin main` for authorized publication. If teammates have advanced it, review their changes and integrate them without overwriting their work. This workflow does not require a force push.

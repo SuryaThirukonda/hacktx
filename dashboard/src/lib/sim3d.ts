@@ -258,6 +258,7 @@ export class SceneController {
   private droneScale = 1;
   private raf = 0;
   private frame: Frame3D | null = null;
+  private animationAt = 0;
   private target = new THREE.Vector3();
   private resizeObs: ResizeObserver;
   private camHeading: number | null = null;
@@ -1240,6 +1241,7 @@ export class SceneController {
   }
 
   update(f: Frame3D) {
+    const resetPose = !this.frame || f.t_s < this.lastT - 0.5;
     this.frame = f;
     if (this.beaconMark) { clearGroup(this.beaconMark); this.scene.remove(this.beaconMark); this.beaconMark = null; }
     if (f.beacon && f.beacon.status !== "rejected") {
@@ -1262,9 +1264,9 @@ export class SceneController {
     }
     this.lastT = f.t_s;
     const d = f.drone;
-    this.drone.position.copy(v3(d.pos[0], d.pos[1], d.pos[2]));
+    if (resetPose) this.drone.position.copy(v3(d.pos[0], d.pos[1], d.pos[2]));
     const [qw, qx, qy, qz] = d.quat;
-    this.droneBody.quaternion.copy(C_ENU).multiply(new THREE.Quaternion(qx, qy, qz, qw));
+    if (resetPose) this.droneBody.quaternion.copy(C_ENU).multiply(new THREE.Quaternion(qx, qy, qz, qw));
     const dot = this.scene.getObjectByName("ground-dot");
     if (dot) dot.position.copy(v3(d.pos[0], d.pos[1], 0.06));
     this.sun.target.position.copy(v3(d.pos[0], d.pos[1], 0));
@@ -1474,12 +1476,20 @@ export class SceneController {
 
   private loop = () => {
     this.raf = requestAnimationFrame(this.loop);
+    const now = performance.now();
+    if (now - this.animationAt < 1000 / 30 - 1) return;
+    const dt = Math.min(.1, (now - this.animationAt) / 1000);
+    this.animationAt = now;
     if (this.focusRing.visible) this.focusRing.scale.setScalar(1 + 0.25 * Math.sin(performance.now() / 260));
     const f = this.frame;
     this.animateHazards(performance.now() / 1000);
     if (f) {
       const d = f.drone;
-      const p = v3(d.pos[0], d.pos[1], d.pos[2]);
+      const blend = 1 - Math.exp(-18 * dt);
+      this.drone.position.lerp(v3(d.pos[0], d.pos[1], d.pos[2]), blend);
+      const [qw, qx, qy, qz] = d.quat;
+      this.droneBody.quaternion.slerp(C_ENU.clone().multiply(new THREE.Quaternion(qx, qy, qz, qw)), blend);
+      const p = this.drone.position;
       // the chase camera turns with a smoothed heading so fast yaw scans do not whip the view around
       if (this.camHeading === null) this.camHeading = d.heading;
       const dh = ((d.heading - this.camHeading + 540) % 360) - 180;

@@ -31,7 +31,7 @@ class ServerCfg(_Section):
     port: int = 8000
     state_hz: float = 10.0
     video_jpeg_quality: int = 72
-    video_max_fps: float = 15.0
+    video_max_fps: float = 30.0
     cors_origins: list[str] = ["*"]
 
 

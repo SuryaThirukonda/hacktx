@@ -4,7 +4,6 @@
   "repair_checkpoint": "7eac8098b2093c888806263c2d80bbea3e147516",
   "repository": "https://github.com/SuryaThirukonda/hacktx.git",
   "branch": "main",
-  "pushed": false,
   "old_source_clean": true,
   "native_ios_unchanged": true,
   "preserved_module_sha256": {
@@ -25,7 +24,8 @@
     "passed": 356,
     "skipped": 2,
     "failed": 0,
-    "evidence": "backend-tests.txt"
+    "evidence": "backend-tests.txt",
+    "evidence_applies_to": "Original integration checkpoint; full suite not rerun for the presentation/startup update."
   },
   "frontend": {
     "typecheck": "passed",
@@ -408,5 +408,22 @@
     "return_check_status": "operator switched to another scenario during the demonstration",
     "current_operator_scenario": "SR1",
     "passed_target_acquisition_criterion": true
+  },
+  "publication": "User authorized normal push to origin/main; inspect origin/main for current revision.",
+  "smooth_render_update": {
+    "main_video_fps": 27.6,
+    "city_startup_s": 2.9,
+    "city_phase": "TAKEOFF",
+    "city_time_s": 2.4,
+    "city_video": {
+      "fps": 29.9,
+      "target_fps": 30,
+      "dropped": 0
+    },
+    "city_error": null,
+    "main_detection_configured_fps": 15,
+    "city_detection_hz": 5,
+    "scope": "Production build, static checks, three-second video sample and one City startup; no long tests.",
+    "detector_counter_sample": "Excluded because starting the new scenario reset the counter during sampling."
   }
 }

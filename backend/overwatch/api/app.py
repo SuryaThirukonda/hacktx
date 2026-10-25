@@ -789,15 +789,22 @@ def create_app(cfg: Config | None = None) -> FastAPI:
     async def mjpeg(src: str):
         boundary = b"--frame"
         last = -1
-        while True:
-            vf = P().latest_drone if src == "drone" else P().latest_phone
-            if vf is not None and vf.seq != last:
-                last = vf.seq
-                img = annotate(vf.image, vf.overlay)
-                ok_, buf = cv2.imencode(".jpg", img, [cv2.IMWRITE_JPEG_QUALITY, 75])
-                if ok_:
-                    yield boundary + b"\r\nContent-Type: image/jpeg\r\n\r\n" + buf.tobytes() + b"\r\n"
-            await asyncio.sleep(1 / 15)
+        display = src == "drone" and rt.mode == "SIMULATED"
+        if display:
+            rt._display_viewers += 1
+        try:
+            while True:
+                vf = (rt._display_drone or P().latest_drone) if display else (P().latest_drone if src == "drone" else P().latest_phone)
+                if vf is not None and vf.seq != last:
+                    last = vf.seq
+                    img = annotate(vf.image, vf.overlay)
+                    ok_, buf = cv2.imencode(".jpg", img, [cv2.IMWRITE_JPEG_QUALITY, 75])
+                    if ok_:
+                        yield boundary + b"\r\nContent-Type: image/jpeg\r\n\r\n" + buf.tobytes() + b"\r\n"
+                await asyncio.sleep(1 / (30 if display else 15))
+        finally:
+            if display:
+                rt._display_viewers -= 1
 
     @app.get("/streams/{src}.mjpg")
     async def stream(src: str) -> StreamingResponse:

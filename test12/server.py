@@ -95,8 +95,22 @@ class Manager:
         self.proc = ctx.Process(target=live.serve, args=(there,), name="test12-live")
         self.proc.start()
         self.conn = here
-        if not here.poll(180) or here.recv()[0] != "ready":
-            raise RuntimeError("the test12 run process did not start")
+        deadline = time.monotonic() + 60
+        try:
+            while not here.poll(.1):
+                if not self.proc.is_alive():
+                    raise RuntimeError("City worker exited during startup; check the server log")
+                if time.monotonic() >= deadline:
+                    raise RuntimeError("City startup timed out; check model weights and the server log")
+            if here.recv()[0] != "ready":
+                raise RuntimeError("City worker did not become ready")
+        except (EOFError, RuntimeError) as exc:
+            if self.proc.is_alive():
+                self.proc.terminate()
+            self.proc.join(timeout=2)
+            here.close()
+            self.proc = self.conn = None
+            raise RuntimeError(str(exc) or "City worker exited during startup") from exc
         threading.Thread(target=self._receive, args=(here,), daemon=True, name="test12-receive").start()
         threading.Thread(target=self._play_out, daemon=True, name="test12-playout").start()
         atexit.register(self._quit)
@@ -118,6 +132,9 @@ class Manager:
                     self.callouts[msg[2]] = msg[3]
                     for n in [n for n in self.callouts if n <= msg[2] - CALLOUTS_KEPT]:
                         del self.callouts[n]
+            elif kind == "pose":
+                with self.lock:
+                    self.frame3d = json.loads(msg[2])
             elif kind in ("state", "end"):
                 with self.lock:
                     self.state_json = msg[2]
@@ -299,7 +316,10 @@ def mount(app: FastAPI) -> None:
         spawn = body.spawn if body else None
         if spawn is not None and (len(spawn) != 2 or not all(np.isfinite(spawn))):
             raise HTTPException(422, "spawn is [x, y] in metres")
-        seed = MGR.start(body.seed if body else None, spawn)
+        try:
+            seed = MGR.start(body.seed if body else None, spawn)
+        except RuntimeError as exc:
+            raise HTTPException(503, str(exc)) from exc
         return {"ok": True, "seed": seed}
 
     @r.get("/api/test12/view")
@@ -412,7 +432,7 @@ def mount(app: FastAPI) -> None:
                     current = MGR.frame3d
                 if current:
                     await ws.send_json(current)
-                await asyncio.sleep(.2)
+                await asyncio.sleep(1 / 30)
         except (WebSocketDisconnect, RuntimeError):
             return
 

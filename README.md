@@ -24,6 +24,14 @@ The City engine and scenarios that explicitly select YOLO need the `vision` extr
 backend/.venv/bin/python -m pip install -e './backend[dev,vision,sim3d,h264]'
 ```
 
+For the local rules-only demonstration, including City's existing 30 FPS render workers:
+
+```sh
+PYTHONPATH=backend:. backend/.venv/bin/python backend/scripts/run_sim_demo.py --port 8012
+```
+
+Open `http://127.0.0.1:8012/dashboard`. This launcher supports multiprocessing safely. Simulation presentation targets 30 FPS while main detection retains its configured 15 FPS and City detection retains 5 Hz; actual rendering depends on machine load. 3D motion is smoothed between pose updates. Extra display frames do not advance detection freshness or change real-flight permissions.
+
 ## Pages
 
 | Route | Purpose |

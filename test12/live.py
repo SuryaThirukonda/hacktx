@@ -74,6 +74,7 @@ def _run(conn, run_no: int, seed: int, spawn, ctl: dict, detector, frames):
     dropped = 0
     speed = 1.0
     leftover = None
+    overlays = {}
 
     def video_fps() -> float:
         p = list(emitted)
@@ -81,6 +82,7 @@ def _run(conn, run_no: int, seed: int, spawn, ctl: dict, detector, frames):
 
     def state(extra: dict | None = None) -> bytes:
         st = run.state()
+        overlays.update(st)
         from .sim3d import frame as frame3d
         st["frame3d"] = frame3d(run, st)
         st["run_no"] = run_no
@@ -161,6 +163,11 @@ def _run(conn, run_no: int, seed: int, spawn, ctl: dict, detector, frames):
                 slow.append((round(run.t, 2), phase, run.phase, round(ms)))
             if run.frame_no % FPS_STATE_EVERY == 0:
                 conn.send(("state", run_no, state()))
+            else:
+                # Presentation poses run at video cadence; detection and rich
+                # map/status updates retain their existing lower rates.
+                from .sim3d import frame as frame3d
+                conn.send(("pose", run_no, json.dumps(frame3d(run, overlays), separators=(",", ":")).encode()))
             ahead = (run.t - sim0) - (time.monotonic() - wall0)
             if ahead > 0:
                 time.sleep(ahead)

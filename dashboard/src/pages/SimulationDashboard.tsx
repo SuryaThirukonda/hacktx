@@ -84,7 +84,7 @@ export function SimulationDashboard() {
           <select id="scenario" value={sid} onChange={(e) => setSid(e.target.value)}>{selected?.scenarios.map((s) => <option key={s.id} value={s.id}>{s.id} · {s.name}</option>)}</select>
           <p className="scenario-description">{scenario?.description}</p></section>
           <section className="launch-action"><div className="view-choice">{(["drone", "3d"] as const).map((v) => <button key={v} aria-pressed={view === v} onClick={() => setView(v)}>{v === "drone" ? "Drone POV" : "3D world"}</button>)}</div>
-            <p>Local simulation · physical flight permission remains separate</p><button disabled={busy || !sid} className="launch-button" onClick={launch}>Launch simulation <ArrowUpRight size={16} /></button></section></div>
+            <p>Local simulation · physical flight permission remains separate</p><button disabled={busy || !sid} className="launch-button" onClick={launch}>{busy ? "Starting simulation…" : "Launch simulation"} <ArrowUpRight size={16} /></button></section></div>
         {error && <p role="alert" className="simulation-error">{error}</p>}
       </main><footer className="launch-footer"><span className="overwatch-brand">Overwatch</span><span>Measurements, predictions and simulator truth remain distinct.</span><a href="/demo">Classic demo tools</a></footer>
     </> : <>
