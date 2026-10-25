@@ -122,6 +122,14 @@ class VideoSourceManager:
                 "items": [self.status(c).model_dump(mode="json") for c in CHOICES]}
 
     # -- switching -------------------------------------------------------------------------------------------
+    def _disarm_control(self) -> None:
+        rt = self.rt
+        if rt.mode == "LIVE":
+            with rt.pipeline.lock:
+                rt.cfg.autonomy.allow_real_flight = False
+                rt.pipeline.flight_confirmed_track_id = None
+                rt.pipeline.autonomy.set_mode("MANUAL", rt.clock.now_ms(), "video source changed: explicit re-arm required")
+
     def select(self, choice: str, value: str | None = None) -> SensorSource:
         rt = self.rt
         if choice not in CHOICES:
@@ -136,6 +144,7 @@ class VideoSourceManager:
         if choice == "dji_mini2":
             if rt.mode != "LIVE":
                 raise SourceError("the DJI bridge needs the backend in LIVE mode (make backend-live)")
+            self._disarm_control()
             self._stop_url()
             self.active, self.value = "dji_mini2", None
             return self.status("dji_mini2")
@@ -153,6 +162,7 @@ class VideoSourceManager:
         from .live import URLFrameSource
         from .near_ir import NearIRVideoSource
 
+        self._disarm_control()
         self._stop_url()
         cls = NearIRVideoSource if choice == "near_ir" else URLFrameSource
         src = cls(rt, str(Path(value).expanduser()) if kind == "file" else value)

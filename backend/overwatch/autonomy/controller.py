@@ -55,6 +55,9 @@ class AutonomyInputs:
     subject_verified: bool = True  # False after the lock re-bound to a track nobody confirmed
     video_fresh: bool = True
     subject_track_id: str | None = None
+    subject_quality_ok: bool = True
+    subject_quality_reasons: tuple[str, ...] = ()
+    subject_frame_id: int | None = None
 
 
 @dataclass
@@ -122,6 +125,7 @@ class AutonomyController:
         self.visual_height: float | None = None
         self.visual_samples = 0
         self.visual_track_id: str | None = None
+        self.visual_frame_id: int | None = None
         for p in (self.pid_yaw, self.pid_fwd, self.pid_alt):
             p.reset()
 
@@ -154,8 +158,10 @@ class AutonomyController:
     def _log(self, now_ms: float, kind: str, text: str) -> None:
         self.audit.append({"ts_ms": now_ms, "kind": kind, "text": text})
 
-    def set_mode(self, mode: str, now_ms: float, source: str = "operator") -> str:
+    def set_mode(self, mode: str, now_ms: float, source: str = "operator", *, emit_command: bool = True) -> str:
         mode = mode.upper()
+        if mode == "DISPATCH" and not self.target_is_sim:
+            raise ValueError("dispatch is supported only by the simulator")
         if mode not in ("MANUAL", "FOLLOW", "HOLD", "RTL", "ESTOP", "DISPATCH", "GOTO"):
             raise ValueError(f"unknown mode {mode}")
         if self.mode == "ESTOP" and mode not in ("MANUAL", "ESTOP"):
@@ -166,6 +172,7 @@ class AutonomyController:
         self.visual_reference_height = self.visual_height = None
         self.visual_samples = 0
         self.visual_track_id = None
+        self.visual_frame_id = None
         self.control_epoch += 1
         self.clear_plan()
         self.mode = mode
@@ -176,7 +183,8 @@ class AutonomyController:
             for p in (self.pid_yaw, self.pid_fwd, self.pid_alt):
                 p.reset()
         elif mode == "MANUAL":
-            self._send(BridgeCommand(type="mode", seq=self.seq, ts_ms=now_ms, payload={"vstick": False}))
+            if emit_command:
+                self._send(BridgeCommand(type="mode", seq=self.seq, ts_ms=now_ms, payload={"vstick": False}))
             self.fsm = "IDLE"
         elif mode == "RTL":
             self._send(BridgeCommand(type="rtl", seq=self.seq, ts_ms=now_ms))
@@ -383,6 +391,7 @@ class AutonomyController:
 
         if not self.target_is_sim and (inp.subject_state != "LOCKED" or inp.subject_box is None
                                        or not inp.subject_verified or not inp.video_fresh or not link_ok
+                                       or not inp.subject_quality_ok
                                        or inp.subject_xy is None or not inp.calibration_valid):
             # Physical full follow never flies a speculative search route or pursues an unverified re-binding.
             self.clear_plan()
@@ -545,15 +554,18 @@ class AutonomyController:
                 # Do not translate from clipped, tiny or grossly changed detections.
                 height_frac = (y1 - y0) / max(height, 1)
                 unclipped = x0 > 0.02 * width and x1 < 0.98 * width and y0 > 0.02 * height and y1 < 0.98 * height
-                trustworthy = unclipped and 0.06 <= height_frac <= 0.8 and not inp.occluder_near_last_seen
+                trustworthy = (unclipped and 0.06 <= height_frac <= 0.8 and not inp.occluder_near_last_seen
+                               and inp.subject_quality_ok)
                 if trustworthy:
                     if self.visual_reference_height is None:
                         self.visual_reference_height = height_frac
                         self.visual_height = height_frac
                     ratio = height_frac / max(self.visual_height or height_frac, 0.001)
                     if 0.65 <= ratio <= 1.5:
-                        self.visual_height = 0.75 * (self.visual_height or height_frac) + 0.25 * height_frac
-                        self.visual_samples += 1
+                        if inp.subject_frame_id is None or inp.subject_frame_id != self.visual_frame_id:
+                            self.visual_height = 0.75 * (self.visual_height or height_frac) + 0.25 * height_frac
+                            self.visual_samples += 1
+                            self.visual_frame_id = inp.subject_frame_id
                         if self.visual_samples >= 5:
                             right = 0.0 if abs(ex) < 0.08 else 0.4 * ex
                             # Only move along depth after the camera has almost centered the person.
@@ -564,7 +576,8 @@ class AutonomyController:
                         self.visual_samples = 0  # no approach based on a sudden posture/box change
                 else:
                     self.visual_samples = 0
-                self.note = "Visual follow: center person with yaw, strafe and camera pitch; maintain starting image size; altitude stays pilot-controlled"
+                self.note = ("Translation stopped: " + ", ".join(inp.subject_quality_reasons or ("uncertain bounding box",))
+                             if not trustworthy else "Visual follow: center person with yaw, strafe and camera pitch; maintain starting image size; altitude stays pilot-controlled")
             else:
                 self.note = "Camera follow: yaw and gimbal only; pilot controls position and altitude"
         else:

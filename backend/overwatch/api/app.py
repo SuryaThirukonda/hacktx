@@ -69,7 +69,7 @@ class KeyboardBody(BaseModel):
 
 
 class BridgeSetupBody(BaseModel):
-    action: Literal["sim_start", "sim_stop", "operator_rearm", "enable_camera_control", "enable_visual_follow", "disable_control"]
+    action: Literal["sim_start", "sim_stop", "operator_rearm", "enable_camera_control", "enable_visual_follow", "enable_full_control", "disable_control"]
     props_removed: bool = False
 
 
@@ -436,7 +436,7 @@ def create_app(cfg: Config | None = None) -> FastAPI:
         return ok(mode=P().set_autonomy_mode("ESTOP"))
 
     @app.post("/api/autonomy/bridge/setup", dependencies=[Depends(auth)])
-    def bridge_setup(body: BridgeSetupBody) -> dict[str, Any]:
+    async def bridge_setup(body: BridgeSetupBody) -> dict[str, Any]:
         with P().lock:
             bridge = P().autonomy.bridge
             if body.action == "disable_control":
@@ -454,9 +454,17 @@ def create_app(cfg: Config | None = None) -> FastAPI:
                 raise HTTPException(409, "Land the aircraft and confirm propellers removed before starting DJI's simulator")
             if body.action == "operator_rearm" and not bridge.is_sim and not cfg.autonomy.allow_real_flight:
                 raise HTTPException(409, "Aircraft controls are off. Press Enable aircraft controls first.")
-            if body.action in ("enable_camera_control", "enable_visual_follow"):
-                if cfg.autonomy.motion_profile == "full":
+            if hasattr(bridge, "setup_generation"):
+                bridge.setup_generation += 1
+            setup_generation = getattr(bridge, "setup_generation", 0)
+            connection = getattr(bridge, "out", None)
+            control_token = getattr(bridge, "control_token", None)
+            if body.action in ("enable_camera_control", "enable_visual_follow", "enable_full_control"):
+                if body.action != "enable_full_control" and cfg.autonomy.motion_profile == "full":
                     raise HTTPException(409, "Website enable supports yaw and camera tilt only; translation needs full-motion site configuration")
+                video_problem = P()._physical_video_problem()
+                if video_problem:
+                    raise HTTPException(409, video_problem)
                 video_age = P()._age("drone", rt.clock.now_ms())
                 if video_age is None or video_age > cfg.sources.drone.max_age_ms:
                     raise HTTPException(409, "Start Stream first: fresh drone video is required")
@@ -465,14 +473,41 @@ def create_app(cfg: Config | None = None) -> FastAPI:
                     raise HTTPException(409, "Waiting for DJI altitude, heading, battery and camera-tilt telemetry")
                 if d.battery_pct < cfg.autonomy.battery_rtl_pct:
                     raise HTTPException(409, "Battery too low for website aircraft control")
-            if body.action == "enable_visual_follow" and not getattr(bridge, "translation_supported", False):
+            if body.action == "enable_full_control":
+                if cfg.autonomy.motion_profile != "full":
+                    raise HTTPException(409, "Full control requires the full profile and actual site configuration at startup")
+                problem = P()._full_flight_site_problem(rt.clock.now_ms())
+                if problem:
+                    raise HTTPException(409, problem)
+                cfg.autonomy.follow_max_speed_mps = min(1.0, cfg.autonomy.follow_max_speed_mps)
+                cfg.autonomy.reacquire_max_speed_mps = min(1.0, cfg.autonomy.reacquire_max_speed_mps)
+                cfg.autonomy.max_vertical_mps = min(0.5, cfg.autonomy.max_vertical_mps)
+                cfg.autonomy.max_yaw_rate_dps = min(15.0, cfg.autonomy.max_yaw_rate_dps)
+            if body.action in ("enable_visual_follow", "enable_full_control") and not getattr(bridge, "translation_supported", False):
                 raise HTTPException(409, "This SDK build does not advertise movement support; update its background relay first")
             P().set_autonomy_mode("MANUAL", "website bridge setup")
-            if body.action in ("enable_camera_control", "enable_visual_follow"):
-                cfg.autonomy.motion_profile = "visual_follow" if body.action == "enable_visual_follow" else "camera_only"
+            if body.action in ("enable_camera_control", "enable_visual_follow", "enable_full_control"):
+                cfg.autonomy.motion_profile = {"enable_full_control": "full", "enable_visual_follow": "visual_follow",
+                                               "enable_camera_control": "camera_only"}[body.action]
                 cfg.autonomy.allow_real_flight = True  # Explicit website opt-in; never starts follow or takeoff.
+        deadline = asyncio.get_running_loop().time() + 2
+        while getattr(bridge, "control_phase", None) not in (None, "DISABLED"):
+            if asyncio.get_running_loop().time() >= deadline:
+                with P().lock:
+                    cfg.autonomy.allow_real_flight = False
+                raise HTTPException(409, "Waiting for DJI to disable virtual stick. Keep RC neutral and retry Enable.")
+            await asyncio.sleep(0.02)
+        with P().lock:
+            if (getattr(bridge, "setup_generation", 0) != setup_generation or
+                    getattr(bridge, "out", None) is not connection or P().autonomy.mode != "MANUAL"):
+                raise HTTPException(409, "Setup cancelled by Stop, reconnect or another control request")
+            if (getattr(bridge, "control_token", None) != control_token or not bridge.connected(rt.clock.now_ms())
+                    or P()._age("telemetry", rt.clock.now_ms()) is None
+                    or P()._age("telemetry", rt.clock.now_ms()) > cfg.sources.telemetry.max_age_ms):
+                cfg.autonomy.allow_real_flight = False
+                raise HTTPException(409, "Setup cancelled by RC takeover, stale telemetry or link loss; retry explicitly")
             bridge.control_error = None
-            bridge.send(BridgeCommand(type="operator_rearm" if body.action in ("enable_camera_control", "enable_visual_follow") else body.action, ts_ms=rt.clock.now_ms(), payload={
+            bridge.send(BridgeCommand(type="operator_rearm" if body.action in ("enable_camera_control", "enable_visual_follow", "enable_full_control") else body.action, ts_ms=rt.clock.now_ms(), payload={
                 "allow_real_flight": cfg.autonomy.allow_real_flight,
                 "allow_translation": cfg.autonomy.allow_real_flight and cfg.autonomy.motion_profile in ("full", "visual_follow")}))
         return ok(note="Request sent. Phone RC-neutral checks and DJI confirmation must complete before Start follow.")

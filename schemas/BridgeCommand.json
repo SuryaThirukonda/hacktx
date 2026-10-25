@@ -10,7 +10,8 @@
         "sim_start",
         "sim_stop",
         "ping",
-        "estop"
+        "estop",
+        "operator_rearm"
       ],
       "title": "Type",
       "type": "string"

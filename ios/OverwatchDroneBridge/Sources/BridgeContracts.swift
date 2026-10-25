@@ -88,6 +88,7 @@ struct StatusMessage: Encodable {
     let sim: Bool
     let real_flight_armed: Bool
     let control_inhibited: Bool
+    let control_phase: String
     let pilot_reason: String?
     let control_token: String
     let motion_profile: String

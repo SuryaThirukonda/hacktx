@@ -217,11 +217,13 @@ final class VirtualStickController {
 
     /// `mode {vstick: false}`.
     func requestDisable(reason: String) {
+        overrideGuard.inhibit(reason)
         beginDisable(reason: reason, pilot: true)
     }
 
     /// `estop`: zero setpoint + disable virtual stick.
     func estop() {
+        controlToken = UUID().uuidString
         overrideGuard.inhibit("E-STOP: re-arm on phone required")
         beginDisable(reason: "E-STOP: zero velocity + virtual stick disabled, PILOT IN CONTROL", pilot: true)
         disableNowIfActive()
@@ -248,6 +250,7 @@ final class VirtualStickController {
 
     /// The big red button. Latches: the Mac cannot re-enable virtual stick until the operator re-arms.
     func operatorDisable() {
+        controlToken = UUID().uuidString
         overrideGuard.inhibit("Disabled on bridge phone")
         beginDisable(reason: "DISABLED ON THE BRIDGE by the operator: PILOT IN CONTROL (Mac control inhibited)",
                      pilot: true)
@@ -255,7 +258,7 @@ final class VirtualStickController {
     }
 
     func operatorRearm() {
-        guard inhibited else { return }
+        guard inhibited, phase == .disabled, aircraftReportsEnabled != true else { return }
         guard overrideGuard.rearm(at: DeviceClock.nowS()) else {
             audit?("re-arm refused: need fresh controller callbacks and neutral sticks for 250 ms")
             return
@@ -266,6 +269,7 @@ final class VirtualStickController {
     }
 
     func appWillBackground() {
+        controlToken = UUID().uuidString
         overrideGuard.inhibit("Bridge app left foreground")
         guard phase != .disabled || aircraftReportsEnabled == true else { return }
         beginDisable(reason: "bridge app left the foreground: virtual stick disabled, PILOT IN CONTROL", pilot: true)
@@ -285,6 +289,7 @@ final class VirtualStickController {
     /// After every aircraft (re)connect: virtual stick is off on the aircraft and the control modes may have been
     /// reset, so re-apply them.
     func productConnected() {
+        controlToken = UUID().uuidString
         overrideGuard.inhibit("Aircraft connected: re-arm on phone required")
         aircraftReportsEnabled = nil
         if phase != .disabled {
@@ -308,6 +313,7 @@ final class VirtualStickController {
     }
 
     func productDisconnected() {
+        controlToken = UUID().uuidString
         overrideGuard.inhibit("Aircraft disconnected")
         aircraftReportsEnabled = nil
         if phase != .disabled {
@@ -548,6 +554,8 @@ final class VirtualStickController {
     }
 
     private func beginDisable(reason: String, pilot: Bool) {
+        overrideGuard.inhibit(reason)
+        lastAcceptedSeq = -1
         setpoint = nil
         watchdogHover = false
         if pilot {
@@ -570,6 +578,7 @@ final class VirtualStickController {
     }
 
     private func pilotOverride(_ reason: String) {
+        controlToken = UUID().uuidString
         overrideGuard.inhibit(reason)
         rtlActive = false
         goHomeAfterDisable = false

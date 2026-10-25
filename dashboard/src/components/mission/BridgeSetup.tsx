@@ -14,6 +14,7 @@ export function BridgeSetup() {
   const sources = useStore((s) => s.state?.sources);
   const follow = useIncident((s) => s.follow);
   const [profile, setProfile] = useState("visual_follow");
+  useEffect(() => { if (auto?.motion_profile === "full") setProfile("full"); }, [auto?.motion_profile]);
   const [props, setProps] = useState(false);
   const [message, setMessage] = useState("");
   const [busy, setBusy] = useState(false);
@@ -45,13 +46,14 @@ export function BridgeSetup() {
       <p className="text-ink-2">Video {live("drone") ? "live" : "offline"} · DJI telemetry {live("telemetry") ? "live" : "offline"} · RC always has priority</p>
       <label className="flex items-center gap-2">Control capability
         <select aria-label="Control capability" className="rounded border border-line bg-surface-2 p-1" value={profile} onChange={(e) => setProfile(e.target.value)}>
+          {auto?.motion_profile === "full" && <option value="full">Full control · site checks required</option>}
           <option value="visual_follow">Movement + camera</option><option value="camera_only">Rotation + camera only</option>
         </select>
       </label>
-      <p className="text-ink-3">Selected: {profile === "visual_follow" ? "forward/back, sideways, rotation and camera pitch" : "rotation and camera pitch; no translation"}. Press Enable to apply.</p>
+      <p className="text-ink-3">Selected: {profile === "full" ? "site calibrated full control; GPS, fence and calibration required" : profile === "visual_follow" ? "forward/back, sideways, rotation and camera pitch" : "rotation and camera pitch; no translation"}. Press Enable to apply.</p>
       <div className="flex flex-wrap gap-2">
         <Btn tone="primary" disabled={busy} onClick={() => void run(
-          () => setup(profile === "visual_follow" ? "enable_visual_follow" : "enable_camera_control"),
+          () => setup(profile === "full" ? "enable_full_control" : profile === "visual_follow" ? "enable_visual_follow" : "enable_camera_control"),
           "Enable / re-arm sent. Wait for Controls enabled; then use the keyboard or Start follow.")}>{armed ? "Re-arm controls" : "Enable aircraft controls"}</Btn>
         <Btn tone="danger" onClick={() => void run(() => setup("disable_control"), "Stopped. Aircraft controls off; pilot in control.")}>Stop / RC control</Btn>
       </div>

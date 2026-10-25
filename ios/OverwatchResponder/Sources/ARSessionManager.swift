@@ -7,6 +7,8 @@ import Foundation
 /// never has to retain a backlog of ARFrames.
 final class ARSessionManager: NSObject, ARSessionDelegate {
     let session = ARSession()
+    let scan = LocalScan()
+    private(set) var meshSupported = false
     private(set) var lidarSupported = false
     var targetHz: Double = 10.0
 
@@ -28,7 +30,10 @@ final class ARSessionManager: NSObject, ARSessionDelegate {
             emit("ARKit world tracking is not supported on this device")
             return
         }
+        scan.reset()
         let config = ARWorldTrackingConfiguration()
+        meshSupported = ARWorldTrackingConfiguration.supportsSceneReconstruction(.mesh)
+        if meshSupported { config.sceneReconstruction = .mesh }
         config.worldAlignment = .gravity  // y up, arbitrary yaw; the Mac registers ARKit to its local map
         if ARWorldTrackingConfiguration.supportsFrameSemantics(.sceneDepth) {
             config.frameSemantics.insert(.sceneDepth)
@@ -65,6 +70,18 @@ final class ARSessionManager: NSObject, ARSessionDelegate {
         guard canAcceptFrame() else { return }
         lastEmitTs = ts
         onFrame?(frame)
+    }
+
+    func session(_ session: ARSession, didAdd anchors: [ARAnchor]) {
+        scan.update(anchors.compactMap { $0 as? ARMeshAnchor }, timestamp: session.currentFrame?.timestamp ?? 0)
+    }
+
+    func session(_ session: ARSession, didUpdate anchors: [ARAnchor]) {
+        scan.update(anchors.compactMap { $0 as? ARMeshAnchor }, timestamp: session.currentFrame?.timestamp ?? 0)
+    }
+
+    func session(_ session: ARSession, didRemove anchors: [ARAnchor]) {
+        scan.remove(anchors.map { $0.identifier })
     }
 
     func session(_ session: ARSession, didFailWithError error: Error) {

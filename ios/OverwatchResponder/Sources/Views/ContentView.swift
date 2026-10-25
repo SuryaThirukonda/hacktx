@@ -4,6 +4,7 @@ struct ContentView: View {
     @EnvironmentObject private var model: ResponderModel
     @Environment(\.scenePhase) private var scenePhase
     @State private var showSettings = false
+    @State private var showScan = false
 
     var body: some View {
         ZStack {
@@ -20,6 +21,7 @@ struct ContentView: View {
                         .frame(height: 130)
                     ackButton
                     toggles
+                    Button("Local LiDAR scan") { showScan = true }
                     footer
                 }
                 .padding(.horizontal, 16)
@@ -31,6 +33,7 @@ struct ContentView: View {
             SettingsView()
                 .environmentObject(model)
         }
+        .sheet(isPresented: $showScan) { LocalScanView().environmentObject(model) }
         .onAppear {
             model.start()
             if model.host.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {

@@ -66,6 +66,8 @@ class Runtime:
     def __init__(self, cfg: Config) -> None:
         self.cfg = cfg
         self.mode = cfg.session.mode
+        if self.mode == "LIVE":
+            cfg.autonomy.allow_real_flight = False  # Startup never inherits physical permission from a config file.
         self.metrics = Metrics()
         self.faults = FaultInjector()
         self.session_id = session_id()

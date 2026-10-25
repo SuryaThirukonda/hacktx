@@ -69,6 +69,7 @@ final class BridgeController: NSObject, DJIRemoteControllerDelegate {
     private var lastCommand: String?
     private var lastGimbalErrorLogS = -1.0e9
     private var started = false
+    private var commandFreshness = CommandFreshnessGuard()
     private var serverClockOffsetMs: Double?
     private var externalSDK = false
     private weak var externalAircraft: DJIAircraft?
@@ -104,7 +105,12 @@ final class BridgeController: NSObject, DJIRemoteControllerDelegate {
         vstick.isFlying = { [weak self] in self?.telemetry.snapshot.flying ?? false }
 
         socket.onOpen = { [weak self] in self?.core.async { self?.socketOpened() } }
-        socket.onClose = { [weak self] reason in self?.core.async { self?.log("Mac link down: \(reason ?? "closed")", toMac: false) } }
+        socket.onClose = { [weak self] reason in self?.core.async {
+            self?.realFlightArmed.set(false)
+            self?.translationArmed.set(false)
+            self?.vstick.operatorDisable()
+            self?.log("Mac link down: \(reason ?? "closed")", toMac: false)
+        } }
         socket.onText = { [weak self] text, rxMs in self?.handleText(text, rxMs: rxMs) }      // socket queue
         socket.onBinary = { [weak self] _, _ in self?.core.async { self?.vstick.noteMacMessage() } }
 
@@ -186,6 +192,9 @@ final class BridgeController: NSObject, DJIRemoteControllerDelegate {
 
     private func socketOpened() {
         serverClockOffsetMs = nil
+        commandFreshness = CommandFreshnessGuard()
+        realFlightArmed.set(false)
+        translationArmed.set(false)
         macError = nil
         vstick.noteMacMessage()
         vstick.macLinkOpened()
@@ -242,14 +251,24 @@ final class BridgeController: NSObject, DJIRemoteControllerDelegate {
     // MARK: - BridgeCommand (core queue)
 
     private func execute(_ cmd: BridgeCommand) {
-        if externalSDK && ["operator_rearm", "sim_start", "sim_stop"].contains(cmd.type) {
-            guard cmd.string("control_token") == vstick.controlToken,
-                  let offset = serverClockOffsetMs, let sent = cmd.ts_ms, sent.isFinite else { return }
-            let age = DeviceClock.nowMs() - offset - sent
-            guard age >= -100 && age < 500 else { return }
+        let abort = CommandFreshnessGuard.isAbort(cmd.type, enable: cmd.flag("vstick"))
+        var remainingLeaseS: Double?
+        if abort {
+            commandFreshness.noteAbort(sequence: cmd.seq, token: vstick.controlToken)
+        } else if cmd.type != "ping" {
+            let supported = ["vstick", "gimbal", "mode", "rtl", "operator_rearm", "sim_start", "sim_stop"].contains(cmd.type)
+            guard supported else { return }
+            if ["operator_rearm", "sim_start", "sim_stop"].contains(cmd.type) && !externalSDK { return }
+            let requiresControl = ["vstick", "gimbal", "mode", "rtl"].contains(cmd.type)
+            if requiresControl && (vstick.inhibited || !vstick.controllerReady) { return }
+            remainingLeaseS = commandFreshness.accept(token: cmd.string("control_token"),
+                expectedToken: vstick.controlToken, sequence: cmd.seq, sentMs: cmd.ts_ms,
+                nowMs: DeviceClock.nowMs(), offsetMs: serverClockOffsetMs, ttlMs: cmd.number("ttl_ms"))
+            guard remainingLeaseS != nil else { return }
             if cmd.type == "operator_rearm" {
-                // Explicit website request; physical RC freshness/neutral checks remain authoritative here.
-                guard vstick.controllerReady else { log("web re-arm refused: RC monitor stale or sticks not neutral"); return }
+                guard vstick.controllerReady, vstick.phase == .disabled else {
+                    log("web re-arm refused: wait for disable and fresh neutral RC"); return
+                }
                 realFlightArmed.set(cmd.flag("allow_real_flight") == true)
                 translationArmed.set(cmd.flag("allow_translation") == true && realFlightArmed.current)
                 vstick.operatorRearm()
@@ -257,29 +276,20 @@ final class BridgeController: NSObject, DJIRemoteControllerDelegate {
                 return
             }
         }
-        if vstick.inhibited && ["vstick", "gimbal", "rtl"].contains(cmd.type) { return }
-        let needsToken = ["vstick", "gimbal", "rtl"].contains(cmd.type)
-            || (cmd.type == "mode" && cmd.flag("vstick") == true)
-        if needsToken && (vstick.inhibited || !vstick.controllerReady
-                          || cmd.string("control_token") != vstick.controlToken) { return }
         if cmd.type != "ping" && cmd.type != "vstick" {
             lastCommand = "\(cmd.type) #\(Int(cmd.seq ?? 0))"
         }
         switch cmd.type {
         case "vstick":
             let now = DeviceClock.nowS()
-            guard let offset = serverClockOffsetMs, let sent = cmd.number("ts_ms") ?? cmd.ts_ms,
-                  sent.isFinite else { return }
-            let ageMs = DeviceClock.nowMs() - offset - sent
-            let ttlMs = min(300.0, cmd.number("ttl_ms") ?? 300.0)
-            guard ageMs.isFinite, ageMs >= -100, ageMs < ttlMs else { return }
+            guard let lease = remainingLeaseS else { return }
             let sp = VirtualStickController.Setpoint(
                 forward: cmd.number("forward_mps") ?? 0,
                 right: cmd.number("right_mps") ?? 0,
                 up: cmd.number("up_mps") ?? 0,
                 yawRate: cmd.number("yaw_rate_dps") ?? 0,
-                ttlS: max(0.0, ttlMs - max(0, ageMs)) / 1000.0,
-                seq: Int(cmd.number("seq") ?? cmd.seq ?? 0),
+                ttlS: lease,
+                seq: Int(cmd.seq ?? 0),
                 rxS: now)
             vstick.latch(sp)
             lastCommand = String(format: "vstick #%ld  fwd %.1f  right %.1f  up %.1f  yaw %.0f", sp.seq, sp.forward,
@@ -418,6 +428,10 @@ final class BridgeController: NSObject, DJIRemoteControllerDelegate {
         let connected = aircraft != nil
         core.async {
             let wasConnected = self.productConnected
+            if connected != wasConnected {
+                self.realFlightArmed.set(false)
+                self.translationArmed.set(false)
+            }
             self.productConnected = connected
             self.productModel = model
             if connected && !wasConnected {
@@ -479,6 +493,7 @@ final class BridgeController: NSObject, DJIRemoteControllerDelegate {
                                    vstick_enabled: vstick.isEnabled, sim: c.simActive,
                                    real_flight_armed: realFlightArmed.current,
                                    control_inhibited: vstick.inhibited || !vstick.controllerReady,
+                                   control_phase: vstick.phase.rawValue,
                                    pilot_reason: vstick.status().pilotReason,
                                    control_token: vstick.controlToken,
                                    motion_profile: vstick.cameraOnly ? "camera_only" : "full",

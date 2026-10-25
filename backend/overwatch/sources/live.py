@@ -94,6 +94,7 @@ class LiveBridge:
         self.clock = DeviceClock()
         self.decoder: H264Decoder | None = None
         self.frame_id = 0
+        self.command_seq = 0
         self.synthetic = False  # a test harness (fake_devices.py) declares synthetic imagery in its hello
         self.legacy = False
         self.control_capable = False
@@ -105,8 +106,15 @@ class LiveBridge:
         self.web_control_supported = False
         self.pilot_reason: str | None = None
         self.control_error: str | None = None
+        self.control_phase: str | None = None
+        self.setup_generation = 0
 
     def reset_connection(self, *, legacy: bool = False) -> None:
+        with self.rt.pipeline.lock:
+            self.rt.cfg.autonomy.allow_real_flight = False
+            self.rt.pipeline.flight_confirmed_track_id = None
+            self.rt.pipeline.describe_proposal = None
+            self.rt.pipeline.autonomy.set_mode("MANUAL", self.rt.clock.now_ms(), "bridge connection reset: controls off")
         self.legacy = legacy
         self.synthetic = False
         self.sim_active = False
@@ -119,6 +127,8 @@ class LiveBridge:
         self.web_control_supported = False
         self.pilot_reason = None
         self.control_error = None
+        self.control_phase = None
+        self.setup_generation += 1
         self.clock = DeviceClock()
         self.decoder = None
         self.last_rx_ms = -1e12
@@ -127,7 +137,7 @@ class LiveBridge:
         # Invalidate in-flight model answers as well as already selected routes.
         p = self.rt.pipeline
         with p.lock:
-            p.autonomy.set_mode("MANUAL", self.rt.clock.now_ms(), reason)
+            p.autonomy.set_mode("MANUAL", self.rt.clock.now_ms(), reason, emit_command=False)
             p.autonomy.clear_plan()
 
     def permits(self, cmd: BridgeCommand, *, queued: bool = False) -> bool:
@@ -153,7 +163,13 @@ class LiveBridge:
             return
         if not self.permits(cmd):
             return
-        cmd = cmd.model_copy(update={"payload": {**cmd.payload, "control_token": self.control_token}})
+        # One wire sequence across setup, mode, gimbal, RTL and setpoints.
+        with self.rt.pipeline.lock:
+            self.command_seq += 1
+            payload = {**cmd.payload, "control_token": self.control_token, "ttl_ms": min(300, cmd.payload.get("ttl_ms", 300))}
+            if cmd.type == "vstick":
+                payload.update(seq=self.command_seq, ts_ms=cmd.ts_ms)
+            cmd = cmd.model_copy(update={"seq": self.command_seq, "payload": payload})
         msg = cmd.model_dump_json()
         loop.call_soon_threadsafe(_put_latest, q, msg)
 
@@ -182,6 +198,7 @@ class LiveBridge:
                 self.control_capable = not self.legacy and msg.get("pilot_override_protocol") == 1
             if t == "status" and self.control_capable:
                 self.motion_profile = msg.get("motion_profile")
+                self.control_phase = msg.get("control_phase")
                 self.translation_supported = msg.get("translation_supported") is True
                 self.translation_armed = msg.get("translation_armed") is True
                 self.web_control_supported = msg.get("web_control_supported") is True

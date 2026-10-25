@@ -168,6 +168,8 @@ class Pipeline:
         self.raw_tracks: list[RawTrack] = []
         self.last_frame: np.ndarray | None = None
         self.last_frame_id = 0
+        self.last_drone_source_id: str | None = None
+        self.last_detections: list[Detection] = []
         self.last_frame_size = (self.drone_intr.width, self.drone_intr.height)
         self.reference_crop: np.ndarray | None = None
         self.counters: dict[str, SourceCounters] = {k: SourceCounters() for k in ("drone", "phone", "telemetry")}
@@ -297,6 +299,8 @@ class Pipeline:
             out = self.tracker.update(dets, now, cmc.H if (cmc is not None and cmc.ok) else None)
             self.metrics.observe("track_ms", (time.perf_counter() - tt) * 1000.0)
             self.raw_tracks = out.tracks
+            self.last_detections = dets
+            self.last_drone_source_id = pkt.source_id
             for gone in out.expired:
                 for dct in (self.world_kf, self.trails, self.track_hist, self.track_colors, self.track_last_box,
                             self.track_ground_err):
@@ -1236,9 +1240,13 @@ class Pipeline:
         people = [kf.position for tid, kf in self.world_kf.items()
                   if any(t.track_id == tid and t.matched_now for t in self.raw_tracks)]
         snap = subj.snapshot(now)
-        occl = False
+        from .vision.quality import measurement_problems
+        quality = measurement_problems(next((t for t in self.raw_tracks if t.track_id == subj.track_id), None),
+                                       self.raw_tracks, self.last_frame_size, self.cfg.perception.tracker.high_thresh,
+                                       self.last_detections)
+        occl = bool(quality)
         if self.last_frame is not None and subj.track_id in self.track_last_box and subj.state != "LOCKED":
-            occl = _canopy_fraction(self.last_frame, self.track_last_box[subj.track_id]) > 0.3
+            occl = occl or _canopy_fraction(self.last_frame, self.track_last_box[subj.track_id]) > 0.3
         W, H = self.last_frame_size
         return AutonomyInputs(
             now_ms=now, subject_state=subj.state, subject_box=box, image_size=(W, H), hfov_deg=self.drone_intr.hfov_deg,
@@ -1253,6 +1261,8 @@ class Pipeline:
             subject_verified=bool(subj.verified) and (self.mode != "LIVE" or self.autonomy.target_is_sim
                                                      or subj.track_id == self.flight_confirmed_track_id),
             subject_track_id=subj.track_id,
+            subject_quality_ok=not quality, subject_quality_reasons=quality,
+            subject_frame_id=self.last_frame_id,
             video_fresh=self._age("drone", now) is not None
                         and self._age("drone", now) <= self.cfg.sources.drone.max_age_ms)
 
@@ -1276,6 +1286,9 @@ class Pipeline:
             age = self._age(src, now)
             if age is None or age > max_age:
                 return f"real-flight control stopped: {src} stale or missing"
+        video_problem = self._physical_video_problem()
+        if video_problem:
+            return video_problem
         d = self.drone_state(now)
         if self.cfg.autonomy.motion_profile in ("camera_only", "visual_follow"):
             if self.cfg.autonomy.motion_profile == "visual_follow" and not getattr(bridge, "is_sim", False) and (
@@ -1289,6 +1302,21 @@ class Pipeline:
         if not getattr(bridge, "is_sim", False) and (not getattr(bridge, "translation_supported", False)
                                                     or not getattr(bridge, "translation_armed", False)):
             return "full-motion control requires the updated bridge and local Allow aircraft translation opt-in"
+        return self._full_flight_site_problem(now)
+
+    def _physical_video_problem(self) -> str | None:
+        if self.autonomy.target_is_sim:
+            return None
+        if self.counters["drone"].provenance not in ("LIVE", None, ""):
+            return "physical control requires current LIVE video from the DJI bridge, not file/replay or another camera"
+        if self.last_drone_source_id not in (None, "dji-bridge"):
+            return "physical control requires current LIVE video from the DJI bridge, not file/replay or another camera"
+        return None
+
+    def _full_flight_site_problem(self, now: float) -> str | None:
+        """Site checks before full-profile arming. They never grant permission by themselves."""
+        d = self.drone_state(now)
+        bridge = self.autonomy.bridge
         if d is None or any(v is None for v in (d.position_xy_m, d.alt_m, d.yaw_deg, d.battery_pct)):
             return "real-flight control requires position, altitude, heading and battery telemetry"
         if not self.calib.valid:

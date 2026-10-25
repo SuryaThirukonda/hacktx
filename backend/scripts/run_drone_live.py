@@ -54,7 +54,7 @@ async def run(args) -> None:
     cfg.decisions.primary = args.engine
     cfg.decisions.shadow = []
     cfg.decisions.allow_mock = False
-    cfg.autonomy.allow_real_flight = args.real_flight
+    cfg.autonomy.allow_real_flight = False  # Website enable is required after every start or reconnect.
     cfg.autonomy.motion_profile = args.motion_profile
     if args.real_flight and args.motion_profile == "full":
         cfg.autonomy.follow_max_speed_mps = min(1.0, cfg.autonomy.follow_max_speed_mps)
@@ -98,7 +98,7 @@ if __name__ == "__main__":
     parser.add_argument("--motion-profile", choices=["camera_only", "visual_follow", "full"], default="camera_only",
                         help="camera_only rotates and tilts the camera; all translation is zero")
     parser.add_argument("--config", help="site YAML, merged over defaults")
-    parser.add_argument("--real-flight", action="store_true", help="enable backend control; phone re-arm is still required")
+    parser.add_argument("--real-flight", action="store_true", help="compatibility flag for site checks; startup stays disarmed until the website enables control")
     try:
         asyncio.run(run(parser.parse_args()))
     except KeyboardInterrupt:
