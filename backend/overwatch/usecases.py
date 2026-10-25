@@ -21,7 +21,7 @@ USECASES: list[dict[str, Any]] = [
      "scenarios": ["CT1", "CT2"], "not_built": "traffic, night, more than one drone"},
     {"id": "sar", "name": "Search and rescue", "mission": "search", "status": "ready",
      "summary": "Find a lost person in woods: sectors with a probability-of-area prior, a lawnmower sweep, decoys, "
-                "and a person under canopy that the camera cannot see.",
+                "and a person in a far clearing reached on the last legs of the sweep.",
      "scenarios": ["SR1", "SR2", "SR3", "SR4", "SR5", "VC2"], "not_built": "SR6 to SR8 (terrain relief, second looks, ground-team guidance)"},
     {"id": "flood", "name": "Flood rescue", "mission": "search", "status": "ready",
      "summary": "Standing water over the south of a neighbourhood with a few dry mounds. The drone launches from the "
